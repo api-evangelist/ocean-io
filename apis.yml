@@ -1,0 +1,29 @@
+aid: ocean-io
+url: https://raw.githubusercontent.com/api-evangelist/ocean-io/refs/heads/main/apis.yml
+name: Ocean.io
+x-type: company
+description: >-
+  Ocean.io is an account-based sales intelligence platform with company lookalikes, ICP scoring, and integrations into popular CRMs and outreach tools.
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Sales Intelligence
+  - ABM
+  - B2B Data
+  - Lookalikes
+  - Prospecting
+created: '2026-05-08'
+modified: '2026-05-08'
+specificationVersion: '0.19'
+apis: []
+common:
+  - type: Website
+    url: https://ocean.io/
+  - type: Plans
+    url: plans/ocean-io-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/ocean-io-rate-limits.yml
+  - type: FinOps
+    url: finops/ocean-io-finops.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
