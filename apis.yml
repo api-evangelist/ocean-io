@@ -3,21 +3,42 @@ url: https://raw.githubusercontent.com/api-evangelist/ocean-io/refs/heads/main/a
 name: Ocean.io
 x-type: company
 description: >-
-  Ocean.io is an account-based sales intelligence platform with company lookalikes, ICP scoring, and integrations into popular CRMs and outreach tools.
+  Ocean.io is a B2B account-based prospecting and enrichment platform focused on lookalike search and
+  ICP refinement. It offers a REST API for company enrichment and lookalike account discovery. API
+  access is gated to paying customers and configured per contract.
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
   - Sales Intelligence
+  - B2B
+  - Enrichment
+  - Lookalike
   - ABM
-  - B2B Data
-  - Lookalikes
   - Prospecting
 created: '2026-05-08'
 modified: '2026-05-08'
 specificationVersion: '0.19'
-apis: []
+apis:
+  - aid: ocean-io:enrichment
+    name: Ocean.io Enrichment API
+    description: >-
+      REST API for company enrichment given a domain, plus lookalike search returning similar companies
+      based on a seed list. Authentication via API key issued to enterprise customers.
+    humanURL: https://ocean.io/help/api
+    baseURL: https://api.ocean.io
+    tags:
+      - Enrichment
+      - Lookalike
+      - Companies
+    properties:
+      - type: Documentation
+        url: https://ocean.io/help/api
+      - type: ContactSales
+        url: https://ocean.io/contact
 common:
   - type: Website
     url: https://ocean.io/
+  - type: DeveloperPortal
+    url: https://ocean.io/help/api
   - type: Plans
     url: plans/ocean-io-plans-pricing.yml
   - type: RateLimits

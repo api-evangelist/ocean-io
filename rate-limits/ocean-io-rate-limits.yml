@@ -8,28 +8,31 @@ modified: '2026-05-08'
 reconciled: false
 tags:
 - Sales Intelligence
+- B2B
+- Enrichment
+- Lookalike
 - ABM
-- B2B Data
-- Lookalikes
 - Prospecting
 - Rate Limiting
 - Quotas
 - Throttling
-description: Placeholder rate-limit artifact for Ocean.io. Replace with real limits once researched.
-notes: Initial scaffold — limits have not yet been reconciled.
+description: >-
+  Ocean.io does not publish API rate limits on its developer documentation. Quotas are credit-based
+  and configured per contract; throttling returns HTTP 429.
+notes: Contract-defined credit pools; specific RPS not published.
 sources:
-- https://ocean.io/
+- https://ocean.io/help/api
 responseCodes:
   throttled: 429
 limits:
 - name: Default
   scope: account
-  metric: varies
-  limit: see provider documentation
-  notes: Pending reconciliation.
+  metric: credits
+  limit: contract-defined
+  notes: Monthly credit pool; specific RPS not documented.
 policies:
 - name: Backoff Strategy
-  description: Clients should implement exponential backoff with jitter and honor any Retry-After header.
+  description: Honor 429 with exponential backoff and Retry-After.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

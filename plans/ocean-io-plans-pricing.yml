@@ -8,34 +8,41 @@ modified: '2026-05-08'
 reconciled: false
 tags:
 - Sales Intelligence
+- B2B
+- Enrichment
+- Lookalike
 - ABM
-- B2B Data
-- Lookalikes
 - Prospecting
 - Plans
-description: Placeholder plans/pricing artifact for Ocean.io. Replace with real published pricing once
-  the pipeline researches the provider's plans page.
-notes: Initial scaffold — plans/pricing have not yet been reconciled.
+description: >-
+  Ocean.io sells annual contracts with seat counts and credit pools that include API access at higher
+  tiers. Public pricing is not published; deals are sales-led. The platform has separate product tiers
+  for self-serve users and enterprise teams; API quotas are negotiated.
+notes: Sales-led pricing; API typically included at higher tiers.
 sources:
 - https://ocean.io/
+- https://ocean.io/pricing
 plans:
-- id: ocean-io-default
-  name: To Be Reconciled
+- id: ocean-io-platform
+  name: Ocean.io Platform
   type: enterprise
-  description: Initial scaffold; replace with provider plan tiers once pricing is reconciled.
+  description: Annual seat-based contract; API access included at higher tiers with negotiated credit pools.
   entries:
-  - label: API Access
-    name: api_access
+  - label: Contract
+    name: contract
     type: flat
-    metric: varies
+    metric: year
     limit: -1
-    timeFrame: usage
+    timeFrame: annual
     geo: global
     unit: 1
-    price: see https://ocean.io/
-    userMultiplied: false
+    price: contact sales
+    userMultiplied: true
   elements:
-  - name: Pending Reconciliation
+  - name: Lookalike search
+  - name: Company enrichment
+  - name: CRM integrations
+  - name: API access (higher tiers)
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

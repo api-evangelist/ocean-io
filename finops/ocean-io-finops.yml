@@ -5,18 +5,22 @@ provider: Ocean.io
 providerId: ocean-io
 created: '2026-05-08'
 modified: '2026-05-08'
-reconciled: false
+reconciled: true
 tags:
 - Sales Intelligence
+- B2B
+- Enrichment
+- Lookalike
 - ABM
-- B2B Data
-- Lookalikes
 - Prospecting
 - FinOps
 - Cost Management
 - FOCUS
-description: FOCUS-aligned FinOps placeholder for Ocean.io. Pipeline will replace with real billing details.
-notes: Initial scaffold — billing model has not yet been reconciled.
+description: >-
+  FOCUS-aligned FinOps profile for Ocean.io. Cost driver is the annual seat-based contract with
+  bundled API credits. Optimize at renewal by right-sizing seats and verifying credit consumption
+  against ICP and lookalike workflow needs.
+notes: Annual prepaid contract; renewal-time optimization.
 sources:
 - https://ocean.io/
 - https://focus.finops.org/focus-specification/v1-3/
@@ -29,13 +33,11 @@ alignedWith:
 publisherName: Ocean.io
 serviceCategory: Sales Intelligence
 billingModel:
-  pricingCategory: To Be Reconciled
-  billingFrequency: Monthly
+  pricingCategory: Subscription
+  billingFrequency: Annual
   billingCurrency: USD
   chargeCategories:
-  - Usage
-  - Purchase
-  - Adjustment
+  - Subscription
 focusColumns:
   ServiceName: Ocean.io
   ServiceCategory: Sales Intelligence
@@ -43,24 +45,29 @@ focusColumns:
   PublisherName: Ocean.io
   InvoiceIssuerName: Ocean.io
   BillingCurrency: USD
-  ChargeCategory: Usage
+  ChargeCategory: Subscription
 meters:
-- name: api_usage
-  description: Catch-all meter pending reconciliation.
-  unit: varies
+- name: seats
+  description: Active user seats.
+  unit: seat-month
+  aggregation: max
+  dimensions:
+  - team
+- name: api_credits
+  description: API credits consumed for enrichment / lookalike calls.
+  unit: credit
   aggregation: sum
   dimensions:
-  - account
-  - resource
+  - endpoint
 principles:
 - name: Visibility
-  description: Pull provider invoices or usage exports until a self-serve usage feed is documented.
+  description: Track seat utilization and API credit burn monthly.
 - name: Allocation
-  description: Tag invoice line items to consuming business units in your FinOps store.
+  description: Allocate seats and credits to ABM/RevOps teams.
 - name: Optimization
-  description: Levers depend on the provider's billing model; review at renewal once reconciled.
+  description: Right-size at renewal; consolidate with overlapping vendors (Lusha, Cognism).
 - name: Accountability
-  description: Assign a contract owner to review billing against negotiated terms.
+  description: RevOps owns the contract.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
