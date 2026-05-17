@@ -1,7 +1,7 @@
 aid: ocean-io
 url: https://raw.githubusercontent.com/api-evangelist/ocean-io/refs/heads/main/apis.yml
 name: Ocean.io
-x-type: company
+kind: company
 description: >-
   Ocean.io is a B2B account-based prospecting and enrichment platform focused on lookalike search and
   ICP refinement. It offers a REST API for company enrichment and lookalike account discovery. API
