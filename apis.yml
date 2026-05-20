@@ -35,6 +35,8 @@ apis:
       - type: ContactSales
         url: https://ocean.io/contact
 common:
+  - type: GitHubOrganization
+    url: https://github.com/oceanio
   - type: Website
     url: https://ocean.io/
   - type: DeveloperPortal
