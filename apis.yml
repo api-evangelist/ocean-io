@@ -6,7 +6,7 @@ description: >-
   Ocean.io is a B2B account-based prospecting and enrichment platform focused on lookalike search and
   ICP refinement. It offers a REST API for company enrichment and lookalike account discovery. API
   access is gated to paying customers and configured per contract.
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
   - Sales Intelligence
   - B2B
