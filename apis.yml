@@ -35,6 +35,10 @@ apis:
       - type: ContactSales
         url: https://ocean.io/contact
 common:
+  - type: TrustCenter
+    url: security/ocean-io-trust-center.yml
+  - type: DomainSecurity
+    url: security/ocean-io-domain-security.yml
   - type: GitHubOrganization
     url: https://github.com/oceanio
   - type: Website
