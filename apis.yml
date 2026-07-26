@@ -6,7 +6,19 @@ description: >-
   Ocean.io is a B2B account-based prospecting and enrichment platform focused on lookalike search and
   ICP refinement. It offers a REST API for company enrichment and lookalike account discovery. API
   access is gated to paying customers and configured per contract.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source:
+    - plans
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/ocean-io.png
 tags:
   - Sales Intelligence
   - B2B
@@ -15,25 +27,9 @@ tags:
   - ABM
   - Prospecting
 created: '2026-05-08'
-modified: '2026-05-08'
+modified: '2026-07-25'
 specificationVersion: '0.19'
-apis:
-  - aid: ocean-io:enrichment
-    name: Ocean.io Enrichment API
-    description: >-
-      REST API for company enrichment given a domain, plus lookalike search returning similar companies
-      based on a seed list. Authentication via API key issued to enterprise customers.
-    humanURL: https://ocean.io/help/api
-    baseURL: https://api.ocean.io
-    tags:
-      - Enrichment
-      - Lookalike
-      - Companies
-    properties:
-      - type: Documentation
-        url: https://ocean.io/help/api
-      - type: ContactSales
-        url: https://ocean.io/contact
+apis: []
 common:
   - type: TrustCenter
     url: security/ocean-io-trust-center.yml

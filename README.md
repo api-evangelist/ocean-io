@@ -16,10 +16,6 @@ Ocean.io is a B2B account-based prospecting and enrichment platform focused on l
 
 ## APIs
 
-### Ocean.io Enrichment API
-REST API for company enrichment given a domain, plus lookalike search returning similar companies based on a seed list. Authentication via API key issued to enterprise customers.
-- **Base URL:** `https://api.ocean.io`
-- **Docs:** https://ocean.io/help/api
 
 ## Common Properties
 - [Website](https://ocean.io/)
