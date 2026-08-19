@@ -1,0 +1,121 @@
+generated: '2026-08-13'
+method: searched
+source: https://app.ocean.io/docs/getting-started/webhooks
+derived_from: openapi/ocean-io-api-openapi.yml (top-level `webhooks` object)
+spec_type: Webhooks
+asyncapi_published: false
+description: >-
+  Ocean.io has a real event surface, but it is a callback surface rather than a subscription one:
+  several endpoints process asynchronously and POST their results to a webhookUrl the caller supplies
+  per request. There is no webhook registration console, no event catalog page, no signature scheme
+  and no published AsyncAPI document. The payload contracts ARE machine-readable, however — the
+  published OpenAPI 3.1 document declares eight entries under its top-level `webhooks` object, each
+  with a request-body schema, which is the strongest machine-readable event signal available here.
+delivery:
+  model: per-request callback URL
+  request_field: webhookUrl
+  ack_response: '{"status": "in progress"}'
+  ack_status: 200
+  transport: HTTPS POST, Content-Type application/json
+  receiver_requirements:
+    - Publicly reachable over HTTPS
+    - Return a 2xx status within a reasonable timeout
+    - Be idempotent — the same payload may be delivered more than once
+  retries: exponential backoff on non-2xx or timeout
+  security:
+    signature: false
+    hmac: false
+    mechanisms:
+      - type: source-ip-allowlist
+        detail: Ocean.io sends from a fixed set of IP addresses; the current range is available from support only (not published).
+      - type: shared-secret-in-url
+        detail: 'Documented pattern: include a secret query parameter in the webhookUrl (e.g. ?secret=MY_SECRET) and validate it in the handler.'
+    note: >-
+      No request signing is offered. A URL-embedded secret is the only published authentication for
+      inbound callbacks, and it travels in the request line of every delivery.
+producing_operations:
+  - operation: enrichCompanies
+    path: /v2/enrich/companies
+    webhook_usage: All results delivered via webhook
+  - operation: enrichPeople
+    path: /v2/enrich/people
+    webhook_usage: All results delivered via webhook
+  - operation: revealEmails
+    path: /v2/reveal/emails
+    webhook_usage: All results delivered via webhook
+  - operation: revealPhones
+    path: /v2/reveal/phones
+    webhook_usage: All results delivered via webhook
+  - operation: searchPeopleV3
+    path: /v3/search/people
+    webhook_usage: Email reveal results delivered via webhook when revealEmails is requested
+  - operation: enrichPerson
+    path: /v2/enrich/person
+    webhook_usage: Reveal results delivered via webhook when revealEmails / revealPhones are requested
+events:
+  - name: reveal_emails
+    declared_in: openapi webhooks.reveal_emails
+    summary: Reveal Email Results
+    description: >-
+      When email verifications are done, results are POSTed to the URL passed in the Reveal endpoint.
+    schema: components.schemas.PublicRevealEmailWebhookResult
+    payload_example: '{"results": [{"personId": "abc123", "email": {"address": "...", "status": "verified"}}]}'
+  - name: reveal_phones
+    declared_in: openapi webhooks.reveal_phones
+    summary: Reveal Phone Results
+    payload_example: '{"results": [{"personId": "abc123", "phone": {"numbers": ["+4512345678"], "status": "verified"}}]}'
+  - name: people_search_emails
+    declared_in: openapi webhooks.people_search_emails
+    summary: Email reveal results produced by a People Search with revealEmails
+  - name: people_search_phones
+    declared_in: openapi webhooks.people_search_phones
+    summary: Phone reveal results produced by a People Search with revealPhones
+  - name: enrich_person_email
+    declared_in: openapi webhooks.enrich_person_email
+    summary: Email reveal result produced by Enrich Person with revealEmails
+  - name: enrich_person_phone
+    declared_in: openapi webhooks.enrich_person_phone
+    summary: Phone reveal result produced by Enrich Person with revealPhones
+  - name: enrich_companies
+    declared_in: openapi webhooks.enrich_companies
+    summary: Batch company enrichment results
+    payload_example: '{"results": {"your-id-001": {"status": "found", "company": {…}}}}'
+  - name: enrich_people
+    declared_in: openapi webhooks.enrich_people
+    summary: Batch people enrichment results
+    payload_example: '{"results": {"your-id-001": {"status": "found", "person": {…}}}}'
+result_status_vocabulary:
+  enrichment:
+    - value: found
+      meaning: Successfully matched and enriched
+    - value: not_found
+      meaning: No match found in the Ocean.io database
+    - value: triggered
+      meaning: Domain was not in the database — crawling initiated; re-enrich in a few minutes
+  contact_reveal:
+    - value: verified
+      meaning: Confirmed deliverable via SMTP verification
+      charged: true
+    - value: guessed
+      meaning: High-confidence pattern match, not SMTP-verified
+      charged: true
+    - value: catchAll
+      meaning: Domain accepts all addresses — deliverability unknown
+      charged: true
+    - value: notFound
+      meaning: Not found or verification not possible
+      charged: false
+delivery_timing:
+  - operation: Reveal Emails (small batch, <= 50 IDs)
+    typical: 1-3 minutes
+  - operation: Reveal Emails (500 IDs)
+    typical: 2-10 minutes
+  - operation: Enrich batch (small, <= 100 records)
+    typical: 1-5 minutes
+  - operation: Enrich batch (5,000-10,000 records)
+    typical: 10-30 minutes
+gaps:
+  - No AsyncAPI document is published; the event surface is documented in prose plus OpenAPI `webhooks` entries.
+  - No webhook signature or HMAC — receivers cannot cryptographically verify origin.
+  - The sending IP range is support-only, not published, so allowlisting requires a support ticket.
+  - No delivery-attempt log, replay endpoint or dead-letter surface is documented.

@@ -4,7 +4,10 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Ocean.io
 providerId: ocean-io
 created: '2026-05-08'
-modified: '2026-05-08'
+generated: '2026-08-13'
+method: searched
+source: https://app.ocean.io/docs/getting-started/credits
+modified: '2026-08-13'
 reconciled: false
 tags:
 - Sales Intelligence
@@ -15,34 +18,128 @@ tags:
 - Prospecting
 - Plans
 description: >-
-  Ocean.io sells annual contracts with seat counts and credit pools that include API access at higher
-  tiers. Public pricing is not published; deals are sales-led. The platform has separate product tiers
-  for self-serve users and enterprise teams; API quotas are negotiated.
-notes: Sales-led pricing; API typically included at higher tiers.
+  Ocean.io meters the API with a single credit pool that every endpoint draws from, and it publishes
+  the exact per-endpoint credit rates in its API documentation. What it does NOT publish in any form
+  a machine could read in this pass is the money side: https://ocean.io/pricing is named as the
+  pricing page in Ocean.io's own llms.txt, but the marketing host answers every non-browser client
+  with a Cloudflare interstitial (HTTP 403), so no tier names, currency amounts, billing periods or
+  included credit allowances could be read from the provider directly. Third-party review sites
+  publish conflicting figures; none of them are the provider, so none are recorded here. What IS
+  recorded below is the provider-published credit rate card, which is the unit price of every API
+  call, and the runtime balance surface.
+notes: >-
+  plan_count is 0 because no provider-published monetary tier could be read. The credit rate card is
+  recorded as unit pricing. Replaces the 2026-05-08 bulk-sweep placeholder that asserted an annual
+  seat-based enterprise contract without a source.
 sources:
-- https://ocean.io/
-- https://ocean.io/pricing
-plans:
-- id: ocean-io-platform
-  name: Ocean.io Platform
-  type: enterprise
-  description: Annual seat-based contract; API access included at higher tiers with negotiated credit pools.
-  entries:
-  - label: Contract
-    name: contract
-    type: flat
-    metric: year
-    limit: -1
-    timeFrame: annual
-    geo: global
-    unit: 1
-    price: contact sales
-    userMultiplied: true
-  elements:
-  - name: Lookalike search
-  - name: Company enrichment
-  - name: CRM integrations
-  - name: API access (higher tiers)
+- https://app.ocean.io/docs/getting-started/credits
+- https://app.ocean.io/docs/getting-started/best-practices
+- https://www.ocean.io/llms.txt
+pricing_page:
+  url: https://ocean.io/pricing
+  attested_by: 'https://www.ocean.io/llms.txt ("Pricing: Credit-based plans")'
+  probed: '2026-08-13'
+  http_status: 403
+  readable: false
+  note: Cloudflare bot challenge ("Just a moment... Enable JavaScript and cookies to continue") to every non-browser client.
+plan_count: 0
+plans: []
+metering:
+  model: single shared credit pool across all endpoints
+  balance_operation: getCreditBalance
+  balance_path: /v2/credits/balance
+  balance_fields:
+  - credits (oneTime, recurrent)
+  - emailCredits (oneTime, recurrent)
+  - phoneCredits (oneTime, recurrent)
+  - previewCredits (oneTime, recurrent)
+  - dailyLimitRateLeft
+  - dailyLimitRateSecondsToReset
+  exhausted_status: 402
+  exhausted_behaviour: The request is not processed and no credits are deducted.
+unit_pricing:
+  unit: credit
+  currency: null
+  published: true
+  source: https://app.ocean.io/docs/getting-started/credits
+  rates:
+  - endpoint: Search Companies
+    cost: 0.2
+    per: result
+  - endpoint: Search People
+    cost: 0.2
+    per: result
+  - endpoint: Enrich Company
+    cost: 0.1
+    per: result
+  - endpoint: Enrich Person
+    cost: 0.1
+    per: result
+  - endpoint: Enrich Companies (batch)
+    cost: 0.1
+    per: result
+  - endpoint: Enrich People (batch)
+    cost: 0.1
+    per: result
+  - endpoint: Lookup Companies
+    cost: 0.05
+    per: result
+  - endpoint: Lookup People
+    cost: 0.05
+    per: result
+  - endpoint: Autocomplete (all endpoints)
+    cost: 0.1
+    per: call
+  - endpoint: Reveal Emails
+    cost: 1
+    per: email found
+  - endpoint: Reveal Phones
+    cost: 10
+    per: phone found
+  - endpoint: Get Data Fields
+    cost: 0
+    per: call
+  - endpoint: Get Credit Balance
+    cost: 0
+    per: call
+  - endpoint: Warmup Companies
+    cost: 0
+    per: call
+  - endpoint: Preview endpoints
+    cost: null
+    per: null
+    note: '"Not available on this plan" for the documented self-serve credit plan.'
+  - endpoint: MCP export_companies / export_people
+    cost: 0.2
+    per: exported record
+    note: Charged only for records the export actually returns; failed matches are not charged.
+  worked_examples:
+  - scenario: Search 100 companies
+    calculation: 100 x 0.2
+    credits: 20
+  - scenario: Search 500 people
+    calculation: 500 x 0.2
+    credits: 100
+  - scenario: Reveal emails for 200 people (~79% find rate)
+    calculation: 158 x 1
+    credits: 158
+  - scenario: Enrich 1,000 companies (batch)
+    calculation: 1000 x 0.1
+    credits: 100
+  - scenario: Lookup 500 companies by domain
+    calculation: 500 x 0.05
+    credits: 25
+  - scenario: Search 500 people + reveal emails for 300
+    calculation: (500 x 0.2) + (300 x 1)
+    credits: 400
+cost_guidance:
+  published: true
+  source: https://app.ocean.io/docs/getting-started/best-practices
+  rules:
+  - Run a search with "size": 1 first to read the total count before spending credits.
+  - Use the fields parameter to request only what you need.
+  - Use Lookup rather than Search with includeDomains when you already have the domains — it is 4x cheaper per result.
+  - Lookalike searches cost the same per result as filter searches on v3; validate seed domains with Warmup before scaling.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

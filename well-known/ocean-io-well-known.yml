@@ -1,0 +1,108 @@
+generated: '2026-08-13'
+method: probed
+source: live GET of /.well-known/* on every Ocean.io host named in apis.yml and OpenAPI servers[]
+summary: >-
+  One real document was served: RFC 8414 OAuth 2.0 Authorization Server Metadata at
+  https://api.ocean.io/.well-known/oauth-authorization-server, advertising a client_credentials
+  token endpoint with an empty scopes_supported array. Everything else 404s. The 200s recorded on
+  app.ocean.io are the SvelteKit single-page-app catch-all returning an HTML shell for any path —
+  they are NOT documents and are recorded as misses.
+hosts:
+  - host: https://api.ocean.io
+    documents:
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        content_type: application/json
+        document: true
+        file: ocean-io-oauth-authorization-server.json
+      - path: /.well-known/security.txt
+        status: 404
+        document: false
+      - path: /.well-known/openid-configuration
+        status: 404
+        document: false
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+        document: false
+      - path: /.well-known/api-catalog
+        status: 404
+        document: false
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        document: false
+      - path: /.well-known/agent-card.json
+        status: 404
+        document: false
+      - path: /.well-known/agent.json
+        status: 404
+        document: false
+  - host: https://www.ocean.io
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        document: false
+      - path: /.well-known/openid-configuration
+        status: 404
+        document: false
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        document: false
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+        document: false
+      - path: /.well-known/api-catalog
+        status: 404
+        document: false
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        document: false
+      - path: /.well-known/agent-card.json
+        status: 404
+        document: false
+      - path: /.well-known/agent.json
+        status: 404
+        document: false
+  - host: https://app.ocean.io
+    note: >-
+      app.ocean.io answers 200 with the app's HTML shell for several /.well-known/* paths. These are
+      SPA catch-all responses, not served documents, and are treated as misses.
+    documents:
+      - path: /.well-known/openid-configuration
+        status: 200
+        content_type: text/html
+        document: false
+        note: HTML shell (SPA catch-all), not an OIDC discovery document
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        content_type: text/html
+        document: false
+        note: HTML shell (SPA catch-all)
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+        content_type: text/html
+        document: false
+        note: HTML shell (SPA catch-all)
+      - path: /.well-known/api-catalog
+        status: 200
+        content_type: text/html
+        document: false
+        note: HTML shell (SPA catch-all)
+      - path: /.well-known/security.txt
+        status: 404
+        document: false
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        document: false
+      - path: /.well-known/agent-card.json
+        status: 404
+        document: false
+      - path: /.well-known/agent.json
+        status: 404
+        document: false
+findings:
+  security_txt: false
+  openid_configuration: false
+  oauth_authorization_server: true
+  api_catalog: false
+  ai_plugin: false
+  agent_card: false

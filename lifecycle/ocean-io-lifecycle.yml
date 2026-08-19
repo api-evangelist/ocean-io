@@ -1,0 +1,71 @@
+generated: '2026-08-13'
+method: searched
+source: https://app.ocean.io/docs + https://status.ocean.io/
+description: >-
+  Ocean.io versions its API in the URI path and runs two live major versions side by side (v2 and
+  v3) in a single published OpenAPI document. It operates a first-party status page covering the API
+  and the platform separately. No deprecation policy, sunset schedule, changelog or SLA is published
+  on any public page reached in this pass.
+versioning:
+  scheme: uri-path
+  current: '2.0.0'
+  spec_version_field: info.version in https://api.ocean.io/openapi.json
+  live_path_versions:
+    - v2
+    - v3
+  note: >-
+    Search operations exist at both /v2 and /v3 (searchCompanies vs searchCompaniesV3, searchPeople
+    vs searchPeopleV3). Docs navigate to the v3 search operations; the v2 ones remain published and
+    are not marked deprecated in the spec. Enrich, lookup, reveal, autocomplete, segmentation and
+    account endpoints are v2 only.
+  docs: https://app.ocean.io/docs
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    No deprecation or sunset policy is published, no RFC 8594 Sunset/Deprecation header is documented,
+    and no operation in the OpenAPI carries `deprecated: true` — including the v2 search operations
+    that v3 supersedes. A consumer on /v2/search/companies has no published signal about how long it
+    will live.
+deprecated_operations: []
+status_page:
+  url: https://status.ocean.io/
+  first_party: true
+  http_status: 200
+  components:
+    - name: Ocean - API
+      description: Programmatic endpoints and all backend services required for data integration.
+      state_at_probe: Operational
+    - name: Ocean - Platform
+      description: Web application and core services required for the frontend experience.
+      state_at_probe: Operational
+  history_window: 90 days
+  incidents_at_probe: none
+  subscribe: not published on the page
+sla:
+  url: null
+  uptime_target: null
+  published: false
+  note: No public SLA or uptime commitment was found; enterprise terms are contract-defined.
+changelog:
+  url: null
+  published: false
+  note: >-
+    No dated API changelog or release-notes page was found on the docs host (app.ocean.io/docs has no
+    changelog route) or advertised in llms.txt. Version history is only inferable from the v2/v3 path
+    split.
+x-evidence:
+  - fetched: '2026-08-13'
+    url: https://status.ocean.io/
+    http_status: 200
+    finding: first-party status page, two components, all operational
+  - fetched: '2026-08-13'
+    url: https://api.ocean.io/openapi.json
+    http_status: 200
+    finding: info.version 2.0.0; no operation carries deprecated:true
+  - fetched: '2026-08-13'
+    url: https://www.ocean.io/changelog
+    http_status: 403
+    finding: Cloudflare bot challenge on the marketing host; no changelog confirmed

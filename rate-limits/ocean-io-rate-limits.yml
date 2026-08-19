@@ -4,8 +4,11 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Ocean.io
 providerId: ocean-io
 created: '2026-05-08'
-modified: '2026-05-08'
-reconciled: false
+generated: '2026-08-13'
+method: searched
+source: https://app.ocean.io/docs/getting-started/rate-limiting
+modified: '2026-08-13'
+reconciled: true
 tags:
 - Sales Intelligence
 - B2B
@@ -17,22 +20,89 @@ tags:
 - Quotas
 - Throttling
 description: >-
-  Ocean.io does not publish API rate limits on its developer documentation. Quotas are credit-based
-  and configured per contract; throttling returns HTTP 429.
-notes: Contract-defined credit pools; specific RPS not published.
+  Ocean.io publishes explicit request rate limits for self-serve customers — 60 requests per minute
+  and 1,000 requests per day — on its API documentation. Enterprise customers get higher limits
+  defined in their subscription agreement, which are not published. Exceeding a limit returns HTTP
+  429 with a Retry-After header and X-RateLimit-Limit. The remaining daily allowance is readable at
+  runtime from the dailyLimitRateLeft field on the Get Credit Balance endpoint. Rate limits are
+  separate from the credit pool, which meters results returned rather than requests made.
+notes: >-
+  Published limits replace the 2026-05-08 bulk-sweep placeholder that recorded limits as
+  "contract-defined" and unpublished.
 sources:
-- https://ocean.io/help/api
+- https://app.ocean.io/docs/getting-started/rate-limiting
+- https://app.ocean.io/docs/getting-started/best-practices
+- https://app.ocean.io/docs/getting-started/credits
 responseCodes:
   throttled: 429
+  insufficientCredits: 402
+responseHeaders:
+- name: Retry-After
+  description: Seconds to wait before retrying.
+  on: 429
+- name: X-RateLimit-Limit
+  description: Your limit for the current window.
+  on: 429
+runtimeSignals:
+- name: dailyLimitRateLeft
+  source: getCreditBalance (/v2/credits/balance)
+  description: Requests remaining against the daily limit.
+- name: dailyLimitRateSecondsToReset
+  source: getCreditBalance (/v2/credits/balance)
+  description: Seconds until the daily window resets.
 limits:
-- name: Default
+- name: Self-serve per-minute
   scope: account
-  metric: credits
+  metric: requests
+  limit: 60
+  timeFrame: minute
+  audience: self-serve
+  published: true
+- name: Self-serve per-day
+  scope: account
+  metric: requests
+  limit: 1000
+  timeFrame: day
+  audience: self-serve
+  published: true
+- name: Enterprise
+  scope: account
+  metric: requests
   limit: contract-defined
-  notes: Monthly credit pool; specific RPS not documented.
+  timeFrame: unspecified
+  audience: enterprise
+  published: false
+  notes: >-
+    "Enterprise customers have higher limits defined in their subscription agreement. Contact support
+    if you need increased limits."
+- name: Page size — company/people search
+  scope: request
+  metric: results
+  limit: 10000
+  notes: size parameter, minimum 1, on searchCompaniesV3 and searchPeopleV3.
+- name: Page size — lookup
+  scope: request
+  metric: results
+  limit: 1000
+  notes: size parameter, minimum 1, on lookupCompanies and lookupPeople.
+- name: Export ceiling (MCP)
+  scope: request
+  metric: records
+  limit: 10000
+  notes: export_companies / export_people MCP tools cap at 10,000 domains or LinkedIn handles.
 policies:
 - name: Backoff Strategy
-  description: Honor 429 with exponential backoff and Retry-After.
+  description: >-
+    Do not retry immediately on 429. Honour Retry-After and use exponential backoff; Ocean.io
+    publishes bash, Python and JavaScript backoff implementations on the rate-limiting page.
+- name: Pre-flight check
+  description: >-
+    Check dailyLimitRateLeft via Get Credit Balance before starting large batch jobs.
+- name: Request shaping
+  description: >-
+    Use size to request only the results needed, use fields to trim the payload, and spread large
+    batch operations over time rather than bursting.
+limit_count: 6
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

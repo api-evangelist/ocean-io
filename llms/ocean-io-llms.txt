@@ -1,0 +1,40 @@
+# Ocean.io
+
+> Ocean.io is a B2B go-to-market platform built around lookalike intelligence. It helps sales and revenue teams find, score, and engage the right accounts — by learning from the customers they've already won. The core database covers 67M company profiles and 250M+ employee records, each enriched with 100+ signals built from the open web.
+
+## Core products
+
+### Lookalike search
+Ocean's primary capability. Give it a domain and it returns the most similar companies in its database, ranked by a context-vector similarity model trained on firmographic and technographic signals. Used to find net-new prospects that mirror closed-won accounts, build outbound lists, or discover adjacent markets.
+
+### Segmentation
+Clusters a CRM into cohorts ranked by win rate, deal value, and time-to-close — without requiring a data or ML team. Each segment is built from 20+ signals (industry, headcount, tech stack, growth stage, geography, funding) and comes with a pool of 10k+ lookalikes ready to prospect. Inbound leads are automatically scored against the segmentation model. Typical output: 4–6 named segments with benchmarks like "Mid-market FinTech — 68% win rate, 23-day cycle."
+
+### Ocean Agent
+An AI agent that takes account-finding instructions in plain English and executes them end-to-end: searching the database, scoring results against the user's segmentation, and pushing qualified accounts to a CRM. Has access to 11 tools across four categories — search (search_companies, search_people, find_lookalikes), CRM (query_crm, export_to_crm, export_webhook), segmentation (get_segment, score_segment_fit, segment_members), and enrichment (enrich_company, enrich_person). Available natively in the Ocean web app and as an MCP server for use in Claude, ChatGPT, or any MCP-aware client.
+
+### API
+A REST API exposing four capabilities: (1) Search — filter 67M companies by industry, technology, headcount, location, and growth signals using Boolean, fuzzy, or semantic AI search; (2) Enrich — pass a domain or email and receive a full structured company or person profile; (3) Lookalikes — given any company, return the closest matches ranked by similarity score; (4) Email reveal — pass a LinkedIn URL and receive a verified email address with confidence score and full person profile. Integrates directly with HubSpot, Salesforce, Pipedrive, and any webhook endpoint.
+
+## Data coverage
+
+- 67M company profiles
+- 250M+ employee profiles
+- 100+ data points per company including firmographics, technologies, headcount, funding stage, and growth signals
+- 82% CRM match rate
+- Built from the open web, not scraped from static registries
+
+## Integrations
+
+Native CRM integrations: Salesforce, HubSpot, Pipedrive, Attio. Also supports Clay, custom webhooks, Zapier, Make, and n8n. Automatic field mapping with no manual configuration.
+
+## Pages
+
+- [Homepage](https://ocean.io/): Lookalike search overview and live demo
+- [Segmentation](https://ocean.io/segmentation): Customer clustering and TAM mapping
+- [Agent](https://ocean.io/agent): AI agent for account discovery and CRM export
+- [API](https://ocean.io/api): Developer docs and API capabilities
+- [Data](https://ocean.io/data): Data coverage and field reference
+- [Integrations](https://ocean.io/integrations): CRM and workflow integrations
+- [Pricing](https://ocean.io/pricing): Credit-based plans
+- [Case studies](https://ocean.io/case-studies): Customer stories

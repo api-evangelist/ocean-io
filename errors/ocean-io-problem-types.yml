@@ -1,0 +1,150 @@
+generated: '2026-08-13'
+method: searched
+source: https://app.ocean.io/docs/getting-started/errors
+derived_from: openapi/ocean-io-api-openapi.yml
+format: custom-detail
+rfc9457: false
+description: >-
+  Ocean.io returns standard HTTP status codes with a JSON body carrying a single `detail` field.
+  Simple errors put a human-readable string in `detail`; validation errors put an array of
+  field-level objects there (the FastAPI/Pydantic HTTPValidationError shape declared in the
+  OpenAPI). No RFC 9457 problem+json media type is used and no stable machine-readable error `type`
+  URIs or error codes are published — a consumer must string-match `detail` to classify a failure.
+envelope:
+  media_type: application/json
+  field: detail
+  simple_shape: '{"detail": "Insufficient credits"}'
+  validation_shape: >-
+    {"detail": [{"loc": ["body","companiesFilters","companySizes",0], "msg": "''XL'' is not a valid
+    company size", "type": "value_error.enum", "input": "XL", "ctx": {"enum_values": ["0-1","2-10",
+    "11-50","51-200","201-500"]}}]}
+  validation_fields:
+    - name: loc
+      description: Path to the field that caused the error.
+    - name: msg
+      description: Human-readable description of the error.
+    - name: type
+      description: Machine-readable error type (Pydantic error class, e.g. value_error.enum).
+    - name: input
+      description: The value that was rejected.
+    - name: ctx
+      description: 'Allowed values / additional context, e.g. {"enum_values": [...]}.'
+  schema: components.schemas.HTTPValidationError
+problems:
+  - status: 400
+    title: Bad Request
+    meaning: Malformed JSON, or API token supplied in BOTH the header and the query parameter.
+    remediation: Use only one token transport — the X-Api-Token header is recommended.
+    declared_in_spec: true
+    operations: all 26
+  - status: 401
+    title: Unauthorized
+    meaning: API token is missing or not recognised.
+    remediation: Regenerate the token in Account Settings; a valid-looking token that 401s has been revoked.
+    declared_in_spec: false
+    note: >-
+      Documented in the error reference but NOT declared in the OpenAPI, which instead declares 403
+      for both missing and invalid tokens. The authentication page also documents 403 (not 401) for
+      a missing or invalid token, so the docs disagree with themselves here.
+  - status: 402
+    title: Payment Required
+    meaning: Insufficient credits to complete the request.
+    remediation: >-
+      Top up credits or check the recurrent renewal date. The request is not processed and no credits
+      are deducted.
+    declared_in_spec: true
+    operations: all 26
+  - status: 403
+    title: Forbidden
+    meaning: >-
+      Token does not have permission for this operation; also returned when the token is missing
+      ("API token should be provided in headers or query parameters") or invalid ("Invalid API token").
+    remediation: Supply a valid token in X-Api-Token; contact the account owner for entitlement.
+    declared_in_spec: true
+    operations: all 26
+  - status: 404
+    title: Not Found
+    meaning: The requested company or person could not be found in the Ocean.io database.
+    remediation: Confirm the domain / LinkedIn handle; for companies, call warmupCompanies to trigger crawling.
+    declared_in_spec: true
+    operations: all 26
+    note: Declared in the OpenAPI with no response content schema.
+  - status: 412
+    title: Precondition Failed
+    meaning: Segmentation attribution preconditions not met.
+    remediation: Ensure the segmentation exists and has completed before attributing domains.
+    declared_in_spec: true
+    operations:
+      - attributeSegmentationDomains
+  - status: 422
+    title: Unprocessable Entity
+    meaning: Request body failed schema validation.
+    remediation: >-
+      Read the detail array for field-level errors. Common causes are an invalid enum value (fetch
+      valid values from /v2/data-fields) and a wrong ISO country-code format (use lowercase alpha-2,
+      e.g. "de").
+    declared_in_spec: true
+    operations: all 26
+    schema: components.schemas.HTTPValidationError
+  - status: 429
+    title: Too Many Requests
+    meaning: Rate limit exceeded (self-serve default 60/minute, 1,000/day).
+    remediation: Honour Retry-After and back off exponentially. See rate-limits/ocean-io-rate-limits.yml.
+    declared_in_spec: false
+    note: Documented in the error reference and the rate-limiting page but not declared on any operation in the OpenAPI.
+    headers:
+      - Retry-After
+      - X-RateLimit-Limit
+  - status: 502
+    title: Bad Gateway
+    meaning: Upstream failure during segmentation domain attribution.
+    remediation: Retry after a short delay.
+    declared_in_spec: true
+    operations:
+      - attributeSegmentationDomains
+  - status: 5xx
+    title: Server Error
+    meaning: Something went wrong on Ocean.io's side.
+    remediation: Retry after a short delay.
+    declared_in_spec: false
+non_error_conditions:
+  - status: 201
+    title: Created / processing started
+    meaning: >-
+      Enrich Company / Enrich Person returned 201 because the domain was not yet in the database and
+      background crawling was triggered. Results will arrive by webhook, or the caller should retry
+      in 2–5 minutes.
+    operations:
+      - enrichCompany
+      - enrichPerson
+  - status: 200
+    title: Empty result set
+    meaning: >-
+      Filters too narrow returns 0 results with no error. Documented remedies: relax minScore, remove
+      filters one at a time, check enum and country-code formats.
+common_mistakes:
+  - symptom: 400 on every request
+    cause: Token provided in both header and query parameter
+    fix: Use only one method
+  - symptom: 401 with a valid-looking token
+    cause: Token has been revoked
+    fix: Regenerate the token in Account Settings
+  - symptom: 402 immediately
+    cause: Credit balance exhausted
+    fix: Top up credits or check the recurrent renewal date
+  - symptom: 422 on filter values
+    cause: Invalid enum value (e.g. wrong industry name)
+    fix: Fetch valid values from /v2/data-fields
+  - symptom: 422 on location filters
+    cause: Wrong ISO country-code format
+    fix: Use lowercase alpha-2 codes, e.g. "de"
+  - symptom: Results return 0 but no error
+    cause: Filters are too narrow
+    fix: Relax minScore, remove filters one at a time
+  - symptom: 201 instead of 200 on Enrich
+    cause: Domain not yet in the database
+    fix: Wait 2–5 minutes and retry; background crawling was triggered
+gaps:
+  - No stable error codes or error `type` URIs — classification requires string-matching `detail`.
+  - 401 and 429 are documented but not declared on any operation in the OpenAPI.
+  - The docs' 401 ("token missing or not recognised") contradicts the authentication page's 403 for the same conditions.

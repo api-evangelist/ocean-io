@@ -1,0 +1,93 @@
+generated: '2026-08-13'
+method: searched
+source: openapi/ocean-io-api-openapi.yml + well-known/ocean-io-oauth-authorization-server.json
+docs: https://app.ocean.io/docs/getting-started/authentication
+description: >-
+  Ocean.io authenticates every REST call with a single account API token, generated in the app under
+  Account Settings → API tokens. The token may be sent either as the X-Api-Token request header or as
+  an apiToken query parameter — but not both, which is an error. There are no scopes and no per-token
+  permissions surface documented. The published OpenAPI does not declare components.securitySchemes;
+  instead every one of the 26 operations carries the token as two optional parameters (apiToken in
+  query, x-api-token in header), so a generated client will not enforce auth. A separate RFC 8414
+  OAuth 2.0 Authorization Server Metadata document is served at
+  https://api.ocean.io/.well-known/oauth-authorization-server advertising a client_credentials token
+  endpoint; it is not referenced anywhere in the public documentation.
+summary:
+  types:
+    - apiKey
+    - oauth2
+  api_key_in:
+    - header
+    - query
+  oauth2_flows:
+    - clientCredentials
+  scopes_declared: 0
+  openapi_security_schemes_declared: 0
+schemes:
+  - name: X-Api-Token
+    type: apiKey
+    in: header
+    parameter: X-Api-Token
+    primary: true
+    recommended: true
+    description: >-
+      Preferred method. Headers do not appear in server logs or browser history, which the docs give
+      as the reason to prefer it over the query parameter.
+    example_request: "curl -X GET 'https://api.ocean.io/v2/credits/balance' -H 'X-Api-Token: YOUR_API_TOKEN'"
+    sources:
+      - https://app.ocean.io/docs/getting-started/authentication
+      - openapi/ocean-io-api-openapi.yml
+  - name: apiToken
+    type: apiKey
+    in: query
+    parameter: apiToken
+    primary: false
+    recommended: false
+    description: Alternative method; the same token passed as a query-string parameter.
+    example_request: "curl -X GET 'https://api.ocean.io/v2/credits/balance?apiToken=YOUR_API_TOKEN'"
+    sources:
+      - https://app.ocean.io/docs/getting-started/authentication
+      - openapi/ocean-io-api-openapi.yml
+  - name: OAuth 2.0 client credentials
+    type: oauth2
+    flow: clientCredentials
+    token_url: https://api.ocean.io/oauth/token
+    issuer: https://api.ocean.io
+    token_endpoint_auth_methods_supported:
+      - client_secret_post
+    scopes_supported: []
+    documented: false
+    description: >-
+      Discovered only from the RFC 8414 metadata document at
+      https://api.ocean.io/.well-known/oauth-authorization-server (HTTP 200, application/json). No
+      Ocean.io documentation page describes this flow, no client registration process is published,
+      and scopes_supported is empty.
+    sources:
+      - well-known/ocean-io-oauth-authorization-server.json
+token_errors:
+  - scenario: Token missing from request
+    status: 403
+    body: '{"detail": "API token should be provided in headers or query parameters"}'
+  - scenario: Token is invalid or unrecognised
+    status: 403
+    body: '{"detail": "Invalid API token"}'
+  - scenario: Token provided in both header and query parameter
+    status: 400
+    body: '{"detail": "Conflicting API tokens provided in query parameters and headers"}'
+rotation:
+  supported: true
+  process: >-
+    Revoke a suspected-compromised token immediately in Account Settings and generate a new one;
+    update all consuming systems before revoking to avoid downtime.
+  docs: https://app.ocean.io/docs/getting-started/authentication
+mcp:
+  endpoint: https://api.ocean.io/mcp/
+  auth: same account API token, passed as the api-token query parameter on the endpoint URL
+gaps:
+  - >-
+    The OpenAPI declares no components.securitySchemes and no security requirement, so the auth
+    contract is only discoverable from prose. Declaring an apiKey scheme (header X-Api-Token) and
+    applying it globally would make the spec self-describing for generated clients and agents.
+  - >-
+    The OAuth authorization-server metadata is published but undocumented; a consumer cannot obtain
+    client credentials from any public page.

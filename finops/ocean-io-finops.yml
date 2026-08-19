@@ -4,7 +4,13 @@ schema: https://www.finops.org/framework/
 provider: Ocean.io
 providerId: ocean-io
 created: '2026-05-08'
-modified: '2026-05-08'
+# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
+# bulk sweep dated 2026-05-08, not harvested from the provider. See roadmap#35.
+# 2026-08-13: cost model corrected from the provider's own credit documentation at
+# https://app.ocean.io/docs/getting-started/credits — Ocean.io meters API usage from a
+# single credit pool with published per-endpoint rates, not a bundled seat contract.
+method: derived
+modified: '2026-08-13'
 reconciled: true
 tags:
 - Sales Intelligence
@@ -17,11 +23,18 @@ tags:
 - Cost Management
 - FOCUS
 description: >-
-  FOCUS-aligned FinOps profile for Ocean.io. Cost driver is the annual seat-based contract with
-  bundled API credits. Optimize at renewal by right-sizing seats and verifying credit consumption
-  against ICP and lookalike workflow needs.
-notes: Annual prepaid contract; renewal-time optimization.
+  FOCUS-aligned FinOps profile for Ocean.io. The cost driver is a single shared credit pool that
+  every API endpoint draws from, with per-endpoint rates Ocean.io publishes: 0.2 credits per search
+  result, 0.1 per enrichment, 0.05 per lookup, 1 per email revealed and 10 per phone revealed.
+  Optimize by routing known domains through Lookup rather than Search (4x cheaper per result), by
+  sizing searches with a size:1 probe before spending, by trimming responses with the fields
+  parameter, and by treating phone reveal as the outlier line item it is at 10x the cost of an email.
+  Monetary tier pricing is not published in a readable form — the marketing pricing page answers
+  non-browser clients with a Cloudflare challenge — so unit economics are tracked in credits.
+notes: Credit-pool metering with published per-unit rates; monetary tiers not publicly readable.
 sources:
+- https://app.ocean.io/docs/getting-started/credits
+- https://app.ocean.io/docs/getting-started/best-practices
 - https://ocean.io/
 - https://focus.finops.org/focus-specification/v1-3/
 alignedWith:
@@ -33,8 +46,8 @@ alignedWith:
 publisherName: Ocean.io
 serviceCategory: Sales Intelligence
 billingModel:
-  pricingCategory: Subscription
-  billingFrequency: Annual
+  pricingCategory: Usage-based
+  billingFrequency: Unknown
   billingCurrency: USD
   chargeCategories:
   - Subscription
@@ -47,25 +60,39 @@ focusColumns:
   BillingCurrency: USD
   ChargeCategory: Subscription
 meters:
-- name: seats
-  description: Active user seats.
-  unit: seat-month
-  aggregation: max
-  dimensions:
-  - team
 - name: api_credits
-  description: API credits consumed for enrichment / lookalike calls.
+  description: >-
+    Shared credit pool consumed by every endpoint. Published rates: search 0.2/result, enrich
+    0.1/result, lookup 0.05/result, autocomplete 0.1/call, email reveal 1/email found, phone reveal
+    10/phone found; data-fields, credit-balance and warmup are free.
   unit: credit
   aggregation: sum
   dimensions:
   - endpoint
+- name: email_credits
+  description: Separate email-credit balance returned by GET /v2/credits/balance.
+  unit: credit
+  aggregation: sum
+- name: phone_credits
+  description: Separate phone-credit balance returned by GET /v2/credits/balance.
+  unit: credit
+  aggregation: sum
+- name: daily_request_allowance
+  description: Requests remaining against the daily rate limit (dailyLimitRateLeft).
+  unit: request
+  aggregation: min
 principles:
 - name: Visibility
-  description: Track seat utilization and API credit burn monthly.
+  description: >-
+    Poll GET /v2/credits/balance for credits, emailCredits, phoneCredits and dailyLimitRateLeft;
+    it is the only runtime cost signal the API exposes.
 - name: Allocation
   description: Allocate seats and credits to ABM/RevOps teams.
 - name: Optimization
-  description: Right-size at renewal; consolidate with overlapping vendors (Lusha, Cognism).
+  description: >-
+    Use Lookup over Search when domains are known (0.05 vs 0.2 per result); probe with size:1 before
+    a large search; call the free Warmup before batch enrichment; treat phone reveal (10 credits) as
+    an exception path, not a default.
 - name: Accountability
   description: RevOps owns the contract.
 maintainers:

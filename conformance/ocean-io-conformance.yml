@@ -1,0 +1,86 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/ocean-io-api-openapi.yml + https://app.ocean.io/docs + well-known/ocean-io-oauth-authorization-server.json
+description: >-
+  Cross-cutting and industry standard conformance for Ocean.io, derived from the published OpenAPI
+  3.1.0 document and the provider's own documentation, plus one probed well-known document. Ocean.io
+  is a B2B company/people data provider, so the applicable standards are the API cross-cutting set
+  plus data-protection posture — no vertical regime (FHIR, FAPI, PSD2, SCIM) applies.
+standards:
+  - id: openapi-3.1
+    conforms: true
+    evidence: https://api.ocean.io/openapi.json declares openapi 3.1.0 with 26 operations and 156 component schemas
+  - id: openapi-webhooks
+    conforms: true
+    evidence: Top-level `webhooks` object declares 8 callback entries with request-body schemas
+  - id: asyncapi
+    conforms: false
+    evidence: No AsyncAPI document published; the event surface is per-request webhook callbacks only
+  - id: json-schema-2020-12
+    conforms: true
+    evidence: OpenAPI 3.1 schemas are JSON Schema 2020-12 dialect by definition
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: 'Errors use a custom {"detail": ...} envelope with application/json, not application/problem+json'
+  - id: rfc8414-oauth-authorization-server-metadata
+    conforms: true
+    evidence: https://api.ocean.io/.well-known/oauth-authorization-server returns 200 with issuer, token_endpoint, grant_types_supported
+  - id: oauth2
+    conforms: partial
+    evidence: >-
+      A client_credentials token endpoint is advertised in the RFC 8414 metadata, but no documentation,
+      client registration or scope surface is published; the documented auth is an unscoped API token
+  - id: oidc
+    conforms: false
+    evidence: /.well-known/openid-configuration 404s on api.ocean.io and www.ocean.io
+  - id: rfc9116-security-txt
+    conforms: false
+    evidence: /.well-known/security.txt 404s on api.ocean.io, www.ocean.io and app.ocean.io
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: No Sunset/Deprecation header documented; no operation marked deprecated despite a live v2/v3 split
+  - id: rfc9110-retry-after
+    conforms: true
+    evidence: 429 responses return Retry-After and X-RateLimit-Limit per https://app.ocean.io/docs/getting-started/rate-limiting
+  - id: ietf-ratelimit-headers
+    conforms: partial
+    evidence: >-
+      X-RateLimit-Limit is returned (legacy X- form), but not the RateLimit / RateLimit-Policy fields
+      of the IETF draft, and no X-RateLimit-Remaining or -Reset is documented
+  - id: idempotency-key
+    conforms: false
+    evidence: >-
+      No idempotency key on inbound requests. The only idempotency requirement published is on the
+      consumer's webhook receiver
+  - id: cursor-pagination
+    conforms: true
+    evidence: searchAfter cursor + total, documented at https://app.ocean.io/docs/getting-started/pagination
+  - id: mcp
+    conforms: true
+    evidence: >-
+      First-party remote MCP server at https://api.ocean.io/mcp/ (probed 2026-08-13, HTTP 200 with a
+      JSON-RPC token challenge); 8 tools documented
+  - id: a2a
+    conforms: false
+    evidence: /.well-known/agent-card.json and /.well-known/agent.json 404 on every Ocean.io host probed
+  - id: llmstxt
+    conforms: true
+    evidence: https://www.ocean.io/llms.txt returns 200 text/plain with product, data-coverage and page sections
+  - id: soc2
+    conforms: true
+    evidence: SOC 2 named on the Ocean.io trust center (security/ocean-io-trust-center.yml, https://trust.ocean.io/)
+  - id: gdpr
+    conforms: unknown
+    evidence: >-
+      Ocean.io is a Copenhagen-headquartered EU company selling person-level contact data, so GDPR
+      applies, but the marketing host returns a Cloudflare bot challenge (403) to non-browser clients
+      and no DPA/privacy page could be read in this pass
+  - id: iso-27001
+    conforms: unknown
+    evidence: Not named in the trust-center evidence captured
+compliance:
+  published: true
+  url: https://trust.ocean.io/
+  certifications:
+    - SOC 2
+  detail: security/ocean-io-trust-center.yml

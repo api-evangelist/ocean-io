@@ -1,0 +1,126 @@
+generated: '2026-08-13'
+method: derived
+source: mcp/ocean-io-mcp.yml + openapi/ocean-io-api-openapi.yml
+description: >-
+  Binds each documented Ocean.io MCP tool to the REST operation(s) that back it, so an agent can
+  inherit a real input contract from the OpenAPI instead of guessing. The live MCP tools/list is
+  token-gated (HTTP 200 + JSON-RPC error "Please provide your ocean.io API token"), so the mapping is
+  by name and documented semantics; confidence is recorded honestly per row.
+surfaces:
+  openapi:
+    file: openapi/ocean-io-api-openapi.yml
+    original: openapi/_original/ocean-io-openapi.json
+    source: https://api.ocean.io/openapi.json
+    operations: 26
+    gated: false
+  mcp:
+    url: https://api.ocean.io/mcp/
+    docs: https://app.ocean.io/docs/getting-started/mcp
+    tools_documented: 8
+    gated: true
+    gate: api-token query parameter required for tools/list
+  graphql: null
+crosswalk:
+  - tool: search_companies
+    category: search
+    rest:
+      - searchCompaniesV3
+      - searchCompanies
+    binding: rest
+    confidence: high
+    note: >-
+      Docs example uses lookalikeDomains plus a location filter, which are v3 Search Companies
+      request-body fields; searchCompanies (v2) is the legacy equivalent.
+  - tool: search_people
+    category: search
+    rest:
+      - searchPeopleV3
+      - searchPeople
+    binding: rest
+    confidence: high
+  - tool: list_company_fields
+    category: reference
+    rest:
+      - getDataFieldsPublic
+    binding: rest
+    confidence: medium
+    note: >-
+      /v2/data-fields is the single public field/taxonomy reference endpoint; the MCP server splits it
+      into four narrower reference tools, so the mapping fans in rather than one-to-one.
+  - tool: list_people_fields
+    category: reference
+    rest:
+      - getDataFieldsPublic
+    binding: rest
+    confidence: medium
+    note: Fans in to the same /v2/data-fields reference operation.
+  - tool: list_industries
+    category: reference
+    rest:
+      - getDataFieldsPublic
+    binding: rest
+    confidence: medium
+    note: Fans in to the same /v2/data-fields reference operation.
+  - tool: list_linkedin_industries
+    category: reference
+    rest:
+      - getDataFieldsPublic
+    binding: rest
+    confidence: medium
+    note: Fans in to the same /v2/data-fields reference operation.
+mcp_only:
+  - tool: export_companies
+    reason: >-
+      Server-side composite — runs a company search, renders CSV for up to 10,000 domains and returns
+      a download URL. No public REST operation produces a CSV export.
+  - tool: export_people
+    reason: >-
+      Server-side composite — CSV export for up to 10,000 LinkedIn handles or Ocean IDs. No public
+      REST equivalent.
+rest_only:
+  - capability: Enrichment
+    operations:
+      - enrichCompany
+      - enrichCompanies
+      - enrichPerson
+      - enrichPeople
+    note: Batch enrich returns results asynchronously by webhook; no MCP tool is documented.
+  - capability: Lookup by known identifier
+    operations:
+      - lookupCompanies
+      - lookupPeople
+  - capability: Contact reveal
+    operations:
+      - revealEmails
+      - revealPhones
+    note: Webhook-delivered; not exposed over MCP.
+  - capability: Autocomplete
+    operations:
+      - autoCompleteCompany
+      - autoCompleteKeywords
+      - autoCompleteJobTitles
+      - autoCompleteLocations
+      - autoCompleteSkills
+  - capability: Segmentation
+    operations:
+      - createSegmentation
+      - getSegmentation
+      - addMarkedDomains
+      - attributeSegmentationDomains
+  - capability: Search previews
+    operations:
+      - previewSearchCompaniesV3
+      - searchPeopleV3Preview
+    note: Docs record preview endpoints as "not available on this plan" for self-serve credit plans.
+  - capability: Account / operations
+    operations:
+      - getCreditBalance
+      - getDataFieldsPublic
+      - warmupCompanies
+coverage:
+  tools_named: 8
+  tools_bound_to_rest: 6
+  mcp_only: 2
+  rest_operations_total: 26
+  rest_operations_with_a_tool: 3
+  rest_operations_without_a_tool: 23

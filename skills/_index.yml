@@ -1,0 +1,41 @@
+generated: '2026-08-13'
+method: generated
+source: >-
+  openapi/ocean-io-api-openapi.yml (every operationId verified verbatim against the published spec) +
+  https://app.ocean.io/docs/getting-started/workflows
+description: >-
+  Packaged agent operating instructions for Ocean.io's marquee flows. Each skill is grounded in real
+  operationIds from Ocean.io's published OpenAPI 3.1 document and carries the cross-cutting rules
+  captured in conventions/, errors/ and rate-limits/ — in particular that Ocean.io publishes NO
+  request-side idempotency key, so every asynchronous flow puts the deduplication burden on the
+  caller's webhook receiver.
+skills:
+  - file: ocean-io-find-prospects-and-reveal-emails.md
+    name: Find prospects at lookalike companies and reveal their emails
+    api: openapi/ocean-io-api-openapi.yml
+    operations:
+      - searchPeopleV3
+      - revealEmails
+  - file: ocean-io-build-lookalike-company-segment.md
+    name: Build a lookalike company segment from seed customers
+    api: openapi/ocean-io-api-openapi.yml
+    operations:
+      - searchCompaniesV3
+      - previewSearchCompaniesV3
+      - getCreditBalance
+  - file: ocean-io-enrich-crm-accounts.md
+    name: Enrich CRM accounts in batch
+    api: openapi/ocean-io-api-openapi.yml
+    operations:
+      - warmupCompanies
+      - enrichCompanies
+      - enrichCompany
+      - lookupCompanies
+  - file: ocean-io-segment-and-attribute-accounts.md
+    name: Segment a customer list and score new accounts against it
+    api: openapi/ocean-io-api-openapi.yml
+    operations:
+      - createSegmentation
+      - getSegmentation
+      - addMarkedDomains
+      - attributeSegmentationDomains

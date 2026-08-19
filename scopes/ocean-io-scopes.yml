@@ -1,0 +1,35 @@
+generated: '2026-08-13'
+method: probed
+source: https://api.ocean.io/.well-known/oauth-authorization-server
+docs: null
+description: >-
+  Ocean.io publishes RFC 8414 OAuth 2.0 Authorization Server Metadata at
+  https://api.ocean.io/.well-known/oauth-authorization-server (HTTP 200, application/json). The
+  document advertises a client_credentials token endpoint and an EMPTY scopes_supported array, and no
+  public documentation page describes the flow. The REST API itself is authenticated with a single
+  unscoped account API token, and the OpenAPI declares no oauth2 security scheme. There is therefore
+  no scope surface to enumerate — this file records that absence with the evidence, rather than
+  inventing one.
+schemes:
+  - name: OAuth 2.0 (client credentials)
+    source: well-known/ocean-io-oauth-authorization-server.json
+    issuer: https://api.ocean.io
+    flows:
+      - flow: clientCredentials
+        tokenUrl: https://api.ocean.io/oauth/token
+        authorizationUrl: null
+        token_endpoint_auth_methods_supported:
+          - client_secret_post
+        scopes: {}
+scopes: []
+scope_count: 0
+x-evidence:
+  - fetched: '2026-08-13'
+    url: https://api.ocean.io/.well-known/oauth-authorization-server
+    http_status: 200
+    content_type: application/json
+    finding: scopes_supported is an empty array
+  - fetched: '2026-08-13'
+    url: https://api.ocean.io/openapi.json
+    http_status: 200
+    finding: components.securitySchemes is absent; no oauth2 scheme declared

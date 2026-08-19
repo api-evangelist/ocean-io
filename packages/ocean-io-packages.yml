@@ -1,0 +1,99 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  registry.npmjs.org search + package metadata, pypi.org, and Ocean.io's own docs
+  (https://app.ocean.io/docs) — probed 2026-08-13
+description: >-
+  Ocean.io publishes NO first-party client library in any language. Its documentation teaches the API
+  with raw curl, requests and fetch snippets only, and there is no SDK page, no GitHub organisation
+  and no packages under an Ocean.io-controlled registry namespace that wrap the API. Everything below
+  is third-party, written by other companies against Ocean.io's API; none is endorsed by or
+  attributable to Ocean.io. The only npm namespace that plausibly belongs to the company —
+  @oceanio — contains a design-system package, not an API client, and carries no repository,
+  homepage or description to confirm ownership.
+official_sdk_count: 0
+packages:
+  - language: javascript
+    registry: npm
+    name: n8n-nodes-ocean
+    url: https://www.npmjs.com/package/n8n-nodes-ocean
+    install: npm install n8n-nodes-ocean
+    official: false
+    version: 1.0.8
+    published: '2026-07-02'
+    author: Brandon Charleson (Top of Funnel) <brandon@topoffunnel.com>
+    repository: https://github.com/bcharleson/n8n-nodes-ocean
+    description: >-
+      n8n community node for Ocean.io — lookalike company & people discovery, enrichment, reveal and
+      autocomplete. Third-party workflow integration, not an Ocean.io SDK.
+  - language: javascript
+    registry: npm
+    name: ocean-agent-cli
+    url: https://www.npmjs.com/package/ocean-agent-cli
+    install: npx ocean-agent-cli
+    official: false
+    version: 0.1.12
+    published: '2026-05-31'
+    author: Top of Funnel (npm maintainer bcharleson)
+    repository: null
+    description: >-
+      Third-party CLI and MCP server for the Ocean.io data platform. Note this is NOT Ocean.io's own
+      MCP server — Ocean.io ships a hosted remote endpoint at https://api.ocean.io/mcp/ instead
+      (see mcp/ocean-io-mcp.yml). Publishing a lookalike MCP wrapper under a generic name is a
+      supply-chain consideration for anyone searching npm for "ocean mcp".
+  - language: javascript
+    registry: npm
+    name: ocean-io-cli
+    url: https://www.npmjs.com/package/ocean-io-cli
+    install: npx ocean-io-cli
+    official: false
+    version: 0.1.2
+    published: '2026-03-17'
+    author: Top of Funnel (npm maintainer bcharleson)
+    repository: null
+    description: Predecessor of ocean-agent-cli by the same third-party author; unmaintained since 2026-03-17.
+  - language: javascript
+    registry: npm
+    name: '@oceanio/design'
+    url: https://www.npmjs.com/package/@oceanio/design
+    install: npm install @oceanio/design
+    official: false
+    version: 0.12.1
+    published: '2026-04-23'
+    author: null
+    maintainers:
+      - moktoocean
+    repository: null
+    description: >-
+      Design-system package under the @oceanio npm scope. The scope name and the maintainer handle
+      suggest it belongs to Ocean.io, but the package carries no repository, homepage, description or
+      license to confirm it, and it is a UI package rather than an API client — so it is recorded as
+      unconfirmed (official: false) rather than credited as a first-party SDK.
+related_third_party:
+  - name: quarry-cli
+    registry: npm
+    version: 0.1.1
+    published: '2026-06-24'
+    note: Third-party "Apollo & Ocean.io lead extraction" CLI; not an Ocean.io client library.
+  - name: quarry-mcp
+    registry: npm
+    version: 0.1.0
+    published: '2026-06-24'
+    note: Third-party MCP server bundling Apollo and Ocean.io; not first-party.
+registries_probed:
+  - registry: npm
+    query: 'ocean.io / oceanio'
+    result: no first-party client library
+  - registry: PyPI
+    query: ocean-io, oceanio, ocean-api
+    result: 404 on all three; no Ocean.io package
+  - registry: docs
+    query: https://app.ocean.io/docs
+    result: >-
+      No SDK or client-library page exists; every example in Quickstart, Authentication, Pagination,
+      Rate limiting and Best practices is curl, Python requests, or JavaScript fetch
+gaps:
+  - >-
+    A 26-operation JSON API with a published OpenAPI 3.1 document and no generated client in any
+    language is the clearest ergonomics gap in this profile — a generated Python and TypeScript
+    client would fall straight out of the spec already at https://api.ocean.io/openapi.json.

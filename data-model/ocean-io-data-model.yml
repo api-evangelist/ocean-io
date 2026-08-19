@@ -1,0 +1,184 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/ocean-io-api-openapi.yml
+description: >-
+  Entity-relationship graph derived from the 156 component schemas in Ocean.io's published OpenAPI
+  3.1 document. The model has two root entities — Company and Person — joined by employment, plus a
+  Segmentation aggregate that clusters companies into scored Segments, and an account-level Credits
+  balance. Identity is natural-key based, not surrogate: a company is addressed by its registered
+  web domain and a person by an Ocean ID or LinkedIn handle. The schemas are unusually flat — the
+  richest objects (LookalikePerson, search result rows) inline their nested detail rather than
+  $ref-ing a shared Company/Person, so most relationships below are expressed through id-reference
+  FIELDS rather than schema $refs.
+identifiers:
+  - entity: Company
+    key: domain
+    form: registered web domain, e.g. "pandadoc.com"
+    note: The primary key across search, lookup, enrich, warmup and segmentation attribution.
+  - entity: Person
+    key: id
+    form: Ocean person ID (opaque string)
+    alternate_keys:
+      - linkedinUrl
+      - LinkedIn handle
+    note: lookupPeople accepts either a LinkedIn handle/URL or an Ocean ID.
+  - entity: Segmentation
+    key: segmentationId
+    form: path parameter on /v2/segmentation/{segmentation_id}
+  - entity: Segment
+    key: segmentId
+    form: identifier within a segmentation
+entities:
+  - name: Company
+    schema: components.schemas.Company
+    description: >-
+      Firmographic core record. The base Company schema carries registration and contact identity
+      (name, registrationNumber, address fields, social handles) keyed on domain; enriched search and
+      enrich responses layer on headcount, industries, technologies, revenue, funding and growth
+      signals.
+    fields: 17
+    key: domain
+  - name: Person
+    schema: components.schemas.Person
+    description: Individual contact record — name parts, jobTitle, email, phone, social handles, country.
+    fields: 11
+    key: id
+  - name: LookalikePerson
+    schema: components.schemas.LookalikePerson
+    description: >-
+      The people-search result row — the richest person projection (27 fields), including seniorities,
+      departments, skills, experiences, inferredEmails, connection counts and a relevance score.
+    key: id
+  - name: PersonCompany
+    schema: components.schemas.PersonCompany
+    description: >-
+      The employer sub-object embedded in a person record — companySize, revenue, employeeCountOcean,
+      industries, technologies, fundingRound, logo, name. This is the join between Person and Company.
+  - name: Experience
+    schema: components.schemas.Experience
+    description: One past or present role for a person; carries domain and linkedinCompanyHandle, which point back at a company.
+  - name: Segmentation
+    schema: components.schemas.Segmentation
+    description: >-
+      A clustering run over a set of company domains, producing named Segments plus
+      totalAddressableMarket and totalUntouched rollups and a processing status.
+  - name: Segment
+    schema: components.schemas.Segment
+    description: >-
+      One cluster inside a segmentation — name, member domains, companyCount, traits, crmMetrics and
+      lookalikeCount.
+  - name: AttributedDomain
+    schema: components.schemas.AttributedDomain
+    description: The assignment of one company domain to one segment, with a fit score.
+  - name: FundingRound
+    schema: components.schemas.FundingRound
+    description: A funding event attached to a company; typed by FundingRoundType.
+  - name: Media
+    schema: components.schemas.Media
+    description: A social/media profile (url, handle) attached to a company or person.
+  - name: Impressum
+    schema: components.schemas.Impressum
+    description: German-style legal-notice record for a company; contains ImpressumPerson entries.
+  - name: Credits
+    schema: components.schemas.Credits
+    description: Account credit balance split into oneTime and recurrent pools.
+  - name: GetCreditBalanceResponse
+    schema: components.schemas.GetCreditBalanceResponse
+    description: >-
+      Account balance envelope — credits, emailCredits, phoneCredits and previewCredits (each a
+      Credits object) plus dailyLimitRateLeft and dailyLimitRateSecondsToReset.
+relationships:
+  - from: Person
+    to: PersonCompany
+    type: has_one
+    via: company
+    evidence: LookalikePerson.company
+  - from: PersonCompany
+    to: Company
+    type: belongs_to
+    via: name/domain projection
+    evidence: >-
+      PersonCompany is a denormalised Company projection (companySize, revenue, industries,
+      technologies, fundingRound) rather than a $ref to Company.
+    confidence: medium
+  - from: Person
+    to: Experience
+    type: has_many
+    via: experiences
+    evidence: LookalikePerson.experiences
+  - from: Experience
+    to: Company
+    type: belongs_to
+    via: domain
+    evidence: Experience.domain / Experience.linkedinCompanyHandle
+  - from: PersonCompany
+    to: FundingRound
+    type: has_one
+    via: fundingRound
+    evidence: $ref components.schemas.FundingRound
+  - from: FundingRound
+    to: FundingRoundType
+    type: has_one
+    via: type
+    evidence: $ref components.schemas.FundingRoundType
+  - from: Company
+    to: Media
+    type: has_many
+    via: facebook / twitter / linkedin / instagram / xing / youtube
+    evidence: Company social handle fields; Medias/Media schemas
+  - from: Company
+    to: Impressum
+    type: has_one
+    via: impressum
+    evidence: components.schemas.Impressum
+  - from: Impressum
+    to: ImpressumPerson
+    type: has_many
+    via: people
+    evidence: $ref components.schemas.ImpressumPerson
+  - from: Segmentation
+    to: Segment
+    type: has_many
+    via: segments
+    evidence: $ref components.schemas.Segment (array)
+  - from: Segmentation
+    to: SegmentationStatus
+    type: has_one
+    via: status
+    evidence: $ref components.schemas.SegmentationStatus
+  - from: Segment
+    to: Company
+    type: has_many
+    via: domains
+    evidence: Segment.domains is a list of company domains
+  - from: Segment
+    to: SegmentCrmMetrics
+    type: has_one
+    via: crmMetrics
+    evidence: components.schemas.SegmentCrmMetrics
+  - from: AttributedDomain
+    to: Segment
+    type: belongs_to
+    via: segmentId
+    evidence: AttributedDomain.segmentId
+  - from: AttributedDomain
+    to: Company
+    type: belongs_to
+    via: domain
+    evidence: AttributedDomain.domain
+  - from: GetCreditBalanceResponse
+    to: Credits
+    type: has_many
+    via: credits / emailCredits / phoneCredits / previewCredits
+    evidence: four $refs to components.schemas.Credits
+filter_vocabularies:
+  note: >-
+    A large share of the 156 schemas are filter shapes rather than entities — CompaniesFiltersV1/V3,
+    PeopleFilters/PeopleFiltersV3, AllAnyNoneFilter, IndustriesFilter, LocationsFilter,
+    HeadcountGrowthFilter, FundingRoundFilter, MobileAppsFilter, DepartmentSizeFilter and similar.
+    They describe the query language, not the stored model.
+  enum_source:
+    operation: getDataFieldsPublic
+    path: /v2/data-fields
+    detail: Valid industry, technology and field values must match this reference exactly, or the API returns 422.
+render: null

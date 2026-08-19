@@ -1,0 +1,173 @@
+generated: '2026-08-13'
+method: searched
+source: https://app.ocean.io/docs/getting-started/
+docs:
+  quickstart: https://app.ocean.io/docs/getting-started/quickstart
+  authentication: https://app.ocean.io/docs/getting-started/authentication
+  workflows: https://app.ocean.io/docs/getting-started/workflows
+  best_practices: https://app.ocean.io/docs/getting-started/best-practices
+  credits: https://app.ocean.io/docs/getting-started/credits
+  pagination: https://app.ocean.io/docs/getting-started/pagination
+  rate_limiting: https://app.ocean.io/docs/getting-started/rate-limiting
+  errors: https://app.ocean.io/docs/getting-started/errors
+  webhooks: https://app.ocean.io/docs/getting-started/webhooks
+  mcp: https://app.ocean.io/docs/getting-started/mcp
+description: >-
+  Cross-cutting request/response semantics for the Ocean.io API, captured from the provider's own
+  getting-started documentation and cross-checked against the published OpenAPI 3.1 document.
+
+transport:
+  base_url: https://api.ocean.io
+  scheme: https only
+  content_type: application/json
+  dominant_method: POST
+  note: >-
+    23 of 26 operations are POST, including all search, enrich, lookup, reveal and autocomplete reads
+    — filters travel in the request body rather than the query string. Only getDataFieldsPublic,
+    getCreditBalance and getSegmentation are GET.
+
+authentication:
+  style: api-key
+  header: X-Api-Token
+  query_parameter: apiToken
+  mutually_exclusive: true
+  conflict_status: 400
+  detail: authentication/ocean-io-authentication.yml
+
+idempotency:
+  supported: false
+  request_key_header: null
+  note: >-
+    Ocean.io documents NO idempotency key on inbound API requests — there is no Idempotency-Key
+    header or equivalent request parameter anywhere in the docs or the OpenAPI. The only idempotency
+    guidance published is a requirement on the CONSUMER's webhook receiver ("Be idempotent — the same
+    payload may be delivered more than once if retries occur"), which is the provider asking the
+    caller to deduplicate, not the provider offering a replay-safe write contract. Because most write
+    operations are billed per result, an un-acknowledged retry of a reveal or batch enrich can spend
+    credits twice.
+  consumer_side_requirement:
+    surface: webhook receiver
+    rule: Deduplicate on the record IDs in the payload; return 2xx as fast as possible.
+    docs: https://app.ocean.io/docs/getting-started/webhooks
+
+pagination:
+  style: cursor
+  request_parameters:
+    - name: searchAfter
+      in: body
+      description: Opaque base64 cursor returned by the previous page; omit on the first request.
+    - name: size
+      in: body
+      description: Results per page.
+  response_fields:
+    - name: searchAfter
+      description: Cursor for the next page; absent or null on the last page.
+    - name: total
+      description: Total matching records for the query.
+  termination: searchAfter is absent or null in the response
+  page_size_limits:
+    - operation: searchCompaniesV3
+      min: 1
+      max: 10000
+    - operation: searchPeopleV3
+      min: 1
+      max: 10000
+    - operation: lookupCompanies
+      min: 1
+      max: 1000
+    - operation: lookupPeople
+      min: 1
+      max: 1000
+  constraints:
+    - >-
+      searchAfter cannot be combined with peoplePerCompany on Search People; cap results with size
+      instead (10,000 maximum in that mode).
+  rationale_published: >-
+    Docs state cursor pagination is used to avoid duplicate/skipped results and to keep performance
+    constant on large result sets.
+  docs: https://app.ocean.io/docs/getting-started/pagination
+
+sparse_fieldsets:
+  supported: true
+  parameter: fields
+  in: body
+  description: >-
+    Request only the fields you need (e.g. ["domain","name","companySize","primaryCountry",
+    "industries"]) to cut response size and latency. Documented as a best practice for high-volume
+    pipelines.
+  docs: https://app.ocean.io/docs/getting-started/best-practices
+
+field_reference:
+  operation: getDataFieldsPublic
+  path: /v2/data-fields
+  note: >-
+    Enum values for industry, technology and similar filters must match /v2/data-fields exactly; a
+    mismatch is a 422. Country filters use lowercase ISO alpha-2 codes ("de", not "DE" or "Germany").
+
+metering:
+  model: single shared credit pool across all endpoints
+  balance_operation: getCreditBalance
+  balance_path: /v2/credits/balance
+  exhausted_status: 402
+  exhausted_behaviour: Request is not processed and no credits are deducted.
+  detail: plans/ocean-io-plans-pricing.yml
+
+rate_limiting:
+  documented: true
+  self_serve_limits:
+    per_minute: 60
+    per_day: 1000
+  exhausted_status: 429
+  response_headers:
+    - Retry-After
+    - X-RateLimit-Limit
+  remaining_signal:
+    field: dailyLimitRateLeft
+    operation: getCreditBalance
+    note: Daily request allowance remaining, returned by the credit-balance endpoint.
+  guidance: Exponential backoff honouring Retry-After; do not retry immediately.
+  detail: rate-limits/ocean-io-rate-limits.yml
+
+error_envelope:
+  shape: '{"detail": <string|array>}'
+  simple_errors: detail is a human-readable string (400, 401, 402, 403, 404)
+  validation_errors: >-
+    detail is an array of objects with loc (path to the offending field), msg, type, input and ctx
+    (allowed values) — the FastAPI/Pydantic HTTPValidationError shape, declared in the OpenAPI as
+    components.schemas.HTTPValidationError.
+  rfc9457: false
+  content_type: application/json
+  detail_artifact: errors/ocean-io-problem-types.yml
+
+async_execution:
+  pattern: webhook callback
+  request_field: webhookUrl
+  ack_response: '{"status": "in progress"}'
+  ack_status: 200
+  also: >-
+    Enrich Company / Enrich Person answer 201 Created when the domain was not already in the database
+    — crawling has been triggered and the caller should retry in 2–5 minutes.
+  detail: asyncapi/ocean-io-webhooks.yml
+
+versioning:
+  scheme: uri-path
+  versions_live:
+    - v2
+    - v3
+  current: v3 for search; v2 for everything else
+  note: >-
+    /v2 and /v3 search operations are both published in the same OpenAPI document; the docs navigate
+    to the v3 search operations by default. No deprecation dates are published for v2.
+  detail: lifecycle/ocean-io-lifecycle.yml
+
+tracing:
+  request_id_header: null
+  note: No request-id / correlation-id header is documented or declared in the OpenAPI.
+
+cross_links:
+  errors: errors/ocean-io-problem-types.yml
+  lifecycle: lifecycle/ocean-io-lifecycle.yml
+  authentication: authentication/ocean-io-authentication.yml
+  rate_limits: rate-limits/ocean-io-rate-limits.yml
+  plans: plans/ocean-io-plans-pricing.yml
+  webhooks: asyncapi/ocean-io-webhooks.yml

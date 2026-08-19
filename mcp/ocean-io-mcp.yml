@@ -1,0 +1,100 @@
+generated: '2026-08-13'
+method: searched
+status: published
+source: https://app.ocean.io/docs/getting-started/mcp
+description: >-
+  Ocean.io publishes a first-party hosted (remote) MCP server that exposes the company/people data
+  API to any MCP-aware client. It is a single HTTPS endpoint the client POSTs to; authentication is
+  the same Ocean.io API token used by the REST API, passed as an api-token query parameter on the
+  endpoint URL. MCP calls consume credits at the same rate as the equivalent REST call.
+deployment:
+  mode: remote
+  endpoint: https://api.ocean.io/mcp/
+  auth: api-key
+  verified: probed
+  note: >-
+    Probed 2026-08-13 with an anonymous JSON-RPC tools/list POST. The server answered HTTP 200 with
+    an SSE event carrying {"jsonrpc":"2.0","id":1,"error":{"code":0,"message":"Please provide your
+    ocean.io API token"}} — the endpoint is live and reachable, and the live tool schemas are
+    token-gated. The tool list below is therefore taken verbatim from Ocean.io's own MCP docs page
+    (names, descriptions and credit costs), not from an authenticated tools/list; per-tool
+    inputSchema requires authenticated introspection.
+server:
+  name: ocean_data_api
+  transport: http
+  url: https://api.ocean.io/mcp/
+  protocol: Streamable HTTP (text/event-stream)
+  auth:
+    type: api-key
+    location: query
+    parameter: api-token
+    token_source: Ocean.io app → Settings → API tokens
+clients:
+  - client: Claude.ai / Claude Desktop
+    method: Settings → Connectors → Add custom connector
+    value: https://api.ocean.io/mcp/?api-token=YOUR_API_TOKEN
+  - client: Claude Code
+    method: CLI
+    value: claude mcp add --transport http ocean_data_api https://api.ocean.io/mcp/?api-token=YOUR_API_TOKEN
+  - client: Claude Desktop (older builds)
+    method: claude_desktop_config.json via mcp-remote
+    value: npx mcp-remote https://api.ocean.io/mcp/?api-token=YOUR_API_TOKEN
+  - client: Cursor
+    method: Settings → MCP → Add new global server
+    value: https://api.ocean.io/mcp/?api-token=YOUR_API_TOKEN
+tools:
+  - name: list_company_fields
+    description: Every company field you can filter or request. Static — cache for the session.
+    category: reference
+    cost: free
+    source_operation: openapi/ocean-io-api-openapi.yml#getDataFieldsPublic
+  - name: list_people_fields
+    description: Every people field. Static.
+    category: reference
+    cost: free
+    source_operation: openapi/ocean-io-api-openapi.yml#getDataFieldsPublic
+  - name: list_industries
+    description: Ocean.io industry taxonomy. Static.
+    category: reference
+    cost: free
+    source_operation: openapi/ocean-io-api-openapi.yml#getDataFieldsPublic
+  - name: list_linkedin_industries
+    description: LinkedIn industry filter options. Static.
+    category: reference
+    cost: free
+    source_operation: openapi/ocean-io-api-openapi.yml#getDataFieldsPublic
+  - name: search_companies
+    description: Filter or lookalike company search. Paginated.
+    category: search
+    cost: 0.2 credits / result
+    source_operation: openapi/ocean-io-api-openapi.yml#searchCompaniesV3
+  - name: search_people
+    description: Search people by title, location, skills, company. Paginated.
+    category: search
+    cost: 0.2 credits / result
+    source_operation: openapi/ocean-io-api-openapi.yml#searchPeopleV3
+  - name: export_companies
+    description: CSV export — up to 10,000 domains. Requires explicit user confirmation.
+    category: export
+    cost: 0.2 credits / exported company
+    source_operation: null
+    note: No public REST equivalent; MCP-only composite (search + CSV render + download URL).
+  - name: export_people
+    description: CSV export — up to 10,000 LinkedIn handles or URLs. Requires explicit user confirmation.
+    category: export
+    cost: 0.2 credits / exported person
+    source_operation: null
+    note: No public REST equivalent; MCP-only composite.
+behaviour:
+  - Reference list_* tools are static within a session and should be cached.
+  - Search results are paginated; the first response is not the full set.
+  - Export tools require explicit user confirmation in the assistant before they run.
+  - Credits are charged only for records an export actually returns; failed matches are not charged.
+divergence:
+  note: >-
+    Ocean.io's llms.txt describes a separate in-app "Ocean Agent" with 11 tools (search_companies,
+    search_people, find_lookalikes, query_crm, export_to_crm, export_webhook, get_segment,
+    score_segment_fit, segment_members, enrich_company, enrich_person). That is the agent embedded in
+    the Ocean web app, not the published MCP server surface. Only the 8 tools above are documented as
+    available over the MCP endpoint.
+  llms_txt: llms/ocean-io-llms.txt

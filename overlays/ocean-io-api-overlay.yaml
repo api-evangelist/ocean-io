@@ -1,0 +1,160 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Ocean.io API
+  version: 1.0.0
+extends: openapi/ocean-io-api-openapi.yml
+x-generated: '2026-08-13'
+x-method: generated
+x-source: >-
+  Derived from https://api.ocean.io/openapi.json plus Ocean.io's own documentation at
+  https://app.ocean.io/docs. Every value below is either a fact restated from the provider's docs or
+  an API Evangelist annotation clearly namespaced under x-apievangelist-*. The original harvested
+  spec is never mutated — see openapi/_original/ocean-io-openapi.json.
+actions:
+  - target: $.info
+    description: Record provenance and the documentation surface the spec omits.
+    update:
+      x-apievangelist-source: https://api.ocean.io/openapi.json
+      x-apievangelist-harvested: '2026-08-13'
+      x-apievangelist-docs: https://app.ocean.io/docs
+      x-apievangelist-status-page: https://status.ocean.io/
+      x-apievangelist-llms-txt: https://www.ocean.io/llms.txt
+      x-apievangelist-mcp-server: https://api.ocean.io/mcp/
+
+  - target: $
+    description: >-
+      Declare the API-key security scheme the API actually enforces. The published spec declares no
+      components.securitySchemes at all, so a generated client will not send authentication; the
+      token instead appears as two optional parameters on each operation.
+    update:
+      components:
+        securitySchemes:
+          x-apievangelist-ApiTokenHeader:
+            type: apiKey
+            in: header
+            name: X-Api-Token
+            description: >-
+              Ocean.io account API token, generated at Settings -> API tokens. This is the transport
+              Ocean.io recommends, because headers do not appear in server logs or browser history.
+          x-apievangelist-ApiTokenQuery:
+            type: apiKey
+            in: query
+            name: apiToken
+            description: >-
+              The same token as a query parameter. Sending BOTH this and X-Api-Token returns 400
+              "Conflicting API tokens provided in query parameters and headers".
+
+  - target: $.info
+    description: Record the cross-cutting runtime semantics documented outside the spec.
+    update:
+      x-apievangelist-conventions:
+        pagination:
+          style: cursor
+          request: searchAfter (body)
+          response: searchAfter, total
+          terminates_when: searchAfter absent or null
+        rate_limits:
+          self_serve_per_minute: 60
+          self_serve_per_day: 1000
+          exhausted_status: 429
+          headers:
+            - Retry-After
+            - X-RateLimit-Limit
+          remaining_field: dailyLimitRateLeft (from GET /v2/credits/balance)
+        metering:
+          model: single shared credit pool
+          exhausted_status: 402
+          exhausted_behaviour: request not processed, no credits deducted
+        idempotency:
+          request_key: null
+          note: >-
+            No idempotency key exists on inbound requests. Ocean.io requires the CONSUMER's webhook
+            receiver to be idempotent instead, which shifts replay safety onto the caller.
+        error_envelope:
+          media_type: application/json
+          field: detail
+          rfc9457: false
+
+  - target: $.paths['/v2/search/companies'].post
+    description: v2 company search is superseded by /v3/search/companies; no sunset date is published.
+    update:
+      x-apievangelist-superseded-by: searchCompaniesV3
+      x-apievangelist-note: >-
+        Still live and not marked deprecated by the provider. Ocean.io publishes no deprecation
+        policy or Sunset header, so consumers have no signal about its lifetime.
+
+  - target: $.paths['/v2/search/people'].post
+    description: v2 people search is superseded by /v3/search/people; no sunset date is published.
+    update:
+      x-apievangelist-superseded-by: searchPeopleV3
+      x-apievangelist-note: >-
+        Still live and not marked deprecated by the provider.
+
+  - target: $.paths['/v2/reveal/emails'].post
+    description: Annotate the asynchronous callback contract and its billing consequence.
+    update:
+      x-apievangelist-async:
+        pattern: webhook-callback
+        request_field: webhookUrl
+        ack: '{"status": "in progress"}'
+        webhook_event: reveal_emails
+        typical_latency: 1-10 minutes depending on batch size
+        billing: 1 credit per email found; notFound is not charged
+        replay_risk: >-
+          No request-side idempotency key. A retried submission can be charged twice; deduplicate on
+          personId in the receiver.
+
+  - target: $.paths['/v2/reveal/phones'].post
+    description: Annotate the asynchronous callback contract.
+    update:
+      x-apievangelist-async:
+        pattern: webhook-callback
+        request_field: webhookUrl
+        webhook_event: reveal_phones
+        billing: 10 credits per phone found; notFound is not charged
+
+  - target: $.paths['/v2/enrich/companies'].post
+    description: Annotate the batch callback contract and the reconciliation key.
+    update:
+      x-apievangelist-async:
+        pattern: webhook-callback
+        request_field: webhookUrl
+        webhook_event: enrich_companies
+        correlation_key: the caller's own keys in companyDataMapping are echoed in the webhook payload
+        batch_max: 10000
+        result_statuses:
+          - found
+          - not_found
+          - triggered
+
+  - target: $.paths['/v2/enrich/people'].post
+    description: Annotate the batch callback contract.
+    update:
+      x-apievangelist-async:
+        pattern: webhook-callback
+        request_field: webhookUrl
+        webhook_event: enrich_people
+        correlation_key: the caller's own keys in peopleDataMapping are echoed in the webhook payload
+        batch_max: 10000
+
+  - target: $.paths['/v2/warmup/companies'].post
+    description: Flag the free pre-flight operation that avoids wasted enrichment credits.
+    update:
+      x-apievangelist-cost: free
+      x-apievangelist-note: >-
+        Call before a batch enrichment. Splits input into successfulDomains (indexed) and
+        triggeredDomains (crawling started, retry in 2-5 minutes).
+
+  - target: $.paths['/v2/lookup/companies'].post
+    description: Flag the cheaper alternative to search when the domains are already known.
+    update:
+      x-apievangelist-cost: 0.05 credits per result
+      x-apievangelist-note: Cheaper than searchCompaniesV3 with includeDomains (0.2 credits per result).
+
+  - target: $.paths['/v2/data-fields'].get
+    description: Flag the enum authority for every filter value in the API.
+    update:
+      x-apievangelist-cost: free
+      x-apievangelist-note: >-
+        Authoritative source for industry, technology and field enum values. Any filter value that
+        does not match here returns 422.
