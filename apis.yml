@@ -56,42 +56,154 @@ created: '2026-05-08'
 modified: '2026-08-13'
 specificationVersion: '0.23'
 apis:
-  - name: Ocean.io API
-    description: >-
-      REST API for B2B company and people intelligence — 26 operations across search (v2 and v3
-      filter and lookalike search for companies and people), enrichment (single and batch, by domain
-      or LinkedIn handle), lookup, contact reveal (verified email and phone, delivered by webhook),
-      autocomplete of filter values, segmentation, and account operations (credit balance, data
-      fields, warmup). Authenticated with an account API token in the X-Api-Token header, metered
-      from a shared credit pool, cursor-paginated with searchAfter.
-    humanURL: https://app.ocean.io/docs
-    baseURL: https://api.ocean.io
-    tags:
-      - Sales Intelligence
-      - B2B
-      - Enrichment
-      - Lookalike
-      - Company Data
-      - People Data
-      - Contact Data
-      - Segmentation
-      - MCP
-    properties:
-      - type: OpenAPI
-        url: openapi/ocean-io-api-openapi.yml
-      - type: Overlay
-        url: overlays/ocean-io-api-overlay.yaml
-      - type: Documentation
-        url: https://app.ocean.io/docs
-      - type: APIReference
-        url: https://app.ocean.io/docs
-      - type: GettingStarted
-        url: https://app.ocean.io/docs/getting-started/quickstart
-      - type: MCPServer
-        url: mcp/ocean-io-mcp.yml
-      - type: ToolCrosswalk
-        url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-autocomplete-api
+  name: Ocean.io Autocomplete API
+  description: The Autocomplete API from Ocean.io — 5 operation(s) for autocomplete.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Autocomplete
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-autocomplete-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-enrich-api
+  name: Ocean.io Enrich API
+  description: The Enrich API from Ocean.io — 4 operation(s) for enrich.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Enrich
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-enrich-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-lookup-api
+  name: Ocean.io Lookup API
+  description: The Lookup API from Ocean.io — 2 operation(s) for lookup.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Lookup
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-lookup-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-ocean-io-api-documentation-api
+  name: Ocean.io Ocean.io API Documentation API
+  description: >-
+    The Ocean.io API Documentation API from Ocean.io — 0 operation(s) for ocean.io api documentation.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Ocean.io API Documentation
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-ocean-io-api-documentation-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-other-api
+  name: Ocean.io Other API
+  description: The Other API from Ocean.io — 3 operation(s) for other.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Other
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-other-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-reveal-api
+  name: Ocean.io Reveal API
+  description: The Reveal API from Ocean.io — 2 operation(s) for reveal.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Reveal
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-reveal-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-search-api
+  name: Ocean.io Search API
+  description: The Search API from Ocean.io — 6 operation(s) for search.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Search
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-search-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
+- aid: ocean-io:ocean-io-segmentation-api
+  name: Ocean.io Segmentation API
+  description: The Segmentation API from Ocean.io — 4 operation(s) for segmentation.
+  humanURL: https://app.ocean.io/docs
+  baseURL: https://api.ocean.io
+  tags:
+  - Segmentation
+  properties:
+  - type: OpenAPI
+    url: openapi/ocean-io-segmentation-api-openapi.yml
+  - type: Documentation
+    url: https://app.ocean.io/docs
+  - type: APIReference
+    url: https://app.ocean.io/docs
+  - type: GettingStarted
+    url: https://app.ocean.io/docs/getting-started/quickstart
+  - type: ToolCrosswalk
+    url: mcp/ocean-io-tool-crosswalk.yml
 common:
+  - type: Overlay
+    url: overlays/ocean-io-api-overlay.yaml
   - type: Website
     url: https://ocean.io/
   - type: DeveloperPortal
