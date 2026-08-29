@@ -13,6 +13,18 @@ description: >-
   to the closest one. The API is documented with a public OpenAPI 3.1 document, meters every call
   from a single credit pool, delivers batch and reveal results by webhook callback, and is also
   exposed to agents through a first-party hosted MCP server at api.ocean.io/mcp.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: unknown
