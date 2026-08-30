@@ -1,0 +1,810 @@
+openapi: 3.2.0
+info:
+  title: Ocean.io API Documentation Segmentation API
+  summary: Welcome to Ocean.io's API.
+  description: "\n            Welcome to Ocean.io's API.\n            The API can be used to access all our API endpoints, such as our enrich API to look up company information, or our discover API to identify companies based on specific search criteria such as semantic similarity, technologies or industries.\n            Ocean.io's APIs are a set of HTTPS endpoints that you can use to retrieve and integrate Ocean.io's data into your existing workflows.\n            All requests should be made through https and the request and response bodies should be formatted in JSON.\n        "
+  version: 2.0.0
+  x-logo:
+    url: https://cdn2.ocean.io/assets/images/logo/256x92_ocean-logo.svg
+servers:
+- url: https://api.ocean.io
+tags:
+- name: Segmentation
+paths:
+  /v2/segmentation/{segmentation_id}:
+    get:
+      tags:
+      - Segmentation
+      summary: Get segmentation
+      description: Retrieve a segmentation by its id, including its segments, traits, and CRM metrics once `status` is `SUCCESSFUL`.
+      operationId: getSegmentation
+      parameters:
+      - name: segmentation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Segmentation Id
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Segmentation'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                title: ''
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient email credits
+                    - Some email verifications are already in progress and might use all your remaining email credits. Please try again later.
+                    - Insufficient phone credits
+                    - Some phone verifications are already in progress and might use all your remaining phone credits. Please try again later.
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/segmentation:
+    post:
+      tags:
+      - Segmentation
+      summary: Create segmentation
+      description: Create a new segmentation from a list of company domains. Runs asynchronously — poll [Get Segmentation](/docs/getSegmentation) until `status` is `SUCCESSFUL` to read the resulting segments.
+      operationId: createSegmentation
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SegmentationInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentationId'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/segmentation/{segmentation_id}/markDomains:
+    post:
+      tags:
+      - Segmentation
+      summary: Add domains to the positive or negative list of a segmentation
+      description: Append domains to the positive or negative list of an existing segmentation to steer future results toward good-fit companies and away from poor-fit ones.
+      operationId: addMarkedDomains
+      parameters:
+      - name: segmentation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Segmentation Id
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMarkedDomainsInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                title: ''
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient email credits
+                    - Some email verifications are already in progress and might use all your remaining email credits. Please try again later.
+                    - Insufficient phone credits
+                    - Some phone verifications are already in progress and might use all your remaining phone credits. Please try again later.
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Segmentation not found
+                required:
+                - detail
+          description: Not Found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/segmentation/{segmentation_id}/attribute-domains:
+    post:
+      tags:
+      - Segmentation
+      summary: Attribute domains to segments
+      description: Assign each input domain to the closest segment in a segmentation, with a 0-1 match score. The segmentation must have completed successfully first.
+      operationId: attributeSegmentationDomains
+      parameters:
+      - name: segmentation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Segmentation Id
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttributeSegmentationDomainsRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeSegmentationDomainsResponse'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                title: ''
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient email credits
+                    - Some email verifications are already in progress and might use all your remaining email credits. Please try again later.
+                    - Insufficient phone credits
+                    - Some phone verifications are already in progress and might use all your remaining phone credits. Please try again later.
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                required:
+                - detail
+          description: Not Found
+        '412':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Segmentation must be re-run to enable attribution.
+                required:
+                - detail
+          description: Precondition Failed
+        '502':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Clustering service error
+                required:
+                - detail
+          description: Bad Gateway
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    Segment:
+      properties:
+        segmentId:
+          type: integer
+          title: Segmentid
+          description: Unique id of the segment within the segmentation.
+          examples:
+          - 1
+        name:
+          type: string
+          title: Name
+          description: Human-readable label describing the segment.
+          examples:
+          - Enterprise data platforms
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+          description: Domains of the companies assigned to this segment.
+          examples:
+          - - snowflake.com
+            - datadoghq.com
+        companyCount:
+          type: integer
+          title: Companycount
+          description: Number of companies in the segment.
+          examples:
+          - 2
+        traits:
+          items:
+            $ref: '#/components/schemas/ScoringFeature'
+          type: array
+          nullable: true
+          title: Traits
+          description: Company attributes that most define the segment, each with the matched value and a relative score. Present when the segmentation was run with scoring features.
+        crmMetrics:
+          $ref: '#/components/schemas/SegmentCrmMetrics'
+          nullable: true
+          description: Deal performance for the segment, from your connected CRM. `null` when CRM metrics aren't available.
+        lookalikeCount:
+          type: integer
+          nullable: true
+          title: Lookalikecount
+          description: Estimated number of lookalike companies for this segment.
+          examples:
+          - 1840
+      type: object
+      required:
+      - segmentId
+      - name
+      - domains
+      - companyCount
+      title: Segment
+    Segmentation:
+      properties:
+        segmentationId:
+          type: integer
+          title: Segmentationid
+          description: Unique id of the segmentation.
+          examples:
+          - 12345
+        segments:
+          items:
+            $ref: '#/components/schemas/Segment'
+          type: array
+          title: Segments
+          description: Resulting segments. Empty while `status` is `IN_PROGRESS`.
+        status:
+          $ref: '#/components/schemas/SegmentationStatus'
+          description: '`IN_PROGRESS` while running, `SUCCESSFUL` when segments are ready, or `FAILED` if it could not be completed.'
+          examples:
+          - SUCCESSFUL
+        totalAddressableMarket:
+          type: integer
+          nullable: true
+          title: Totaladdressablemarket
+          description: Estimated number of lookalike companies across all segments.
+          examples:
+          - 3200
+        totalUntouched:
+          type: integer
+          nullable: true
+          title: Totaluntouched
+          description: Companies in the addressable market you have no CRM activity with yet.
+          examples:
+          - 27
+      type: object
+      required:
+      - segmentationId
+      - segments
+      - status
+      title: Segmentation
+    SegmentationId:
+      properties:
+        segmentationId:
+          type: integer
+          title: Segmentationid
+          description: Unique id of the segmentation. Use it to poll for results with the get segmentation endpoint.
+          examples:
+          - 12345
+      type: object
+      required:
+      - segmentationId
+      title: SegmentationId
+    SegmentCrmMetrics:
+      properties:
+        averageDealValue:
+          type: number
+          nullable: true
+          title: Averagedealvalue
+          description: Average deal value for the segment, from your connected CRM.
+          examples:
+          - 48000
+        averageTimeToClose:
+          type: number
+          nullable: true
+          title: Averagetimetoclose
+          description: Average time to close in days, from your connected CRM.
+          examples:
+          - 64
+        winRate:
+          type: number
+          nullable: true
+          title: Winrate
+          description: Win rate for the segment (0-1), from your connected CRM.
+          examples:
+          - 0.31
+        untouchedCount:
+          type: integer
+          nullable: true
+          title: Untouchedcount
+          description: Companies in the segment you have no CRM activity with yet.
+          examples:
+          - 12
+      type: object
+      required:
+      - averageDealValue
+      - averageTimeToClose
+      - winRate
+      - untouchedCount
+      title: SegmentCrmMetrics
+    ScoringFeature:
+      properties:
+        featureName:
+          type: string
+          title: Featurename
+          description: Feature that contributed to score
+        featureValue:
+          type: string
+          title: Featurevalue
+          description: Specific value that matched
+        score:
+          type: number
+          title: Score
+          description: Boost contribution
+      type: object
+      required:
+      - featureName
+      - featureValue
+      - score
+      title: ScoringFeature
+    AttributeSegmentationDomainsResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/AttributedDomain'
+          type: array
+          title: Results
+          description: One result per input domain, in the same order.
+        totalRequested:
+          type: integer
+          title: Totalrequested
+          description: Total number of domains requested.
+          examples:
+          - 3
+        totalAttributed:
+          type: integer
+          title: Totalattributed
+          description: Number of domains attributed to a segment. Excludes unmatched domains and domains that couldn't be evaluated.
+          examples:
+          - 2
+      type: object
+      required:
+      - results
+      - totalRequested
+      - totalAttributed
+      title: AttributeSegmentationDomainsResponse
+    AttributeSegmentationDomainsRequest:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          maxItems: 1000
+          minItems: 1
+          title: Domains
+          description: Domains to attribute (max 1000).
+          examples:
+          - - domain1.com
+            - domain2.com
+      type: object
+      required:
+      - domains
+      title: AttributeSegmentationDomainsRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    StatusResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - status
+      title: StatusResponse
+    SegmentationInput:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+          description: Company domains to segment. Provide a representative set of the companies you want to group, typically your customers or best-fit accounts.
+          examples:
+          - - stripe.com
+            - twilio.com
+            - datadoghq.com
+            - snowflake.com
+        leadScoringFeatures:
+          items:
+            type: string
+            enum:
+            - company_size
+            - industry_categories
+            - industries
+            - linkedin_industry
+            - countries
+            - primary_country
+            - ecommerce
+            - is_small_site
+            - technologies
+            - technology_categories
+            - keywords
+            - year_founded
+            - international_presence
+            - multiple_locations
+            - web_traffic_visits
+            - revenue
+            - headcount_growth_3m
+            - headcount_growth_6m
+            - headcount_growth_12m
+            - headcount_growth_3m_percentage
+            - headcount_growth_6m_percentage
+            - headcount_growth_12m_percentage
+          type: array
+          nullable: true
+          title: Leadscoringfeatures
+          description: Company attributes to consider when grouping and scoring companies (for example `industries`, `technologies`, `company_size`). Omit to use the default feature set.
+          examples:
+          - - industries
+            - technologies
+            - company_size
+        numberOfSegmentsMode:
+          type: integer
+          nullable: true
+          title: Numberofsegmentsmode
+          description: Bias toward fewer or more segments. Omit to let the service choose the number that best fits the data.
+        positiveDomains:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Positivedomains
+          description: Companies that are a good fit. The segmentation leans toward similar companies.
+          examples:
+          - - stripe.com
+        negativeDomains:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Negativedomains
+          description: Companies that are a poor fit. The segmentation leans away from similar companies.
+          examples:
+          - - tinyunknown.io
+      type: object
+      required:
+      - domains
+      title: SegmentationInput
+    AttributedDomain:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: The domain that was attributed.
+          examples:
+          - domain1.com
+        segmentId:
+          type: integer
+          nullable: true
+          title: Segmentid
+          description: ID of the matching segment, or `null` if the domain didn't match any segment closely enough (the unattributed bucket).
+          examples:
+          - 42
+        score:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          nullable: true
+          title: Score
+          description: Match score (0-1). Higher means a stronger match to the assigned segment. `null` when the domain didn't match any segment closely enough or couldn't be evaluated.
+          examples:
+          - 0.91
+      type: object
+      required:
+      - domain
+      - segmentId
+      title: AttributedDomain
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AddMarkedDomainsInput:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+          description: Domains to add to the positive or negative list.
+          examples:
+          - - stripe.com
+            - twilio.com
+        type:
+          type: string
+          enum:
+          - positive
+          - negative
+          title: Type
+          description: Whether these domains are a good fit (`positive`) or a poor fit (`negative`).
+          examples:
+          - positive
+      type: object
+      required:
+      - domains
+      - type
+      title: AddMarkedDomainsInput
+    SegmentationStatus:
+      type: string
+      enum:
+      - IN_PROGRESS
+      - SUCCESSFUL
+      - FAILED
+      title: SegmentationStatus

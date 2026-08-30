@@ -1,0 +1,310 @@
+openapi: 3.2.0
+info:
+  title: Ocean.io API Documentation Reveal API
+  summary: Welcome to Ocean.io's API.
+  description: "\n            Welcome to Ocean.io's API.\n            The API can be used to access all our API endpoints, such as our enrich API to look up company information, or our discover API to identify companies based on specific search criteria such as semantic similarity, technologies or industries.\n            Ocean.io's APIs are a set of HTTPS endpoints that you can use to retrieve and integrate Ocean.io's data into your existing workflows.\n            All requests should be made through https and the request and response bodies should be formatted in JSON.\n        "
+  version: 2.0.0
+  x-logo:
+    url: https://cdn2.ocean.io/assets/images/logo/256x92_ocean-logo.svg
+servers:
+- url: https://api.ocean.io
+tags:
+- name: Reveal
+paths:
+  /v2/reveal/emails:
+    post:
+      tags:
+      - Reveal
+      summary: Reveal emails
+      description: 'Get emails and email statuses for people.
+
+
+        **Webhook result:**
+
+        [Documentation](/docs/webhooks/reveal_emails)'
+      operationId: revealEmails
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicRevealEmailBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicRevealEmailResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient email credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/reveal/phones:
+    post:
+      tags:
+      - Reveal
+      summary: Reveal phones
+      description: 'Get phones and phone statuses for people.
+
+
+        **Webhook result:**
+
+        [Documentation](/docs/webhooks/reveal_phones)'
+      operationId: revealPhones
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicRevealPhoneBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicRevealPhoneResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient phone credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    PublicRevealEmailResult:
+      properties:
+        status:
+          type: string
+          enum:
+          - in progress
+          - webhook sent
+          title: Status
+          description: Status of the request. `"in progress"` if any email has to be verified in the background. All the email results are sent to the webhook once they are all done.
+          examples:
+          - in progress
+      type: object
+      required:
+      - status
+      title: PublicRevealEmailResult
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PublicRevealEmailBody:
+      properties:
+        personIds:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Personids
+          description: List of Ocean person ids to fetch the email data for. One email credit will be charged for every verified email found.
+          examples:
+          - - personId1
+            - personId2
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the email data should be sent to, when completed.
+          examples:
+          - https://some-url.com
+      additionalProperties: false
+      type: object
+      required:
+      - personIds
+      - webhookUrl
+      title: PublicRevealEmailBody
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    PublicRevealPhoneResult:
+      properties:
+        status:
+          type: string
+          enum:
+          - in progress
+          - webhook sent
+          title: Status
+          description: Status of the request. `"in progress"` if any phone has to be verified in the background. All the phone results are sent to the webhook once they are all done.
+          examples:
+          - in progress
+      type: object
+      required:
+      - status
+      title: PublicRevealPhoneResult
+    PublicRevealPhoneBody:
+      properties:
+        personIds:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Personids
+          description: List of Ocean person ids to fetch the phone data for. One phone credit will be charged for every verified phone found.
+          examples:
+          - - personId1
+            - personId2
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the phone data should be sent to, when completed.
+          examples:
+          - https://some-url.com
+      additionalProperties: false
+      type: object
+      required:
+      - personIds
+      - webhookUrl
+      title: PublicRevealPhoneBody

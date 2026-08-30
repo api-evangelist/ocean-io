@@ -1,0 +1,773 @@
+openapi: 3.2.0
+info:
+  title: Ocean.io API Documentation Autocomplete API
+  summary: Welcome to Ocean.io's API.
+  description: "\n            Welcome to Ocean.io's API.\n            The API can be used to access all our API endpoints, such as our enrich API to look up company information, or our discover API to identify companies based on specific search criteria such as semantic similarity, technologies or industries.\n            Ocean.io's APIs are a set of HTTPS endpoints that you can use to retrieve and integrate Ocean.io's data into your existing workflows.\n            All requests should be made through https and the request and response bodies should be formatted in JSON.\n        "
+  version: 2.0.0
+  x-logo:
+    url: https://cdn2.ocean.io/assets/images/logo/256x92_ocean-logo.svg
+servers:
+- url: https://api.ocean.io
+tags:
+- name: Autocomplete
+paths:
+  /v2/autocomplete/companies:
+    post:
+      tags:
+      - Autocomplete
+      summary: Autocomplete companies
+      description: Auto complete the name search
+      operationId: autoCompleteCompany
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models__autocomplete_companies__AutoCompletionBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models__autocomplete_companies__AutoCompletionResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/autocomplete/keywords:
+    post:
+      tags:
+      - Autocomplete
+      summary: Autocomplete keywords
+      description: Auto complete the keyword search.
+      operationId: autoCompleteKeywords
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models__autocomplete_keyword__AutoCompletionBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models__autocomplete_keyword__AutoCompletionResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/autocomplete/job-titles:
+    post:
+      tags:
+      - Autocomplete
+      summary: Autocomplete job titles
+      description: Auto complete the job title search.
+      operationId: autoCompleteJobTitles
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models__autocomplete_job_title__AutoCompletionBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models__autocomplete_job_title__AutoCompletionResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/autocomplete/locations:
+    post:
+      tags:
+      - Autocomplete
+      summary: Autocomplete locations
+      description: Auto complete the location search
+      operationId: autoCompleteLocations
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models__autocomplete_locations__AutoCompletionBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models__autocomplete_locations__AutoCompletionResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/autocomplete/skills:
+    post:
+      tags:
+      - Autocomplete
+      summary: Autocomplete skills
+      description: Auto complete the skill search.
+      operationId: autoCompleteSkills
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models__autocomplete_skills__AutoCompletionBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models__autocomplete_skills__AutoCompletionResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    models__autocomplete_locations__Location:
+      properties:
+        countryCode:
+          type: string
+          title: Country code
+          description: ISO country code
+          examples:
+          - us
+        filterCode:
+          type: string
+          title: Filter code
+          description: Code used for filtering locations
+          examples:
+          - us-CA
+        name:
+          type: string
+          title: Location name
+          description: English name of the location
+          examples:
+          - California
+        parentCode:
+          type: string
+          title: Parent code
+          description: Code of the parent location
+          examples:
+          - us
+        parentName:
+          type: string
+          title: Parent name
+          description: Name of the parent location
+          examples:
+          - United States
+        type:
+          $ref: '#/components/schemas/LocationType'
+          title: Location type
+          description: 'Type of location: 1-country, 2-region, 3-municipality, 4-city'
+          examples:
+          - 2-region
+      additionalProperties: false
+      type: object
+      required:
+      - countryCode
+      - filterCode
+      - name
+      - parentCode
+      - parentName
+      - type
+      title: Location
+    models__autocomplete_companies__AutoCompletionBody:
+      properties:
+        name:
+          type: string
+          title: Auto completion input
+          description: Beginning of the name or the domain of a company
+          examples:
+          - ocea
+        countryFilters:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Country filters
+          description: List of countries to filter for the autocompletion
+          examples:
+          - - dk
+            - se
+        excludeDomains:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Exclude domains
+          description: List of domains to exclude from the results
+          examples:
+          - - ocean.com
+        forLookalikeSearch:
+          type: boolean
+          title: For lookalike search
+          description: 'When `false`, returns all matching companies without domain validation or status filters. WARNING: Do not set this parameter to `false` if the autocomplete results will be used as input for a lookalike search.'
+          default: true
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      title: AutoCompletionBody
+    models__autocomplete_companies__AutoCompletionResult:
+      properties:
+        companies:
+          items:
+            $ref: '#/components/schemas/AutoCompletionCompany'
+          type: array
+          title: Companies found
+          description: Array of found companies. Returns empty array if no results
+      additionalProperties: false
+      type: object
+      required:
+      - companies
+      title: AutoCompletionResult
+    models__autocomplete_job_title__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Autocomplete request for job title
+          description: Beginning of the job title
+          examples:
+          - developer
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of job titles to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
+    models__autocomplete_keyword__AutoCompletionResult:
+      properties:
+        keywords:
+          items:
+            type: string
+          type: array
+          title: Keywords found
+          description: Array of found keywords. Returns empty array if no results
+          examples:
+          - software
+          - software development
+      additionalProperties: false
+      type: object
+      required:
+      - keywords
+      title: AutoCompletionResult
+    models__autocomplete_locations__AutoCompletionResult:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/models__autocomplete_locations__Location'
+          type: array
+          title: Locations found
+          description: Array of found locations with metadata. Returns empty array if no results
+      additionalProperties: false
+      type: object
+      required:
+      - locations
+      title: AutoCompletionResult
+    models__autocomplete_skills__AutoCompletionResult:
+      properties:
+        skills:
+          items:
+            type: string
+          type: array
+          title: Skills found
+          description: Array of found skills. Returns empty array if no results
+          examples:
+          - Python
+          - Python Programming
+          - Python Django
+      additionalProperties: false
+      type: object
+      required:
+      - skills
+      title: AutoCompletionResult
+    models__autocomplete_skills__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          title: Autocomplete request for skills
+          description: Beginning of the skill name
+          examples:
+          - python
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of skills to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
+    models__autocomplete_job_title__AutoCompletionResult:
+      properties:
+        jobTitles:
+          items:
+            type: string
+          type: array
+          title: Job titles found
+          description: Array of found job titles. Returns empty array if no results
+          examples:
+          - Software Engineer
+          - Senior Software Engineer
+      additionalProperties: false
+      type: object
+      required:
+      - jobTitles
+      title: AutoCompletionResult
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LocationType:
+      type: string
+      enum:
+      - 1-country
+      - 2-region
+      - 3-municipality
+      - 4-city
+      title: LocationType
+    models__autocomplete_locations__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          title: Autocomplete request for location
+          description: Beginning of the location
+          examples:
+          - londo
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of locations to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+        locationType:
+          $ref: '#/components/schemas/LocationSearchType'
+          title: Location type
+          description: Type of entities to search locations for. Use 'people' to include non-standard locations like 'San Francisco Bay Area'.
+          default: companies
+          examples:
+          - companies
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    LocationSearchType:
+      type: string
+      enum:
+      - companies
+      - people
+      title: LocationSearchType
+    models__autocomplete_keyword__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          title: Autocomplete request for keywords
+          description: Beginning of the keyword
+          examples:
+          - softw
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of keywords to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
+    AutoCompletionCompany:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain of the company, used as a unique identifier
+          examples:
+          - ocean.io
+        logo:
+          type: string
+          nullable: true
+          title: Logo
+          description: Logo of the company (URL)
+          examples:
+          - https://cdn2.ocean.io/companies-logos-v1/domain.com/020539e284d9318e805301b672ad23047c30818a.png
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Name of the company
+          examples:
+          - Ocean
+      additionalProperties: false
+      type: object
+      required:
+      - domain
+      title: AutoCompletionCompany

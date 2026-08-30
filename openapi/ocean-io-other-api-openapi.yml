@@ -1,0 +1,634 @@
+openapi: 3.2.0
+info:
+  title: Ocean.io API Documentation Other API
+  summary: Welcome to Ocean.io's API.
+  description: "\n            Welcome to Ocean.io's API.\n            The API can be used to access all our API endpoints, such as our enrich API to look up company information, or our discover API to identify companies based on specific search criteria such as semantic similarity, technologies or industries.\n            Ocean.io's APIs are a set of HTTPS endpoints that you can use to retrieve and integrate Ocean.io's data into your existing workflows.\n            All requests should be made through https and the request and response bodies should be formatted in JSON.\n        "
+  version: 2.0.0
+  x-logo:
+    url: https://cdn2.ocean.io/assets/images/logo/256x92_ocean-logo.svg
+servers:
+- url: https://api.ocean.io
+tags:
+- name: Other
+paths:
+  /v2/data-fields:
+    get:
+      tags:
+      - Other
+      summary: Get data fields
+      description: 'Provides a list of all industries and industry categories, technologies and regions searchable by Ocean.io.
+
+
+        Calling this endpoint does not consume any credits.'
+      operationId: getDataFieldsPublic
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicGetDataFieldsResponse'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                title: ''
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient email credits
+                    - Some email verifications are already in progress and might use all your remaining email credits. Please try again later.
+                    - Insufficient phone credits
+                    - Some phone verifications are already in progress and might use all your remaining phone credits. Please try again later.
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/credits/balance:
+    get:
+      tags:
+      - Other
+      summary: Get credit balance
+      description: Get credit balance
+      operationId: getCreditBalance
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCreditBalanceResponse'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                title: ''
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient email credits
+                    - Some email verifications are already in progress and might use all your remaining email credits. Please try again later.
+                    - Insufficient phone credits
+                    - Some phone verifications are already in progress and might use all your remaining phone credits. Please try again later.
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/warmup/companies:
+    post:
+      tags:
+      - Other
+      summary: Warmup companies
+      description: 'Check available companies in Ocean''s database and trigger process of data gathering for the missing ones.
+
+
+        Calling this endpoint does not consume any credits'
+      operationId: warmupCompanies
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WarmupCompaniesBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarmupCompaniesResult'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                title: ''
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient email credits
+                    - Some email verifications are already in progress and might use all your remaining email credits. Please try again later.
+                    - Insufficient phone credits
+                    - Some phone verifications are already in progress and might use all your remaining phone credits. Please try again later.
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    WarmupCompaniesBody:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Domains
+          description: Domains to be checked and added to the database if not present
+          examples:
+          - - ocean.io
+            - denmark.dk
+      additionalProperties: false
+      type: object
+      required:
+      - domains
+      title: WarmupCompaniesBody
+    Credits:
+      properties:
+        oneTime:
+          type: number
+          title: Onetime
+          description: Number of one-time credits left.
+          default: 0
+          examples:
+          - 1000
+        recurrent:
+          type: number
+          title: Recurrent
+          description: Number of recurrent credits left.
+          default: 0
+          examples:
+          - 1000
+      type: object
+      title: Credits
+    WarmupCompaniesResult:
+      properties:
+        successfulDomains:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Successful domains
+          description: Domains that are already present in Ocean's database
+          examples:
+          - - successful-domain-1.com
+            - successful-domain-2.com
+        triggeredDomains:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Triggered domains
+          description: Domains that are not currently present in Ocean's database. Data gathering process has been triggered for them
+          examples:
+          - - domain-to-be-crawled-1.com
+            - domain-to-be-crawled-2.com
+        ignoredDomains:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Ignored domains
+          description: Invalid domains that failed validation process
+          examples:
+          - - bad-domain-1
+            - bad-domain-2
+        missingDomains:
+          additionalProperties:
+            type: string
+            enum:
+            - bad content
+            - crawler failed
+            - data gathering started
+            - in progress
+            - invalid domain
+            - other error
+            - robots disallowed
+            - unsupported language
+            - invalid redirect
+            - ssl certificate error
+          type: object
+          nullable: true
+          title: Missing domains
+          description: Domains that are not present in Ocean's database and the reason
+          examples:
+          - missing-domain-1.com: bad content
+            missing-domain-2.com: crawler failed
+        dataErrors:
+          additionalProperties:
+            type: string
+            enum:
+            - missing context vector
+            - missing industries
+            - missing keywords
+            - missing industry categories
+          type: object
+          nullable: true
+          title: Domains with data errors
+          description: Domains that are present in Ocean's database but lack the necessary data to perform the search, along with the reason
+          examples:
+          - data-errors-domain-1.com: missing context vector
+            data-errors-domain-2.com: missing industry features
+      type: object
+      title: WarmupCompaniesResult
+    GetCreditBalanceResponse:
+      properties:
+        credits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Standard'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        emailCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Email'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        phoneCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Phone'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        previewCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Preview'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        dailyLimitRateLeft:
+          type: integer
+          title: Dailylimitrateleft
+          description: Number of requests left for the current day.
+          default: 0
+          examples:
+          - 10
+        dailyLimitRateSecondsToReset:
+          type: integer
+          title: Dailylimitratesecondstoreset
+          description: Number of seconds left until the daily limit resets.
+          default: 0
+          examples:
+          - 3600
+      type: object
+      title: GetCreditBalanceResponse
+    Seniority:
+      type: string
+      enum:
+      - Owner
+      - Founder
+      - Board Member
+      - C-Level
+      - Partner
+      - VP
+      - Head
+      - Director
+      - Manager
+      - Other
+      title: Seniority
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PublicCountryCodeToRegionMapping:
+      properties:
+        code:
+          type: string
+          nullable: true
+          title: Region code
+          description: Region code in ISO-3166-2 format
+          examples:
+          - nl-NH
+        englishName:
+          type: string
+          nullable: true
+          title: Region name
+          description: Region name
+          examples:
+          - North Holland
+        localName:
+          type: string
+          nullable: true
+          title: Region local name
+          description: Region local name
+          examples:
+          - Noord-Holland
+      type: object
+      title: PublicCountryCodeToRegionMapping
+    Department:
+      type: string
+      enum:
+      - Accounting and Finance
+      - Board
+      - Business Support
+      - Customer Relations
+      - Design
+      - Editorial Personnel
+      - Engineering
+      - Founder/Owner
+      - Healthcare
+      - HR
+      - Legal
+      - Management
+      - Manufacturing
+      - Marketing and Advertising
+      - Operations
+      - PR and Communications
+      - Procurement
+      - Product
+      - Quality Control
+      - R&D
+      - Sales
+      - Security
+      - Supply Chain
+      - Other
+      title: Department
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    PublicTechnology:
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Technology name
+          description: The technology name
+          examples:
+          - ChatStack
+        categories:
+          items:
+            type: string
+          type: array
+          title: Technology categories
+          description: Technology categories
+          examples:
+          - - Chat
+      type: object
+      title: PublicTechnology
+    PublicGetDataFieldsResponse:
+      properties:
+        industries:
+          items:
+            $ref: '#/components/schemas/PublicIndustries'
+          type: array
+          title: Industries
+          description: List of industries
+          examples:
+          - - industries:
+              - Advertising Platforms
+              - Biopharma
+              industryCategory: Administrative Services
+        linkedinIndustries:
+          items:
+            type: string
+          type: array
+          title: Linkedin industries
+          description: List of Linkedin industries
+          examples:
+          - - Accounting
+            - Airlines/Aviation
+            - Alternative Dispute Resolution
+        technologies:
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
+          type: array
+          title: Technologies
+          description: List of technologies
+          examples:
+          - categories:
+            - Chat
+            name: ChatStack
+        regions:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/PublicCountryCodeToRegionMapping'
+            type: array
+          type: object
+          title: Country regions
+          description: List of regions per country
+          examples:
+          - nl:
+            - code: NH
+              englishName: North Holland
+              localName: Noord-Holland
+        seniorities:
+          items:
+            $ref: '#/components/schemas/Seniority'
+          type: array
+          title: Seniorities
+          description: List of seniorities computed from the job title of the person
+          examples:
+          - - C-Level
+            - Manager
+        departments:
+          items:
+            $ref: '#/components/schemas/Department'
+          type: array
+          title: Departments
+          description: List of departments computed from the job title of the person
+          examples:
+          - - Management
+            - Marketing and Advertising
+      type: object
+      title: PublicGetDataFieldsResponse
+    PublicIndustries:
+      properties:
+        industries:
+          items:
+            type: string
+          type: array
+          title: Industries
+          description: List of industries
+          examples:
+          - - Advertising Platforms
+            - Biopharma
+        industryCategory:
+          type: string
+          nullable: true
+          title: Industry category
+          description: Industry category name
+          examples:
+          - Administrative Services
+      type: object
+      title: PublicIndustries

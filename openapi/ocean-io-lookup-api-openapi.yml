@@ -1,0 +1,1654 @@
+openapi: 3.2.0
+info:
+  title: Ocean.io API Documentation Lookup API
+  summary: Welcome to Ocean.io's API.
+  description: "\n            Welcome to Ocean.io's API.\n            The API can be used to access all our API endpoints, such as our enrich API to look up company information, or our discover API to identify companies based on specific search criteria such as semantic similarity, technologies or industries.\n            Ocean.io's APIs are a set of HTTPS endpoints that you can use to retrieve and integrate Ocean.io's data into your existing workflows.\n            All requests should be made through https and the request and response bodies should be formatted in JSON.\n        "
+  version: 2.0.0
+  x-logo:
+    url: https://cdn2.ocean.io/assets/images/logo/256x92_ocean-logo.svg
+servers:
+- url: https://api.ocean.io
+tags:
+- name: Lookup
+paths:
+  /v2/lookup/companies:
+    post:
+      tags:
+      - Lookup
+      summary: Lookup multiple companies by domain
+      description: 'Lookup and enrich multiple companies by domain (max 1000). This endpoint provides simple, per-result pricing.
+
+
+        **Key features:**
+
+        - Batch lookup up to 1000 company domains
+
+        - Domain redirections are handled automatically
+
+
+        Returns enriched company data for each domain. Companies not found will have `company: null` in the result.'
+      operationId: lookupCompanies
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupCompaniesRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupCompaniesResponse'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v2/lookup/people:
+    post:
+      tags:
+      - Lookup
+      summary: Lookup multiple people by LinkedIn handle or Ocean ID
+      description: 'Lookup and enrich multiple people by LinkedIn handles and/or Ocean.io IDs (max 1000 total). This endpoint provides simple, per-result pricing.
+
+
+        **Key features:**
+
+        - Batch lookup up to 1000 people (combined total of linkedinHandles + oceanIds)
+
+        - Provide either linkedinHandles, oceanIds, or both lists
+
+
+        Returns only successfully matched people in the response.'
+      operationId: lookupPeople
+      parameters:
+      - name: apiToken
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Apitoken
+      - name: x-api-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupPeopleRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupPeopleResponse'
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - API token should be provided in headers or query parameters
+                    - Current API token is not registered in our database
+                required:
+                - detail
+          description: Forbidden
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Insufficient credits
+                required:
+                - detail
+          description: Payment Required
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum:
+                    - Conflicting API tokens provided in query parameters and headers
+                required:
+                - detail
+          description: Bad Request
+        '404':
+          description: Not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ImpressumPerson:
+      properties:
+        name:
+          type: string
+          title: Name
+          examples:
+          - Michael Scott
+        position:
+          type: string
+          nullable: true
+          title: Position
+          examples:
+          - Regional Manager
+      type: object
+      required:
+      - name
+      title: ImpressumPerson
+    Media:
+      properties:
+        url:
+          type: string
+          title: Media URL
+          description: URL of the media
+        handle:
+          type: string
+          nullable: true
+          title: Handle
+          description: ids extracted from social media urls
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Name of the company as it appears in the social media account
+        specialties:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Specialties
+          description: Specialties of the company as it appears in the social media account. Right now we only have this for LinkedIn.
+          examples:
+          - - artificial intelligence
+            - machine learning
+      type: object
+      required:
+      - url
+      title: Media
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LookupCompaniesResponse:
+      properties:
+        companies:
+          items:
+            $ref: '#/components/schemas/PublicCompany'
+          type: array
+          title: Companies
+          description: List of enriched companies found. Only includes successfully matched companies.
+        totalRequested:
+          type: integer
+          title: Totalrequested
+          description: Total number of domains requested
+          examples:
+          - 3
+        totalFound:
+          type: integer
+          title: Totalfound
+          description: Total number of companies found
+          examples:
+          - 2
+        redirectMap:
+          additionalProperties:
+            type: string
+          type: object
+          nullable: true
+          title: Domain redirection mapping
+          description: Mapping of original domains passed in filters to their redirected domains.
+          examples:
+          - given_local_domain.uk: original.com
+            ikea.nl: ikea.com
+        creditsUsed:
+          type: number
+          title: Creditsused
+          description: Number of credits charged for this request.
+          examples:
+          - 1.0
+      type: object
+      required:
+      - companies
+      - totalRequested
+      - totalFound
+      - creditsUsed
+      title: LookupCompaniesResponse
+    PersonCompany:
+      properties:
+        companySize:
+          $ref: '#/components/schemas/PublicCompanySize'
+          nullable: true
+          title: Company size range
+          description: Company size range
+          examples:
+          - 2-10
+        logo:
+          type: string
+          nullable: true
+          title: Logo
+          description: Logo of the company (URL)
+          examples:
+          - https://cdn2.ocean.io/companies-logos-v1/domain.com/020539e284d9318e805301b672ad23047c30818a.png
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Name of the company
+          examples:
+          - Dunder Mifflin Paper Company
+        revenue:
+          $ref: '#/components/schemas/Revenue'
+          nullable: true
+          title: Revenue range
+          description: Revenue range
+          examples:
+          - 1-10M
+        employeeCountOcean:
+          type: integer
+          nullable: true
+          title: Employeecountocean
+          description: Number of people working at the company in our database.
+          examples:
+          - 57
+        industries:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Industries
+          description: Industries of the company<br>Available values can be found at /v2/data-fields endpoint.
+          examples:
+          - - Audio
+            - Electronics
+        technologies:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Technologies
+          description: Software technologies used by the company
+          examples:
+          - - Accesso
+            - Adcash
+            - Atlassian Jira
+        fundingRound:
+          $ref: '#/components/schemas/FundingRound'
+          nullable: true
+          title: Funding round
+          description: Funding round of the company
+          examples:
+          - cbUrl: https://www.crunchbase.com/funding_round/5c26b0c0
+            date: '2020-01-01'
+            moneyRaisedInUsd: 1000000
+            type: Seed
+      type: object
+      title: PersonCompany
+    Medias:
+      properties:
+        linkedin:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: LinkedIn page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://www.linkedin.com/company/dunder-mifflin
+        twitter:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Twitter page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://twitter.com/dunder-mifflin
+        youtube:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: YouTube page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://youtube.com/channel/dunder-mifflin
+        facebook:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Facebook page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://facebook.com/dunder-mifflin
+        xing:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Xing page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://xing.com/dunder-mifflin
+        tiktok:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: TikTok page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://tiktok.com/dunder-mifflin
+        instagram:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Instagram page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://instagram.com/dunder-mifflin
+      type: object
+      title: Medias
+    Department:
+      type: string
+      enum:
+      - Accounting and Finance
+      - Board
+      - Business Support
+      - Customer Relations
+      - Design
+      - Editorial Personnel
+      - Engineering
+      - Founder/Owner
+      - Healthcare
+      - HR
+      - Legal
+      - Management
+      - Manufacturing
+      - Marketing and Advertising
+      - Operations
+      - PR and Communications
+      - Procurement
+      - Product
+      - Quality Control
+      - R&D
+      - Sales
+      - Security
+      - Supply Chain
+      - Other
+      title: Department
+    PublicCompanySize:
+      type: string
+      enum:
+      - 0-1
+      - 2-10
+      - 11-50
+      - 51-200
+      - 201-500
+      - 501-1000
+      - 1001-5000
+      - 5001-10000
+      - 10001-50000
+      - 50001-100000
+      - 100001-500000
+      - 500000+
+      title: PublicCompanySize
+    Revenue:
+      type: string
+      enum:
+      - 0-1M
+      - 1-10M
+      - 10-50M
+      - 50-100M
+      - 100-500M
+      - 500-1000M
+      - '>1000M'
+      title: Revenue
+    CompanyField:
+      type: string
+      enum:
+      - domain
+      - countries
+      - primaryCountry
+      - companySize
+      - industryCategories
+      - industries
+      - linkedinIndustry
+      - ecommerce
+      - keywords
+      - employeeCountOcean
+      - employeeCountLinkedin
+      - revenue
+      - yearFounded
+      - description
+      - emails
+      - phones
+      - phones.number
+      - phones.country
+      - phones.primary
+      - logo
+      - technologies
+      - technologyCategories
+      - mobileApps
+      - mobileApps.link
+      - mobileApps.name
+      - webTraffic
+      - webTraffic.visits
+      - webTraffic.pageViews
+      - webTraffic.pagesPerVisit
+      - medias
+      - medias.linkedin
+      - medias.twitter
+      - medias.youtube
+      - medias.facebook
+      - medias.xing
+      - medias.tiktok
+      - medias.instagram
+      - name
+      - legalName
+      - locations
+      - locations.primary
+      - locations.country
+      - locations.locality
+      - locations.region
+      - locations.postalCode
+      - locations.streetAddress
+      - locations.state
+      - locations.regionCode
+      - departmentSizes
+      - rootUrl
+      - faxes
+      - faxes.number
+      - faxes.country
+      - faxes.primary
+      - impressum
+      - impressum.company
+      - impressum.address
+      - impressum.email
+      - impressum.phone
+      - impressum.fax
+      - impressum.vat
+      - impressum.url
+      - impressum.people
+      - fundingRound
+      - fundingRound.date
+      - fundingRound.type
+      - fundingRound.moneyRaisedInUsd
+      - fundingRound.cbUrl
+      - redirectedFrom
+      - updatedAt
+      - headcountGrowth
+      - headcountGrowth.threeMonths
+      - headcountGrowth.threeMonthsPercentage
+      - headcountGrowth.sixMonths
+      - headcountGrowth.sixMonthsPercentage
+      - headcountGrowth.twelveMonths
+      - headcountGrowth.twelveMonthsPercentage
+      - headcountGrowthPerDepartment
+      title: CompanyField
+    MobileApp:
+      properties:
+        link:
+          type: string
+          nullable: true
+          title: url
+          description: Website address for this app
+          examples:
+          - https://www.my.app.com/
+        name:
+          type: string
+          title: App name
+          description: App name
+          examples:
+          - My awesome app
+      type: object
+      required:
+      - name
+      title: MobileApp
+    LookupCompaniesRequest:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          maxItems: 1000
+          minItems: 1
+          title: Domains
+          description: List of company domains to lookup (max 1000). Domain redirections are handled automatically.
+          examples:
+          - - ocean.io
+            - google.com
+            - apple.com
+        fields:
+          items:
+            $ref: '#/components/schemas/CompanyField'
+          type: array
+          nullable: true
+          title: Fields
+          description: Fields to return in the Company objects. Only requesting the fields that are needed will use less bandwidth and result in faster responses. If not specified, all fields are returned that can be seen in the example.
+          examples:
+          - - domain
+            - countries
+            - primaryCountry
+            - companySize
+            - industryCategories
+            - industries
+            - linkedinIndustry
+            - ecommerce
+            - keywords
+            - employeeCountOcean
+            - employeeCountLinkedin
+            - revenue
+            - yearFounded
+            - description
+            - emails
+            - phones
+            - logo
+            - technologies
+            - technologyCategories
+            - mobileApps
+            - webTraffic
+            - medias
+            - name
+            - legalName
+            - locations
+            - departmentSizes
+            - rootUrl
+            - faxes
+            - impressum
+            - fundingRound
+            - updatedAt
+      type: object
+      required:
+      - domains
+      title: LookupCompaniesRequest
+    DepartmentSizesGrowth:
+      properties:
+        department:
+          $ref: '#/components/schemas/Department'
+          description: Department name
+        growth:
+          $ref: '#/components/schemas/Growth'
+          nullable: true
+          title: Headcount growth
+          description: Headcount growth per department
+      type: object
+      required:
+      - department
+      - growth
+      title: DepartmentSizesGrowth
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    FundingRoundType:
+      type: string
+      enum:
+      - Seed
+      - Series A
+      - Angel
+      - Series B
+      - Series Unknown
+      - Pre-Seed
+      - Grant
+      - Series C
+      - Convertible Note
+      - Debt Financing
+      - Non-Equity Assistance
+      - Undisclosed
+      - Series D
+      - Corporate Round
+      - Equity Crowdfunding
+      - Product Crowdfunding
+      - Series E
+      - Private Equity
+      - Secondary Market
+      - Initial Coin Offering
+      - Post-IPO Equity
+      - Series F
+      - Post-IPO Debt
+      - Series H
+      - Series G
+      - Post-IPO Secondary
+      - Series I
+      - Series J
+      title: FundingRoundType
+    WebTraffic:
+      properties:
+        visits:
+          type: integer
+          nullable: true
+          title: Total visits for the last available month
+          description: Total number of visits of the website for the last available month
+        pageViews:
+          type: integer
+          nullable: true
+          title: Website views
+          description: Number of views of the website for the last available month
+        pagesPerVisit:
+          type: number
+          nullable: true
+          title: Pages per visit
+          description: Average number of pages viewed per visit for the last available month
+        bounceRate:
+          type: number
+          nullable: true
+          title: Bouncerate
+          description: Bounce rate of the domain for the last available month
+      type: object
+      title: WebTraffic
+    DepartmentSize:
+      properties:
+        department:
+          $ref: '#/components/schemas/Department'
+          description: Department name
+        size:
+          type: integer
+          title: Size
+          description: Department size
+      type: object
+      required:
+      - department
+      - size
+      title: DepartmentSize
+    LookupPeopleRequest:
+      properties:
+        linkedinHandles:
+          items:
+            type: string
+          type: array
+          maxItems: 1000
+          title: Linkedinhandles
+          description: List of LinkedIn profile handles to lookup (e.g., ['john-doe', 'jane-smith'])
+          examples:
+          - - john-doe
+            - jane-smith
+        oceanIds:
+          items:
+            type: string
+          type: array
+          maxItems: 1000
+          title: Oceanids
+          description: List of Ocean.io person IDs to lookup (e.g., ['abc123', 'def456'])
+          examples:
+          - - abc123
+            - def456
+      type: object
+      title: LookupPeopleRequest
+    public_api__models__person__Email:
+      properties:
+        address:
+          type: string
+          nullable: true
+          title: Address
+          description: Email address
+          examples:
+          - name@gmail.com
+        status:
+          type: string
+          enum:
+          - verified
+          - guessed
+          - catchAll
+          - notFound
+          title: Status
+          description: 'Status of the address: verified, catchAll or guessed'
+      type: object
+      required:
+      - address
+      - status
+      title: Email
+    LookupPeopleResponse:
+      properties:
+        people:
+          items:
+            $ref: '#/components/schemas/LookalikePerson'
+          type: array
+          title: People
+          description: List of enriched people found. Only includes successfully matched people.
+        totalRequested:
+          type: integer
+          title: Totalrequested
+          description: Total number of identifiers requested
+          examples:
+          - 2
+        totalFound:
+          type: integer
+          title: Totalfound
+          description: Total number of people found
+          examples:
+          - 1
+        creditsUsed:
+          type: number
+          title: Creditsused
+          description: Number of credits charged for this request.
+          examples:
+          - 1.0
+      type: object
+      required:
+      - people
+      - totalRequested
+      - totalFound
+      - creditsUsed
+      title: LookupPeopleResponse
+    Impressum:
+      properties:
+        company:
+          type: string
+          nullable: true
+          title: Company name
+          description: Company name as mentioned in Impressum
+          examples:
+          - Dunder Mifflin Paper Company, Inc.
+        address:
+          type: string
+          nullable: true
+          title: Address
+          description: Company address as mentioned in Impressum
+          examples:
+          - Scranton Business Park, 1725 Slough Ave Suit 200, Scranton, USA
+        email:
+          type: string
+          nullable: true
+          title: Email
+          description: Company email as mentioned in Impressum
+          examples:
+          - email@dundermifflin.com
+        phone:
+          type: string
+          nullable: true
+          title: Phone
+          description: Company phone as mentioned in Impressum
+          examples:
+          - '+35123456789'
+        fax:
+          type: string
+          nullable: true
+          title: Fax
+          description: Company fax as mentioned in Impressum
+          examples:
+          - '+35123456790'
+        vat:
+          type: string
+          nullable: true
+          title: VAT
+          description: VAT number as mentioned in Impressum
+          examples:
+          - '123456'
+        url:
+          type: string
+          nullable: true
+          title: Impressum url
+          description: url where Impressum can be found
+          examples:
+          - https://dundermifflinpaper.com/impressum
+        people:
+          items:
+            $ref: '#/components/schemas/ImpressumPerson'
+          type: array
+          nullable: true
+          title: People
+          description: People mentioned in Impressum
+      type: object
+      title: Impressum
+    PublicCompany:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain of the company, used as a unique identifier
+          examples:
+          - dundermifflinpaper.com
+        countries:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Countries
+          description: List of all countries in which the company operates
+          examples:
+          - - us
+            - ca
+        primaryCountry:
+          type: string
+          nullable: true
+          title: Primary country
+          description: Main country of the company
+          examples:
+          - us
+        companySize:
+          $ref: '#/components/schemas/PublicCompanySize'
+          nullable: true
+          title: Company size range
+          description: Company size range
+          examples:
+          - 2-10
+        industryCategories:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Industrycategories
+          description: Industry categories of the company<br>Available values can be found at /v2/data-fields endpoint.
+          examples:
+          - - Consumer Electronics
+            - Hardware
+        industries:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Industries
+          description: Industries of the company<br>Available values can be found at /v2/data-fields endpoint.
+          examples:
+          - - Audio
+            - Electronics
+        linkedinIndustry:
+          type: string
+          nullable: true
+          title: Linkedinindustry
+          description: Linkedin industry of the company<br>Available values can be found at /v2/data-fields endpoint.
+          examples:
+          - Computer Software
+        ecommerce:
+          type: boolean
+          nullable: true
+          title: E-Commerce
+          description: True if the company is an e-commerce company
+          examples:
+          - true
+        keywords:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Keywords
+          description: Keywords associated with the company
+          examples:
+          - - paper
+            - premium copy paper
+        employeeCountOcean:
+          type: integer
+          nullable: true
+          title: Employeecountocean
+          description: Number of people working at the company in our database.
+          examples:
+          - 57
+        employeeCountLinkedin:
+          type: integer
+          nullable: true
+          title: Employeecountlinkedin
+          description: Number of people linked to the company page on Linkedin. This number might be higher than `employeeCountOcean` because of private profiles.
+          examples:
+          - 70
+        revenue:
+          $ref: '#/components/schemas/Revenue'
+          nullable: true
+          title: Revenue range
+          description: Revenue range
+          examples:
+          - 1-10M
+        yearFounded:
+          type: integer
+          nullable: true
+          title: Yearfounded
+          description: Year the company was founded
+          examples:
+          - 1999
+        description:
+          type: string
+          nullable: true
+          title: Description
+          description: Company's description
+          examples:
+          - Dunder Mifflin Paper Company, Inc. is a fictional paper and office supplies wholesale company featured in the American television series The Office.
+        emails:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Emails
+          description: Emails of the company
+          examples:
+          - - email1@domain.com
+            - email2@domain.com
+        phones:
+          items:
+            $ref: '#/components/schemas/ContactNumber'
+          type: array
+          nullable: true
+          title: Phones
+          description: Phones of the company
+          examples:
+          - - country: us
+              number: +1 212 456 7890
+              primary: true
+            - country: ca
+              number: +1 250 555 0199
+        logo:
+          type: string
+          nullable: true
+          title: Logo
+          description: Logo of the company (URL)
+          examples:
+          - https://cdn2.ocean.io/companies-logos-v1/domain.com/020539e284d9318e805301b672ad23047c30818a.png
+        technologies:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Technologies
+          description: Software technologies used by the company
+          examples:
+          - - Accesso
+            - Adcash
+            - Atlassian Jira
+        technologyCategories:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Technology categories
+          description: Technology categories of the company
+          examples:
+          - - Security
+            - Analytics
+            - Blogs
+        mobileApps:
+          items:
+            $ref: '#/components/schemas/MobileApp'
+          type: array
+          nullable: true
+          title: Mobile apps
+          description: Mobile apps produced by the company
+        webTraffic:
+          $ref: '#/components/schemas/WebTraffic'
+          nullable: true
+          description: Web traffic of the domain
+          examples:
+          - bounceRate: 0.5227
+            pageViews: 2155984
+            pagesPerVisit: 4.88
+            visits: 10000
+        medias:
+          $ref: '#/components/schemas/Medias'
+          nullable: true
+          title: Social medias
+          description: Social medias of the company
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Name of the company
+          examples:
+          - Dunder Mifflin Paper Company
+        legalName:
+          type: string
+          nullable: true
+          title: Legalname
+          description: Legal name of the company
+          examples:
+          - Dunder Mifflin Paper Company, Inc.
+        locations:
+          items:
+            $ref: '#/components/schemas/public_api__models__company__Location'
+          type: array
+          nullable: true
+          title: Locations
+          description: Locations of the company
+        departmentSizes:
+          items:
+            $ref: '#/components/schemas/DepartmentSize'
+          type: array
+          nullable: true
+          title: Department sizes
+          description: Number of employees per department
+          examples:
+          - - department: Accounting and Finance
+              size: 10
+            - department: Sales
+              size: 15
+        rootUrl:
+          type: string
+          nullable: true
+          title: Rooturl
+          description: Root url to access the website
+          examples:
+          - https://dundermifflinpaper.com/
+        faxes:
+          items:
+            $ref: '#/components/schemas/ContactNumber'
+          type: array
+          nullable: true
+          title: Faxes
+          description: Faxes of the company
+          examples:
+          - - country: us
+              number: '5709045026'
+              primary: true
+        impressum:
+          $ref: '#/components/schemas/Impressum'
+          nullable: true
+          title: Impressum
+          description: Impressum (Imprint) data of the company (only for Germany, Austria, Switzerland)
+        fundingRound:
+          $ref: '#/components/schemas/FundingRound'
+          nullable: true
+          title: Funding round
+          description: Funding round of the company
+          examples:
+          - cbUrl: https://www.crunchbase.com/funding_round/orderyoyo-post-ipo-equity--5c26b0c0
+            date: '2020-01-01'
+            moneyRaisedInUsd: 1000000
+            type: Seed
+        redirectedFrom:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Redirected from
+          description: Urls that redirects to this domain. We provide maximum 10 urls in this field.
+          examples:
+          - - pol.dk
+            - pressen.nu
+        updatedAt:
+          type: string
+          nullable: true
+          title: Updated at
+          description: When has the company data been updated for the last time
+          examples:
+          - '2022-08-22T12:09:37Z'
+        headcountGrowth:
+          $ref: '#/components/schemas/Growth'
+          nullable: true
+          title: Headcount growth
+          description: Headcount growth of the company
+          examples:
+          - sixMonths: 10
+            sixMonthsPercentage: 0.2
+            threeMonths: 5
+            threeMonthsPercentage: 0.1
+            twelveMonths: 15
+            twelveMonthsPercentage: 0.3
+        headcountGrowthPerDepartment:
+          items:
+            $ref: '#/components/schemas/DepartmentSizesGrowth'
+          type: array
+          nullable: true
+          title: Headcount growth per department
+          description: Headcount growth per department
+          examples:
+          - - department: Accounting and Finance
+              growth:
+                sixMonths: 10
+                sixMonthsPercentage: 0.2
+                threeMonths: 5
+                threeMonthsPercentage: 0.1
+                twelveMonths: 15
+                twelveMonthsPercentage: 0.3
+      type: object
+      required:
+      - domain
+      title: PublicCompany
+    FundingRound:
+      properties:
+        date:
+          type: string
+          nullable: true
+          title: Funding date
+          description: Date of the funding round
+        type:
+          $ref: '#/components/schemas/FundingRoundType'
+          nullable: true
+          title: Funding round type
+          description: Type of the funding round
+        moneyRaisedInUsd:
+          type: integer
+          nullable: true
+          title: Money raised in USD
+          description: Amount of money raised in USD
+        cbUrl:
+          type: string
+          nullable: true
+          title: Crunchbase URL
+          description: URL of the funding round on Crunchbase
+      type: object
+      title: FundingRound
+    Growth:
+      properties:
+        threeMonths:
+          type: integer
+          nullable: true
+          title: Growth in the last 3 months
+          description: Actual headcount change (positive or negative number)
+        threeMonthsPercentage:
+          type: number
+          nullable: true
+          title: Headcount change in the last 3 months
+          description: 'Headcount growth as a decimal (e.g., 0.15 represents 15% growth) '
+        sixMonths:
+          type: integer
+          nullable: true
+          title: Growth in the last 6 months
+          description: Actual headcount change (positive or negative number)
+        sixMonthsPercentage:
+          type: number
+          nullable: true
+          title: Headcount change in the last 6 months
+          description: Headcount growth as a decimal (e.g., 0.15 represents 15% growth)
+        twelveMonths:
+          type: integer
+          nullable: true
+          title: Growth in the last 12 months
+          description: Actual headcount change (positive or negative number)
+        twelveMonthsPercentage:
+          type: number
+          nullable: true
+          title: Headcount change in the last 12 months
+          description: Headcount growth as a decimal (e.g., 0.15 represents 15% growth)
+      type: object
+      title: Growth
+    public_api__models__company__Location:
+      properties:
+        primary:
+          type: boolean
+          title: Primary location
+          description: True if the location is the headquarter of the company
+          default: false
+          examples:
+          - true
+          - false
+        latitude:
+          type: number
+          nullable: true
+          title: Latitude
+          description: Latitude of the location
+          examples:
+          - 43.6471
+        longitude:
+          type: number
+          nullable: true
+          title: Longitude
+          description: Longitude of the location
+          examples:
+          - -79.3971
+        country:
+          type: string
+          nullable: true
+          title: Country code
+          description: Country code of the location
+          examples:
+          - us
+        locality:
+          type: string
+          nullable: true
+          title: Locality/City
+          description: Locality (city) of the location
+          examples:
+          - Scranton
+        region:
+          type: string
+          nullable: true
+          title: Region
+          description: Region of the location. Available abbreviation values are located at /v2/data-fields endpoint (region section)
+          examples:
+          - Lackawanna County
+        postalCode:
+          type: string
+          nullable: true
+          title: Postal code
+          description: Postal code of the location
+          examples:
+          - '18505'
+        streetAddress:
+          type: string
+          nullable: true
+          title: Street address
+          description: Street address of the location
+          examples:
+          - Scranton Business Park, 1725 Slough Ave Suit 200
+        state:
+          type: string
+          nullable: true
+          title: State
+          description: Abbreviation of the location (if applicable). Available abbreviation values are located at /v2/data-fields endpoint (region section). Deprecated, please use `region` instead
+          examples:
+          - pa
+          deprecated: true
+        regionCode:
+          type: string
+          nullable: true
+          title: Region code
+          description: Region code of the location
+          examples:
+          - PA
+      type: object
+      title: Location
+    LookalikePerson:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Internal ocean id of the person
+          examples:
+          - e9447c74eafa8a19
+        domain:
+          type: string
+          title: Domain
+          description: Domain of the company the person is working for
+          examples:
+          - google.com
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Full name of the person
+          examples:
+          - John Doe
+        firstName:
+          type: string
+          nullable: true
+          title: Firstname
+          description: First name of the person
+          examples:
+          - John
+        lastName:
+          type: string
+          nullable: true
+          title: Lastname
+          description: Last name of the person
+          examples:
+          - Doe
+        country:
+          type: string
+          nullable: true
+          title: Country
+          description: Country code of the person
+          examples:
+          - us
+          - dk
+        state:
+          type: string
+          nullable: true
+          title: State
+          description: State code of the person
+          examples:
+          - CA
+          - NY
+        location:
+          type: string
+          nullable: true
+          title: Location
+          description: Location of the person
+          examples:
+          - Copenhagen, Capital Region, Denmark
+        linkedinUrl:
+          type: string
+          nullable: true
+          title: Linkedinurl
+          description: Link to the linkedin profile of the person
+          examples:
+          - https://www.linkedin.com/in/someone
+        seniorities:
+          items:
+            $ref: '#/components/schemas/Seniority'
+          type: array
+          nullable: true
+          title: Seniorities
+          description: List of seniorities computed from the job title of the person
+          examples:
+          - - C-Level
+            - Manager
+        departments:
+          items:
+            $ref: '#/components/schemas/Department'
+          type: array
+          nullable: true
+          title: Departments
+          description: List of departments computed from the job title of the person
+          examples:
+          - - Management
+            - Marketing and Advertising
+        photo:
+          type: string
+          nullable: true
+          title: Photo
+          description: Link to the person's profile picture on LinkedIn
+          examples:
+          - http://media.licdn.com/dms/image/somelink
+        jobTitle:
+          type: string
+          nullable: true
+          title: Jobtitle
+          description: Job title of the person
+          examples:
+          - Professeur
+        jobTitleEnglish:
+          type: string
+          nullable: true
+          title: Jobtitleenglish
+          description: English translation of the person's job title
+          examples:
+          - Teacher
+        currentJobDescription:
+          type: string
+          nullable: true
+          title: Currentjobdescription
+          description: Current job description of the person
+          examples:
+          - Software Engineer specializing in cloud infrastructure
+        experiences:
+          items:
+            $ref: '#/components/schemas/Experience'
+          type: array
+          nullable: true
+          title: Experiences
+          description: List of experiences of the person
+          examples:
+          - - dateFrom: '2020-01-01'
+              dateTo: '2021-01-01'
+              description: Software Engineer specializing in cloud infrastructure
+              domain: domain.com
+              jobTitle: Software Engineer
+        summary:
+          type: string
+          nullable: true
+          title: Summary
+          description: Summary of the person
+          examples:
+          - Some text that the person wrote to describe themselves
+        skills:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Skills
+          description: Skills of the person
+          examples:
+          - - Product Management
+            - Entrepreneurship
+            - Social Media
+        phone:
+          $ref: '#/components/schemas/public_api__models__person__Phone'
+          nullable: true
+          description: Phone numbers of the person
+          examples:
+          - numbers:
+            - '+4512345678'
+            - +33 6 00 00 00 00
+            status: verified
+        email:
+          $ref: '#/components/schemas/public_api__models__person__Email'
+          nullable: true
+          description: Email of the person
+          examples:
+          - address: example.jonas@ocean.io
+            status: verified
+        inferredEmails:
+          items:
+            type: string
+          type: array
+          title: Inferredemails
+          description: List of inferred email addresses for the person. This is only available for enterprise subscriptions.
+          examples:
+          - - john.doe@domain.com
+            - j.doe@domain.com
+        updatedAt:
+          type: string
+          nullable: true
+          title: Updated at
+          description: When has the person data been updated for the last time
+          examples:
+          - '2022-10-27T12:09:37Z'
+        connectionsCount:
+          type: integer
+          nullable: true
+          title: Number of connections
+          description: Number of LinkedIn connections of the person
+          examples:
+          - 10
+          - 500
+        followersCount:
+          type: integer
+          nullable: true
+          title: Number of followers
+          description: Number of LinkedIn followers of the person
+          examples:
+          - 50
+          - 1000
+        headline:
+          type: string
+          nullable: true
+          title: Headline
+          description: Headline of the person
+          examples:
+          - Senior Software Engineer | Tech Lead
+        company:
+          $ref: '#/components/schemas/PersonCompany'
+          nullable: true
+        relevance:
+          type: string
+          enum:
+          - A
+          - B
+          - C
+          nullable: true
+          title: Relevance category
+          description: Relevance category (A - the most relevant)
+          examples:
+          - A
+      type: object
+      required:
+      - id
+      - domain
+      title: LookalikePerson
+    Seniority:
+      type: string
+      enum:
+      - Owner
+      - Founder
+      - Board Member
+      - C-Level
+      - Partner
+      - VP
+      - Head
+      - Director
+      - Manager
+      - Other
+      title: Seniority
+    public_api__models__person__Phone:
+      properties:
+        numbers:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Numbers
+          description: Phone numbers
+          examples:
+          - - '+4512345678'
+            - +33 6 00 00 00 00
+        status:
+          type: string
+          enum:
+          - verified
+          - notFound
+          - inProgress
+          title: Status
+          description: 'Status of the phone numbers: verified or not found'
+      type: object
+      required:
+      - numbers
+      - status
+      title: Phone
+    ContactNumber:
+      properties:
+        number:
+          type: string
+          title: Number
+          description: Contact number
+        country:
+          type: string
+          nullable: true
+          title: Contact number country code
+          description: Country code of the contact number
+        primary:
+          type: boolean
+          nullable: true
+          title: Primary contact number
+          description: True if the contact number is the primary contact number of the company
+      type: object
+      required:
+      - number
+      title: ContactNumber
+    Experience:
+      properties:
+        domain:
+          type: string
+          nullable: true
+          title: Domain
+          description: Domain of the company the person is working for
+          examples:
+          - domain.com
+        jobTitle:
+          type: string
+          nullable: true
+          title: Jobtitle
+          description: Job title of the person
+          examples:
+          - Designer
+        dateFrom:
+          type: string
+          nullable: true
+          title: Datefrom
+          description: Start date of the experience
+          examples:
+          - '2020-01-01'
+        dateTo:
+          type: string
+          nullable: true
+          title: Dateto
+          description: End date of the experience
+          examples:
+          - '2021-01-01'
+        description:
+          type: string
+          nullable: true
+          title: Description
+          description: Description of the experience
+          examples:
+          - Software Engineer specializing in cloud infrastructure
+        linkedinCompanyHandle:
+          type: string
+          nullable: true
+          title: Linkedincompanyhandle
+          description: Linkedin handle of the company the person is working for
+          examples:
+          - colliers
+      type: object
+      title: Experience
