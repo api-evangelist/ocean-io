@@ -43,7 +43,7 @@ tags:
   - B2B
   - Enrichment
   - Lookalike
-  - Account Based Marketing
+  - ABM
   - Prospecting
   - Company Data
   - People Data
@@ -146,7 +146,8 @@ apis:
   description: The Other API from Ocean.io — 3 operation(s) for other.
   humanURL: https://app.ocean.io/docs
   baseURL: https://api.ocean.io
-  tags:
+  tags: []
+  tags_raw:
   - Other
   properties:
   - type: OpenAPI
