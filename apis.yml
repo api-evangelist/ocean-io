@@ -2,17 +2,16 @@ aid: ocean-io
 url: https://raw.githubusercontent.com/api-evangelist/ocean-io/refs/heads/main/apis.yml
 name: Ocean.io
 kind: company
-description: >-
-  Ocean.io is a B2B go-to-market data platform built around lookalike intelligence: give it a domain
-  or a set of closed-won customers and it returns the most similar companies from a database of 67M
-  company profiles and 250M+ employee records, each carrying 100+ signals assembled from the open
-  web. Alongside the web app it ships a public REST API at api.ocean.io covering company and people
-  search (filter, Boolean and lookalike), company and person enrichment, domain and LinkedIn-handle
-  lookup, verified email and phone reveal, autocomplete for filter values, and a stateful
-  segmentation service that clusters a customer list into scored segments and attributes new domains
-  to the closest one. The API is documented with a public OpenAPI 3.1 document, meters every call
-  from a single credit pool, delivers batch and reveal results by webhook callback, and is also
-  exposed to agents through a first-party hosted MCP server at api.ocean.io/mcp.
+description: 'Ocean.io is a B2B go-to-market data platform built around lookalike intelligence: give it
+  a domain or a set of closed-won customers and it returns the most similar companies from a database
+  of 67M company profiles and 250M+ employee records, each carrying 100+ signals assembled from the open
+  web. Alongside the web app it ships a public REST API at api.ocean.io covering company and people search
+  (filter, Boolean and lookalike), company and person enrichment, domain and LinkedIn-handle lookup, verified
+  email and phone reveal, autocomplete for filter values, and a stateful segmentation service that clusters
+  a customer list into scored segments and attributes new domains to the closest one. The API is documented
+  with a public OpenAPI 3.1 document, meters every call from a single credit pool, delivers batch and
+  reveal results by webhook callback, and is also exposed to agents through a first-party hosted MCP server
+  at api.ocean.io/mcp.'
 deliveryModel:
   model: saas
   open_source: false
@@ -34,38 +33,38 @@ accessModel:
   label: Unknown
   confidence: low
   source:
-    - plans
+  - plans
   generated: '2026-07-22'
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/ocean-io.png
 tags:
-  - Sales Intelligence
-  - B2B
-  - Enrichment
-  - Lookalike
-  - Account Based Marketing
-  - Prospecting
-  - Company Data
-  - People Data
-  - Contact Data
-  - Segmentation
-  - Go-To-Market
-  - MCP
+- Sales Intelligence
+- B2B
+- Enrichment
+- Lookalike
+- Account Based Marketing
+- Prospecting
+- Company Data
+- People Data
+- Contact Data
+- Segmentation
+- Go-To-Market
+- MCP
 tags_raw:
-  - Sales Intelligence
-  - B2B
-  - Enrichment
-  - Lookalike
-  - ABM
-  - Prospecting
-  - Company Data
-  - People Data
-  - Contact Data
-  - Segmentation
-  - Go-To-Market
-  - MCP
+- Sales Intelligence
+- B2B
+- Enrichment
+- Lookalike
+- ABM
+- Prospecting
+- Company Data
+- People Data
+- Contact Data
+- Segmentation
+- Go-To-Market
+- MCP
 created: '2026-05-08'
-modified: '2026-08-13'
+modified: '2026-09-16'
 specificationVersion: '0.23'
 apis:
 - aid: ocean-io:ocean-io-autocomplete-api
@@ -123,9 +122,8 @@ apis:
   - type: ToolCrosswalk
     url: mcp/ocean-io-tool-crosswalk.yml
 - aid: ocean-io:ocean-io-ocean-io-api-documentation-api
-  name: Ocean.io Ocean.io API Documentation API
-  description: >-
-    The Ocean.io API Documentation API from Ocean.io — 0 operation(s) for ocean.io api documentation.
+  name: Ocean.io API Documentation API
+  description: The Ocean.io API Documentation API from Ocean.io — 0 operation(s) for ocean.io api documentation.
   humanURL: https://app.ocean.io/docs
   baseURL: https://api.ocean.io
   tags:
@@ -215,67 +213,67 @@ apis:
   - type: ToolCrosswalk
     url: mcp/ocean-io-tool-crosswalk.yml
 common:
-  - type: Overlay
-    url: overlays/ocean-io-api-overlay.yaml
-  - type: Website
-    url: https://ocean.io/
-  - type: DeveloperPortal
-    url: https://ocean.io/api
-  - type: Documentation
-    url: https://app.ocean.io/docs
-  - type: APIReference
-    url: https://app.ocean.io/docs
-  - type: GettingStarted
-    url: https://app.ocean.io/docs/getting-started/quickstart
-  - type: Pricing
-    url: https://ocean.io/pricing
-  - type: StatusPage
-    url: https://status.ocean.io/
-  - type: Lifecycle
-    url: lifecycle/ocean-io-lifecycle.yml
-  - type: Authentication
-    url: authentication/ocean-io-authentication.yml
-  - type: OAuthScopes
-    url: scopes/ocean-io-scopes.yml
-  - type: Conventions
-    url: conventions/ocean-io-conventions.yml
-  - type: ErrorCatalog
-    url: errors/ocean-io-problem-types.yml
-  - type: Webhooks
-    url: asyncapi/ocean-io-webhooks.yml
-  - type: DataModel
-    url: data-model/ocean-io-data-model.yml
-  - type: MCPServer
-    url: mcp/ocean-io-mcp.yml
-  - type: ToolCrosswalk
-    url: mcp/ocean-io-tool-crosswalk.yml
-  - type: AgentSkill
-    url: skills/_index.yml
-  - type: LLMsTxt
-    url: llms/ocean-io-llms.txt
-  - type: WellKnown
-    url: well-known/ocean-io-well-known.yml
-  - type: Conformance
-    url: conformance/ocean-io-conformance.yml
-  - type: Compliance
-    url: https://trust.ocean.io/
-  - type: Packages
-    url: packages/ocean-io-packages.yml
-  - type: AgenticAccess
-    url: agentic-access/ocean-io-agentic-access.yml
-  - type: TrustCenter
-    url: security/ocean-io-trust-center.yml
-  - type: DomainSecurity
-    url: security/ocean-io-domain-security.yml
-  - type: Plans
-    url: plans/ocean-io-plans-pricing.yml
-  - type: RateLimits
-    url: rate-limits/ocean-io-rate-limits.yml
-  - type: FinOps
-    url: finops/ocean-io-finops.yml
+- type: Overlay
+  url: overlays/ocean-io-api-overlay.yaml
+- type: Website
+  url: https://ocean.io/
+- type: DeveloperPortal
+  url: https://ocean.io/api
+- type: Documentation
+  url: https://app.ocean.io/docs
+- type: APIReference
+  url: https://app.ocean.io/docs
+- type: GettingStarted
+  url: https://app.ocean.io/docs/getting-started/quickstart
+- type: Pricing
+  url: https://ocean.io/pricing
+- type: StatusPage
+  url: https://status.ocean.io/
+- type: Lifecycle
+  url: lifecycle/ocean-io-lifecycle.yml
+- type: Authentication
+  url: authentication/ocean-io-authentication.yml
+- type: OAuthScopes
+  url: scopes/ocean-io-scopes.yml
+- type: Conventions
+  url: conventions/ocean-io-conventions.yml
+- type: ErrorCatalog
+  url: errors/ocean-io-problem-types.yml
+- type: Webhooks
+  url: asyncapi/ocean-io-webhooks.yml
+- type: DataModel
+  url: data-model/ocean-io-data-model.yml
+- type: MCPServer
+  url: mcp/ocean-io-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/ocean-io-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/ocean-io-llms.txt
+- type: WellKnown
+  url: well-known/ocean-io-well-known.yml
+- type: Conformance
+  url: conformance/ocean-io-conformance.yml
+- type: Compliance
+  url: https://trust.ocean.io/
+- type: Packages
+  url: packages/ocean-io-packages.yml
+- type: AgenticAccess
+  url: agentic-access/ocean-io-agentic-access.yml
+- type: TrustCenter
+  url: security/ocean-io-trust-center.yml
+- type: DomainSecurity
+  url: security/ocean-io-domain-security.yml
+- type: Plans
+  url: plans/ocean-io-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/ocean-io-rate-limits.yml
+- type: FinOps
+  url: finops/ocean-io-finops.yml
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com
 x-enrichment:
   date: '2026-08-13'
   status: enriched
