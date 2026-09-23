@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Ocean.io API Documentation Reveal API
   summary: Welcome to Ocean.io's API.
-  description: "\n            Welcome to Ocean.io's API.\n            The API can be used to access all our API endpoints, such as our enrich API to look up company information, or our discover API to identify companies based on specific search criteria such as semantic similarity, technologies or industries.\n            Ocean.io's APIs are a set of HTTPS endpoints that you can use to retrieve and integrate Ocean.io's data into your existing workflows.\n            All requests should be made through https and the request and response bodies should be formatted in JSON.\n        "
+  description: Welcome to Ocean.io's API.
   version: 2.0.0
   x-logo:
     url: https://cdn2.ocean.io/assets/images/logo/256x92_ocean-logo.svg
@@ -21,7 +21,7 @@ paths:
 
         **Webhook result:**
 
-        [Documentation](/docs/webhooks/reveal_emails)'
+        Documentation'
       operationId: revealEmails
       parameters:
       - name: apiToken
@@ -111,7 +111,7 @@ paths:
 
         **Webhook result:**
 
-        [Documentation](/docs/webhooks/reveal_phones)'
+        Documentation'
       operationId: revealPhones
       parameters:
       - name: apiToken
@@ -193,55 +193,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    PublicRevealEmailResult:
-      properties:
-        status:
-          type: string
-          enum:
-          - in progress
-          - webhook sent
-          title: Status
-          description: Status of the request. `"in progress"` if any email has to be verified in the background. All the email results are sent to the webhook once they are all done.
-          examples:
-          - in progress
-      type: object
-      required:
-      - status
-      title: PublicRevealEmailResult
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PublicRevealEmailBody:
-      properties:
-        personIds:
-          items:
-            type: string
-          type: array
-          maxItems: 500
-          minItems: 1
-          title: Personids
-          description: List of Ocean person ids to fetch the email data for. One email credit will be charged for every verified email found.
-          examples:
-          - - personId1
-            - personId2
-        webhookUrl:
-          type: string
-          title: Webhookurl
-          description: Url of the webhook the email data should be sent to, when completed.
-          examples:
-          - https://some-url.com
-      additionalProperties: false
-      type: object
-      required:
-      - personIds
-      - webhookUrl
-      title: PublicRevealEmailBody
     ValidationError:
       properties:
         loc:
@@ -268,6 +219,21 @@ components:
       - msg
       - type
       title: ValidationError
+    PublicRevealEmailResult:
+      properties:
+        status:
+          type: string
+          enum:
+          - in progress
+          - webhook sent
+          title: Status
+          description: Status of the request. `"in progress"` if any email has to be verified in the background. All the email results are sent to the webhook once they are all done.
+          examples:
+          - in progress
+      type: object
+      required:
+      - status
+      title: PublicRevealEmailResult
     PublicRevealPhoneResult:
       properties:
         status:
@@ -283,6 +249,40 @@ components:
       required:
       - status
       title: PublicRevealPhoneResult
+    PublicRevealEmailBody:
+      properties:
+        personIds:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Personids
+          description: List of Ocean person ids to fetch the email data for. One email credit will be charged for every verified email found.
+          examples:
+          - - personId1
+            - personId2
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the email data should be sent to, when completed.
+          examples:
+          - https://some-url.com
+      additionalProperties: false
+      type: object
+      required:
+      - personIds
+      - webhookUrl
+      title: PublicRevealEmailBody
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     PublicRevealPhoneBody:
       properties:
         personIds:

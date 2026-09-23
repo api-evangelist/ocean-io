@@ -1,0 +1,52 @@
+{
+  "provider": "ocean-io",
+  "sources": [
+    "_original/ocean-io-api-openapi.yml"
+  ],
+  "outputs": [
+    "ocean-io-autocomplete-api-openapi.yml",
+    "ocean-io-enrich-api-openapi.yml",
+    "ocean-io-lookup-api-openapi.yml",
+    "ocean-io-ocean-io-api-documentation-api-openapi.yml",
+    "ocean-io-other-api-openapi.yml",
+    "ocean-io-reveal-api-openapi.yml",
+    "ocean-io-search-api-openapi.yml",
+    "ocean-io-segmentation-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "ocean-io-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "ocean-io-api-openapi.yml: tagged webhooks POST reveal_emails -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: tagged webhooks POST people_search_emails -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: tagged webhooks POST enrich_person_email -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: tagged webhooks POST reveal_phones -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: tagged webhooks POST people_search_phones -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: tagged webhooks POST enrich_person_phone -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: tagged webhooks POST enrich_companies -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: tagged webhooks POST enrich_people -> Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: declared missing tag: Autocomplete",
+    "ocean-io-api-openapi.yml: declared missing tag: Enrich",
+    "ocean-io-api-openapi.yml: declared missing tag: Lookup",
+    "ocean-io-api-openapi.yml: declared missing tag: Ocean.io API Documentation",
+    "ocean-io-api-openapi.yml: declared missing tag: Other",
+    "ocean-io-api-openapi.yml: declared missing tag: Reveal",
+    "ocean-io-api-openapi.yml: declared missing tag: Search",
+    "ocean-io-api-openapi.yml: declared missing tag: Segmentation",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "_original/ocean-io-openapi.json: archived document superseded by a larger archived document",
+    "ocean-io-autocomplete-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ocean-io-enrich-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ocean-io-lookup-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ocean-io-ocean-io-api-documentation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ocean-io-other-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ocean-io-reveal-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ocean-io-search-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ocean-io-segmentation-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
