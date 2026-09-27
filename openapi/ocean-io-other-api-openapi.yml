@@ -276,107 +276,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    PublicCountryCodeToRegionMapping:
-      properties:
-        code:
-          type: string
-          nullable: true
-          title: Region code
-          description: Region code in ISO-3166-2 format
-          examples:
-          - nl-NH
-        englishName:
-          type: string
-          nullable: true
-          title: Region name
-          description: Region name
-          examples:
-          - North Holland
-        localName:
-          type: string
-          nullable: true
-          title: Region local name
-          description: Region local name
-          examples:
-          - Noord-Holland
-      type: object
-      title: PublicCountryCodeToRegionMapping
-    Seniority:
-      type: string
-      enum:
-      - Owner
-      - Founder
-      - Board Member
-      - C-Level
-      - Partner
-      - VP
-      - Head
-      - Director
-      - Manager
-      - Other
-      title: Seniority
-    PublicIndustries:
-      properties:
-        industries:
-          items:
-            type: string
-          type: array
-          title: Industries
-          description: List of industries
-          examples:
-          - - Advertising Platforms
-            - Biopharma
-        industryCategory:
-          type: string
-          nullable: true
-          title: Industry category
-          description: Industry category name
-          examples:
-          - Administrative Services
-      type: object
-      title: PublicIndustries
-    GetCreditBalanceResponse:
-      properties:
-        credits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Standard'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        emailCredits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Email'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        phoneCredits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Phone'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        previewCredits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Preview'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        dailyLimitRateLeft:
-          type: integer
-          title: Dailylimitrateleft
-          description: Number of requests left for the current day.
-          default: 0
-          examples:
-          - 10
-        dailyLimitRateSecondsToReset:
-          type: integer
-          title: Dailylimitratesecondstoreset
-          description: Number of seconds left until the daily limit resets.
-          default: 0
-          examples:
-          - 3600
-      type: object
-      title: GetCreditBalanceResponse
     PublicTechnology:
       properties:
         name:
@@ -450,42 +349,31 @@ components:
       - Supply Chain
       - Other
       title: Department
-    WarmupCompaniesBody:
+    PublicCountryCodeToRegionMapping:
       properties:
-        domains:
-          items:
-            type: string
-          type: array
-          maxItems: 500
-          minItems: 1
-          title: Domains
-          description: Domains to be checked and added to the database if not present
+        code:
+          type: string
+          nullable: true
+          title: Region code
+          description: Region code in ISO-3166-2 format
           examples:
-          - - ocean.io
-            - denmark.dk
-      additionalProperties: false
+          - nl-NH
+        englishName:
+          type: string
+          nullable: true
+          title: Region name
+          description: Region name
+          examples:
+          - North Holland
+        localName:
+          type: string
+          nullable: true
+          title: Region local name
+          description: Region local name
+          examples:
+          - Noord-Holland
       type: object
-      required:
-      - domains
-      title: WarmupCompaniesBody
-    Credits:
-      properties:
-        oneTime:
-          type: number
-          title: Onetime
-          description: Number of one-time credits left.
-          default: 0
-          examples:
-          - 1000
-        recurrent:
-          type: number
-          title: Recurrent
-          description: Number of recurrent credits left.
-          default: 0
-          examples:
-          - 1000
-      type: object
-      title: Credits
+      title: PublicCountryCodeToRegionMapping
     WarmupCompaniesResult:
       properties:
         successfulDomains:
@@ -556,6 +444,66 @@ components:
             data-errors-domain-2.com: missing industry features
       type: object
       title: WarmupCompaniesResult
+    WarmupCompaniesBody:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Domains
+          description: Domains to be checked and added to the database if not present
+          examples:
+          - - ocean.io
+            - denmark.dk
+      additionalProperties: false
+      type: object
+      required:
+      - domains
+      title: WarmupCompaniesBody
+    GetCreditBalanceResponse:
+      properties:
+        credits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Standard'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        emailCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Email'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        phoneCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Phone'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        previewCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Preview'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        dailyLimitRateLeft:
+          type: integer
+          title: Dailylimitrateleft
+          description: Number of requests left for the current day.
+          default: 0
+          examples:
+          - 10
+        dailyLimitRateSecondsToReset:
+          type: integer
+          title: Dailylimitratesecondstoreset
+          description: Number of seconds left until the daily limit resets.
+          default: 0
+          examples:
+          - 3600
+      type: object
+      title: GetCreditBalanceResponse
     PublicGetDataFieldsResponse:
       properties:
         industries:
@@ -622,6 +570,24 @@ components:
             - Marketing and Advertising
       type: object
       title: PublicGetDataFieldsResponse
+    Credits:
+      properties:
+        oneTime:
+          type: number
+          title: Onetime
+          description: Number of one-time credits left.
+          default: 0
+          examples:
+          - 1000
+        recurrent:
+          type: number
+          title: Recurrent
+          description: Number of recurrent credits left.
+          default: 0
+          examples:
+          - 1000
+      type: object
+      title: Credits
     HTTPValidationError:
       properties:
         detail:
@@ -631,3 +597,37 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    Seniority:
+      type: string
+      enum:
+      - Owner
+      - Founder
+      - Board Member
+      - C-Level
+      - Partner
+      - VP
+      - Head
+      - Director
+      - Manager
+      - Other
+      title: Seniority
+    PublicIndustries:
+      properties:
+        industries:
+          items:
+            type: string
+          type: array
+          title: Industries
+          description: List of industries
+          examples:
+          - - Advertising Platforms
+            - Biopharma
+        industryCategory:
+          type: string
+          nullable: true
+          title: Industry category
+          description: Industry category name
+          examples:
+          - Administrative Services
+      type: object
+      title: PublicIndustries

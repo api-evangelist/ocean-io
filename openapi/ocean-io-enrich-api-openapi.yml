@@ -417,104 +417,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    public_api__models__person__Email:
-      properties:
-        address:
-          type: string
-          nullable: true
-          title: Address
-          description: Email address
-          examples:
-          - name@gmail.com
-        status:
-          type: string
-          enum:
-          - verified
-          - guessed
-          - catchAll
-          - notFound
-          title: Status
-          description: 'Status of the address: verified, catchAll or guessed'
-      type: object
-      required:
-      - address
-      - status
-      title: Email
-    MatchCompaniesBody:
-      properties:
-        companyDataMapping:
-          additionalProperties:
-            $ref: '#/components/schemas/MatchCompanyBody'
-          type: object
-          maxProperties: 10000
-          minProperties: 1
-          title: Mapping of user-defined IDs to company data
-          description: A dictionary where each key is unique user-defined ID for a company, and each value is the data for that company to be enriched. This ID will be included in the webhook response together with the enriched company data, allowing the user to match the response to the original request.
-        webhookUrl:
-          type: string
-          title: Webhookurl
-          description: Url of the webhook the enriched companies should be sent to, when completed.
-          examples:
-          - https://some-url.com
-        fields:
-          items:
-            $ref: '#/components/schemas/CompanyField'
-          type: array
-          nullable: true
-          title: Fields
-          description: Fields to return in the Company objects. Only requesting the fields that are needed will use less bandwidth and result in faster responses. If not specified, all fields are returned that can be seen in the example.
-          examples:
-          - - domain
-            - countries
-            - primaryCountry
-            - companySize
-            - industryCategories
-            - industries
-            - linkedinIndustry
-            - ecommerce
-            - keywords
-            - employeeCountOcean
-            - employeeCountLinkedin
-            - revenue
-            - yearFounded
-            - description
-            - emails
-            - phones
-            - logo
-            - technologies
-            - technologyCategories
-            - mobileApps
-            - webTraffic
-            - medias
-            - name
-            - legalName
-            - locations
-            - departmentSizes
-            - rootUrl
-            - faxes
-            - impressum
-            - fundingRound
-            - updatedAt
-      additionalProperties: false
-      type: object
-      required:
-      - companyDataMapping
-      - webhookUrl
-      title: MatchCompaniesBody
-    DepartmentSize:
-      properties:
-        department:
-          $ref: '#/components/schemas/Department'
-          description: Department name
-        size:
-          type: integer
-          title: Size
-          description: Department size
-      type: object
-      required:
-      - department
-      - size
-      title: DepartmentSize
     Growth:
       properties:
         threeMonths:
@@ -549,61 +451,36 @@ components:
           description: Headcount growth as a decimal (e.g., 0.15 represents 15% growth)
       type: object
       title: Growth
-    PublicCompanySize:
-      type: string
-      enum:
-      - 0-1
-      - 2-10
-      - 11-50
-      - 51-200
-      - 201-500
-      - 501-1000
-      - 1001-5000
-      - 5001-10000
-      - 10001-50000
-      - 50001-100000
-      - 100001-500000
-      - 500000+
-      title: PublicCompanySize
-    RevealPhones:
+    EnrichCompaniesResult:
       properties:
-        includePhones:
-          type: boolean
-          title: Include phones
-          description: Include the phones for all the results. One phone credit will be charged for each verified phone.
-          default: false
+        status:
+          type: string
+          const: in progress
+          title: Status
+          description: Status of the enrichment request. Always `"in progress"` initially, as enrichment is processed asynchronously in the background. Once completed, results for all companies will be sent to the provided webhook.
           examples:
-          - true
-        webhookUrl:
-          type: string
-          nullable: true
-          title: Webhook url
-          description: Only relevant if `includePhones` is True. Webhook url to get the reveal phone results, if any phone has to be processed in the background.
-          examples:
-          - https://url.com/webhook
-      additionalProperties: false
-      type: object
-      title: RevealPhones
-    ContactNumber:
-      properties:
-        number:
-          type: string
-          title: Number
-          description: Contact number
-        country:
-          type: string
-          nullable: true
-          title: Contact number country code
-          description: Country code of the contact number
-        primary:
-          type: boolean
-          nullable: true
-          title: Primary contact number
-          description: True if the contact number is the primary contact number of the company
+          - in progress
       type: object
       required:
-      - number
-      title: ContactNumber
+      - status
+      title: EnrichCompaniesResult
+    ImpressumPerson:
+      properties:
+        name:
+          type: string
+          title: Name
+          examples:
+          - Michael Scott
+        position:
+          type: string
+          nullable: true
+          title: Position
+          examples:
+          - Regional Manager
+      type: object
+      required:
+      - name
+      title: ImpressumPerson
     public_api__models__company__Location:
       properties:
         primary:
@@ -680,25 +557,21 @@ components:
           - PA
       type: object
       title: Location
-    MobileApp:
+    DepartmentSizesGrowth:
       properties:
-        link:
-          type: string
+        department:
+          $ref: '#/components/schemas/Department'
+          description: Department name
+        growth:
+          $ref: '#/components/schemas/Growth'
           nullable: true
-          title: url
-          description: Website address for this app
-          examples:
-          - https://www.my.app.com/
-        name:
-          type: string
-          title: App name
-          description: App name
-          examples:
-          - My awesome app
+          title: Headcount growth
+          description: Headcount growth per department
       type: object
       required:
-      - name
-      title: MobileApp
+      - department
+      - growth
+      title: DepartmentSizesGrowth
     Department:
       type: string
       enum:
@@ -727,25 +600,72 @@ components:
       - Supply Chain
       - Other
       title: Department
-    RevealEmails:
+    EnrichPeopleResult:
       properties:
-        includeEmails:
-          type: boolean
-          title: Include emails
-          description: Include the emails for all the results. One email credit will be charged for each verified email.
-          default: false
+        status:
+          type: string
+          const: in progress
+          title: Status
+          description: Status of the enrichment request. Always `"in progress"` initially, as enrichment is processed asynchronously in the background. Once completed, results for all people will be sent to the provided webhook.
           examples:
-          - true
-        webhookUrl:
+          - in progress
+      type: object
+      required:
+      - status
+      title: EnrichPeopleResult
+    FundingRound:
+      properties:
+        date:
           type: string
           nullable: true
-          title: Webhook url
-          description: Only relevant if `includeEmails` is True. Webhook url to get the reveal email results, if any email has to be processed in the background.
+          title: Funding date
+          description: Date of the funding round
+        type:
+          $ref: '#/components/schemas/FundingRoundType'
+          nullable: true
+          title: Funding round type
+          description: Type of the funding round
+        moneyRaisedInUsd:
+          type: integer
+          nullable: true
+          title: Money raised in USD
+          description: Amount of money raised in USD
+        cbUrl:
+          type: string
+          nullable: true
+          title: Crunchbase URL
+          description: URL of the funding round on Crunchbase
+      type: object
+      title: FundingRound
+    MatchPersonBody:
+      properties:
+        person:
+          $ref: '#/components/schemas/Person'
+          description: The person to match with
+        company:
+          $ref: '#/components/schemas/Company'
+          nullable: true
+          title: Company
+          description: The company to match the person with
+        revealEmails:
+          $ref: '#/components/schemas/RevealEmails'
+          nullable: true
+          title: Reveal emails
           examples:
-          - https://url.com/webhook
+          - includeEmails: true
+            webhookUrl: https://url.com/webhook
+        revealPhones:
+          $ref: '#/components/schemas/RevealPhones'
+          nullable: true
+          title: Reveal phones
+          examples:
+          - includePhones: true
+            webhookUrl: https://url.com/webhook
       additionalProperties: false
       type: object
-      title: RevealEmails
+      required:
+      - person
+      title: MatchPersonBody
     Company:
       properties:
         name:
@@ -870,254 +790,6 @@ components:
       additionalProperties: false
       type: object
       title: Company
-    EnrichPeopleResult:
-      properties:
-        status:
-          type: string
-          const: in progress
-          title: Status
-          description: Status of the enrichment request. Always `"in progress"` initially, as enrichment is processed asynchronously in the background. Once completed, results for all people will be sent to the provided webhook.
-          examples:
-          - in progress
-      type: object
-      required:
-      - status
-      title: EnrichPeopleResult
-    MatchPersonBody:
-      properties:
-        person:
-          $ref: '#/components/schemas/Person'
-          description: The person to match with
-        company:
-          $ref: '#/components/schemas/Company'
-          nullable: true
-          title: Company
-          description: The company to match the person with
-        revealEmails:
-          $ref: '#/components/schemas/RevealEmails'
-          nullable: true
-          title: Reveal emails
-          examples:
-          - includeEmails: true
-            webhookUrl: https://url.com/webhook
-        revealPhones:
-          $ref: '#/components/schemas/RevealPhones'
-          nullable: true
-          title: Reveal phones
-          examples:
-          - includePhones: true
-            webhookUrl: https://url.com/webhook
-      additionalProperties: false
-      type: object
-      required:
-      - person
-      title: MatchPersonBody
-    Media:
-      properties:
-        url:
-          type: string
-          title: Media URL
-          description: URL of the media
-        handle:
-          type: string
-          nullable: true
-          title: Handle
-          description: ids extracted from social media urls
-        name:
-          type: string
-          nullable: true
-          title: Name
-          description: Name of the company as it appears in the social media account
-        specialties:
-          items:
-            type: string
-          type: array
-          nullable: true
-          title: Specialties
-          description: Specialties of the company as it appears in the social media account. Right now we only have this for LinkedIn.
-          examples:
-          - - artificial intelligence
-            - machine learning
-      type: object
-      required:
-      - url
-      title: Media
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    Experience:
-      properties:
-        domain:
-          type: string
-          nullable: true
-          title: Domain
-          description: Domain of the company the person is working for
-          examples:
-          - domain.com
-        jobTitle:
-          type: string
-          nullable: true
-          title: Jobtitle
-          description: Job title of the person
-          examples:
-          - Designer
-        dateFrom:
-          type: string
-          nullable: true
-          title: Datefrom
-          description: Start date of the experience
-          examples:
-          - '2020-01-01'
-        dateTo:
-          type: string
-          nullable: true
-          title: Dateto
-          description: End date of the experience
-          examples:
-          - '2021-01-01'
-        description:
-          type: string
-          nullable: true
-          title: Description
-          description: Description of the experience
-          examples:
-          - Software Engineer specializing in cloud infrastructure
-        linkedinCompanyHandle:
-          type: string
-          nullable: true
-          title: Linkedincompanyhandle
-          description: Linkedin handle of the company the person is working for
-          examples:
-          - colliers
-      type: object
-      title: Experience
-    WebTraffic:
-      properties:
-        visits:
-          type: integer
-          nullable: true
-          title: Total visits for the last available month
-          description: Total number of visits of the website for the last available month
-        pageViews:
-          type: integer
-          nullable: true
-          title: Website views
-          description: Number of views of the website for the last available month
-        pagesPerVisit:
-          type: number
-          nullable: true
-          title: Pages per visit
-          description: Average number of pages viewed per visit for the last available month
-        bounceRate:
-          type: number
-          nullable: true
-          title: Bouncerate
-          description: Bounce rate of the domain for the last available month
-      type: object
-      title: WebTraffic
-    MatchPersonBaseBody:
-      properties:
-        person:
-          $ref: '#/components/schemas/Person'
-          description: The person to match with
-        company:
-          $ref: '#/components/schemas/Company'
-          nullable: true
-          title: Company
-          description: The company to match the person with
-      additionalProperties: false
-      type: object
-      required:
-      - person
-      title: MatchPersonBaseBody
-    Person:
-      properties:
-        id:
-          type: string
-          nullable: true
-          title: Person id
-          description: Ocean id of the person
-          examples:
-          - b8952796be57982d
-        name:
-          type: string
-          nullable: true
-          title: Name
-          description: Full name of the contact
-          examples:
-          - John Doe
-        firstName:
-          type: string
-          nullable: true
-          title: First name
-          description: First name of the contact
-          examples:
-          - John
-        lastName:
-          type: string
-          nullable: true
-          title: Last name
-          description: Last name of the contact
-          examples:
-          - Doe
-        jobTitle:
-          type: string
-          nullable: true
-          title: Job title
-          description: Job title of the contact
-          examples:
-          - CEO
-        email:
-          type: string
-          nullable: true
-          title: Email
-          description: Email address of the contact
-          examples:
-          - john.doe@example.com
-        phone:
-          type: string
-          nullable: true
-          title: Phone
-          description: Phone number of the contact
-          examples:
-          - +45 12345678
-        facebook:
-          type: string
-          nullable: true
-          title: Facebook
-          description: Facebook page of the contact
-          examples:
-          - https://www.facebook.com/johndoe
-        twitter:
-          type: string
-          nullable: true
-          title: Twitter
-          description: The Twitter page of the contact
-          examples:
-          - https://twitter.com/johndoe
-        linkedin:
-          type: string
-          nullable: true
-          title: LinkedIn
-          description: The LinkedIn page of the contact
-          examples:
-          - https://www.linkedin.com/in/johndoe
-        country:
-          type: string
-          nullable: true
-          title: Country
-          description: The country of the contact
-          examples:
-          - dk
-      additionalProperties: false
-      type: object
-      title: Person
     Seniority:
       type: string
       enum:
@@ -1132,145 +804,6 @@ components:
       - Manager
       - Other
       title: Seniority
-    Impressum:
-      properties:
-        company:
-          type: string
-          nullable: true
-          title: Company name
-          description: Company name as mentioned in Impressum
-          examples:
-          - Dunder Mifflin Paper Company, Inc.
-        address:
-          type: string
-          nullable: true
-          title: Address
-          description: Company address as mentioned in Impressum
-          examples:
-          - Scranton Business Park, 1725 Slough Ave Suit 200, Scranton, USA
-        email:
-          type: string
-          nullable: true
-          title: Email
-          description: Company email as mentioned in Impressum
-          examples:
-          - email@dundermifflin.com
-        phone:
-          type: string
-          nullable: true
-          title: Phone
-          description: Company phone as mentioned in Impressum
-          examples:
-          - '+35123456789'
-        fax:
-          type: string
-          nullable: true
-          title: Fax
-          description: Company fax as mentioned in Impressum
-          examples:
-          - '+35123456790'
-        vat:
-          type: string
-          nullable: true
-          title: VAT
-          description: VAT number as mentioned in Impressum
-          examples:
-          - '123456'
-        url:
-          type: string
-          nullable: true
-          title: Impressum url
-          description: url where Impressum can be found
-          examples:
-          - https://dundermifflinpaper.com/impressum
-        people:
-          items:
-            $ref: '#/components/schemas/ImpressumPerson'
-          type: array
-          nullable: true
-          title: People
-          description: People mentioned in Impressum
-      type: object
-      title: Impressum
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ImpressumPerson:
-      properties:
-        name:
-          type: string
-          title: Name
-          examples:
-          - Michael Scott
-        position:
-          type: string
-          nullable: true
-          title: Position
-          examples:
-          - Regional Manager
-      type: object
-      required:
-      - name
-      title: ImpressumPerson
-    Revenue:
-      type: string
-      enum:
-      - 0-1M
-      - 1-10M
-      - 10-50M
-      - 50-100M
-      - 100-500M
-      - 500-1000M
-      - '>1000M'
-      title: Revenue
-    public_api__models__person__Phone:
-      properties:
-        numbers:
-          items:
-            type: string
-          type: array
-          nullable: true
-          title: Numbers
-          description: Phone numbers
-          examples:
-          - - '+4512345678'
-            - +33 6 00 00 00 00
-        status:
-          type: string
-          enum:
-          - verified
-          - notFound
-          - inProgress
-          title: Status
-          description: 'Status of the phone numbers: verified or not found'
-      type: object
-      required:
-      - numbers
-      - status
-      title: Phone
     EnrichCompanyResult:
       properties:
         domain:
@@ -1577,254 +1110,6 @@ components:
       - domain
       - creditsUsed
       title: EnrichCompanyResult
-    DepartmentSizesGrowth:
-      properties:
-        department:
-          $ref: '#/components/schemas/Department'
-          description: Department name
-        growth:
-          $ref: '#/components/schemas/Growth'
-          nullable: true
-          title: Headcount growth
-          description: Headcount growth per department
-      type: object
-      required:
-      - department
-      - growth
-      title: DepartmentSizesGrowth
-    FundingRoundType:
-      type: string
-      enum:
-      - Seed
-      - Series A
-      - Angel
-      - Series B
-      - Series Unknown
-      - Pre-Seed
-      - Grant
-      - Series C
-      - Convertible Note
-      - Debt Financing
-      - Non-Equity Assistance
-      - Undisclosed
-      - Series D
-      - Corporate Round
-      - Equity Crowdfunding
-      - Product Crowdfunding
-      - Series E
-      - Private Equity
-      - Secondary Market
-      - Initial Coin Offering
-      - Post-IPO Equity
-      - Series F
-      - Post-IPO Debt
-      - Series H
-      - Series G
-      - Post-IPO Secondary
-      - Series I
-      - Series J
-      title: FundingRoundType
-    MatchPeopleBody:
-      properties:
-        peopleDataMapping:
-          additionalProperties:
-            $ref: '#/components/schemas/MatchPersonBaseBody'
-          type: object
-          maxProperties: 10000
-          minProperties: 1
-          title: Unique string id to people match body mapping
-          description: A dictionary where each key is a unique user-defined ID for a person, and each value is the data for that person to be enriched. This ID will be included in the webhook response together with the enriched person data, allowing the user to match the response to the original request.
-        webhookUrl:
-          type: string
-          title: Webhookurl
-          description: Url of the webhook the enriched people should be sent to, when completed.
-          examples:
-          - https://some-url.com
-      additionalProperties: false
-      type: object
-      required:
-      - peopleDataMapping
-      - webhookUrl
-      title: MatchPeopleBody
-    EnrichCompaniesResult:
-      properties:
-        status:
-          type: string
-          const: in progress
-          title: Status
-          description: Status of the enrichment request. Always `"in progress"` initially, as enrichment is processed asynchronously in the background. Once completed, results for all companies will be sent to the provided webhook.
-          examples:
-          - in progress
-      type: object
-      required:
-      - status
-      title: EnrichCompaniesResult
-    FundingRound:
-      properties:
-        date:
-          type: string
-          nullable: true
-          title: Funding date
-          description: Date of the funding round
-        type:
-          $ref: '#/components/schemas/FundingRoundType'
-          nullable: true
-          title: Funding round type
-          description: Type of the funding round
-        moneyRaisedInUsd:
-          type: integer
-          nullable: true
-          title: Money raised in USD
-          description: Amount of money raised in USD
-        cbUrl:
-          type: string
-          nullable: true
-          title: Crunchbase URL
-          description: URL of the funding round on Crunchbase
-      type: object
-      title: FundingRound
-    CompanyField:
-      type: string
-      enum:
-      - domain
-      - countries
-      - primaryCountry
-      - companySize
-      - industryCategories
-      - industries
-      - linkedinIndustry
-      - ecommerce
-      - keywords
-      - employeeCountOcean
-      - employeeCountLinkedin
-      - revenue
-      - yearFounded
-      - description
-      - emails
-      - phones
-      - phones.number
-      - phones.country
-      - phones.primary
-      - logo
-      - technologies
-      - technologyCategories
-      - mobileApps
-      - mobileApps.link
-      - mobileApps.name
-      - webTraffic
-      - webTraffic.visits
-      - webTraffic.pageViews
-      - webTraffic.pagesPerVisit
-      - medias
-      - medias.linkedin
-      - medias.twitter
-      - medias.youtube
-      - medias.facebook
-      - medias.xing
-      - medias.tiktok
-      - medias.instagram
-      - name
-      - legalName
-      - locations
-      - locations.primary
-      - locations.country
-      - locations.locality
-      - locations.region
-      - locations.postalCode
-      - locations.streetAddress
-      - locations.state
-      - locations.regionCode
-      - departmentSizes
-      - rootUrl
-      - faxes
-      - faxes.number
-      - faxes.country
-      - faxes.primary
-      - impressum
-      - impressum.company
-      - impressum.address
-      - impressum.email
-      - impressum.phone
-      - impressum.fax
-      - impressum.vat
-      - impressum.url
-      - impressum.people
-      - fundingRound
-      - fundingRound.date
-      - fundingRound.type
-      - fundingRound.moneyRaisedInUsd
-      - fundingRound.cbUrl
-      - redirectedFrom
-      - updatedAt
-      - headcountGrowth
-      - headcountGrowth.threeMonths
-      - headcountGrowth.threeMonthsPercentage
-      - headcountGrowth.sixMonths
-      - headcountGrowth.sixMonthsPercentage
-      - headcountGrowth.twelveMonths
-      - headcountGrowth.twelveMonthsPercentage
-      - headcountGrowthPerDepartment
-      title: CompanyField
-    Medias:
-      properties:
-        linkedin:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: LinkedIn page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://www.linkedin.com/company/dunder-mifflin
-        twitter:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Twitter page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://twitter.com/dunder-mifflin
-        youtube:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: YouTube page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://youtube.com/channel/dunder-mifflin
-        facebook:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Facebook page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://facebook.com/dunder-mifflin
-        xing:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Xing page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://xing.com/dunder-mifflin
-        tiktok:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: TikTok page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://tiktok.com/dunder-mifflin
-        instagram:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Instagram page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://instagram.com/dunder-mifflin
-      type: object
-      title: Medias
     EnrichPersonResult:
       properties:
         id:
@@ -2036,6 +1321,167 @@ components:
       - domain
       - creditsUsed
       title: EnrichPersonResult
+    public_api__models__person__Email:
+      properties:
+        address:
+          type: string
+          nullable: true
+          title: Address
+          description: Email address
+          examples:
+          - name@gmail.com
+        status:
+          type: string
+          enum:
+          - verified
+          - guessed
+          - catchAll
+          - notFound
+          title: Status
+          description: 'Status of the address: verified, catchAll or guessed'
+      type: object
+      required:
+      - address
+      - status
+      title: Email
+    FundingRoundType:
+      type: string
+      enum:
+      - Seed
+      - Series A
+      - Angel
+      - Series B
+      - Series Unknown
+      - Pre-Seed
+      - Grant
+      - Series C
+      - Convertible Note
+      - Debt Financing
+      - Non-Equity Assistance
+      - Undisclosed
+      - Series D
+      - Corporate Round
+      - Equity Crowdfunding
+      - Product Crowdfunding
+      - Series E
+      - Private Equity
+      - Secondary Market
+      - Initial Coin Offering
+      - Post-IPO Equity
+      - Series F
+      - Post-IPO Debt
+      - Series H
+      - Series G
+      - Post-IPO Secondary
+      - Series I
+      - Series J
+      title: FundingRoundType
+    WebTraffic:
+      properties:
+        visits:
+          type: integer
+          nullable: true
+          title: Total visits for the last available month
+          description: Total number of visits of the website for the last available month
+        pageViews:
+          type: integer
+          nullable: true
+          title: Website views
+          description: Number of views of the website for the last available month
+        pagesPerVisit:
+          type: number
+          nullable: true
+          title: Pages per visit
+          description: Average number of pages viewed per visit for the last available month
+        bounceRate:
+          type: number
+          nullable: true
+          title: Bouncerate
+          description: Bounce rate of the domain for the last available month
+      type: object
+      title: WebTraffic
+    Person:
+      properties:
+        id:
+          type: string
+          nullable: true
+          title: Person id
+          description: Ocean id of the person
+          examples:
+          - b8952796be57982d
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Full name of the contact
+          examples:
+          - John Doe
+        firstName:
+          type: string
+          nullable: true
+          title: First name
+          description: First name of the contact
+          examples:
+          - John
+        lastName:
+          type: string
+          nullable: true
+          title: Last name
+          description: Last name of the contact
+          examples:
+          - Doe
+        jobTitle:
+          type: string
+          nullable: true
+          title: Job title
+          description: Job title of the contact
+          examples:
+          - CEO
+        email:
+          type: string
+          nullable: true
+          title: Email
+          description: Email address of the contact
+          examples:
+          - john.doe@example.com
+        phone:
+          type: string
+          nullable: true
+          title: Phone
+          description: Phone number of the contact
+          examples:
+          - +45 12345678
+        facebook:
+          type: string
+          nullable: true
+          title: Facebook
+          description: Facebook page of the contact
+          examples:
+          - https://www.facebook.com/johndoe
+        twitter:
+          type: string
+          nullable: true
+          title: Twitter
+          description: The Twitter page of the contact
+          examples:
+          - https://twitter.com/johndoe
+        linkedin:
+          type: string
+          nullable: true
+          title: LinkedIn
+          description: The LinkedIn page of the contact
+          examples:
+          - https://www.linkedin.com/in/johndoe
+        country:
+          type: string
+          nullable: true
+          title: Country
+          description: The country of the contact
+          examples:
+          - dk
+      additionalProperties: false
+      type: object
+      title: Person
     MatchCompanyBody:
       properties:
         company:
@@ -2089,3 +1535,557 @@ components:
       additionalProperties: false
       type: object
       title: MatchCompanyBody
+    CompanyField:
+      type: string
+      enum:
+      - domain
+      - countries
+      - primaryCountry
+      - companySize
+      - industryCategories
+      - industries
+      - linkedinIndustry
+      - ecommerce
+      - keywords
+      - employeeCountOcean
+      - employeeCountLinkedin
+      - revenue
+      - yearFounded
+      - description
+      - emails
+      - phones
+      - phones.number
+      - phones.country
+      - phones.primary
+      - logo
+      - technologies
+      - technologyCategories
+      - mobileApps
+      - mobileApps.link
+      - mobileApps.name
+      - webTraffic
+      - webTraffic.visits
+      - webTraffic.pageViews
+      - webTraffic.pagesPerVisit
+      - medias
+      - medias.linkedin
+      - medias.twitter
+      - medias.youtube
+      - medias.facebook
+      - medias.xing
+      - medias.tiktok
+      - medias.instagram
+      - name
+      - legalName
+      - locations
+      - locations.primary
+      - locations.country
+      - locations.locality
+      - locations.region
+      - locations.postalCode
+      - locations.streetAddress
+      - locations.state
+      - locations.regionCode
+      - departmentSizes
+      - rootUrl
+      - faxes
+      - faxes.number
+      - faxes.country
+      - faxes.primary
+      - impressum
+      - impressum.company
+      - impressum.address
+      - impressum.email
+      - impressum.phone
+      - impressum.fax
+      - impressum.vat
+      - impressum.url
+      - impressum.people
+      - fundingRound
+      - fundingRound.date
+      - fundingRound.type
+      - fundingRound.moneyRaisedInUsd
+      - fundingRound.cbUrl
+      - redirectedFrom
+      - updatedAt
+      - headcountGrowth
+      - headcountGrowth.threeMonths
+      - headcountGrowth.threeMonthsPercentage
+      - headcountGrowth.sixMonths
+      - headcountGrowth.sixMonthsPercentage
+      - headcountGrowth.twelveMonths
+      - headcountGrowth.twelveMonthsPercentage
+      - headcountGrowthPerDepartment
+      title: CompanyField
+    PublicCompanySize:
+      type: string
+      enum:
+      - 0-1
+      - 2-10
+      - 11-50
+      - 51-200
+      - 201-500
+      - 501-1000
+      - 1001-5000
+      - 5001-10000
+      - 10001-50000
+      - 50001-100000
+      - 100001-500000
+      - 500000+
+      title: PublicCompanySize
+    Impressum:
+      properties:
+        company:
+          type: string
+          nullable: true
+          title: Company name
+          description: Company name as mentioned in Impressum
+          examples:
+          - Dunder Mifflin Paper Company, Inc.
+        address:
+          type: string
+          nullable: true
+          title: Address
+          description: Company address as mentioned in Impressum
+          examples:
+          - Scranton Business Park, 1725 Slough Ave Suit 200, Scranton, USA
+        email:
+          type: string
+          nullable: true
+          title: Email
+          description: Company email as mentioned in Impressum
+          examples:
+          - email@dundermifflin.com
+        phone:
+          type: string
+          nullable: true
+          title: Phone
+          description: Company phone as mentioned in Impressum
+          examples:
+          - '+35123456789'
+        fax:
+          type: string
+          nullable: true
+          title: Fax
+          description: Company fax as mentioned in Impressum
+          examples:
+          - '+35123456790'
+        vat:
+          type: string
+          nullable: true
+          title: VAT
+          description: VAT number as mentioned in Impressum
+          examples:
+          - '123456'
+        url:
+          type: string
+          nullable: true
+          title: Impressum url
+          description: url where Impressum can be found
+          examples:
+          - https://dundermifflinpaper.com/impressum
+        people:
+          items:
+            $ref: '#/components/schemas/ImpressumPerson'
+          type: array
+          nullable: true
+          title: People
+          description: People mentioned in Impressum
+      type: object
+      title: Impressum
+    MatchPeopleBody:
+      properties:
+        peopleDataMapping:
+          additionalProperties:
+            $ref: '#/components/schemas/MatchPersonBaseBody'
+          type: object
+          maxProperties: 10000
+          minProperties: 1
+          title: Unique string id to people match body mapping
+          description: A dictionary where each key is a unique user-defined ID for a person, and each value is the data for that person to be enriched. This ID will be included in the webhook response together with the enriched person data, allowing the user to match the response to the original request.
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the enriched people should be sent to, when completed.
+          examples:
+          - https://some-url.com
+      additionalProperties: false
+      type: object
+      required:
+      - peopleDataMapping
+      - webhookUrl
+      title: MatchPeopleBody
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ContactNumber:
+      properties:
+        number:
+          type: string
+          title: Number
+          description: Contact number
+        country:
+          type: string
+          nullable: true
+          title: Contact number country code
+          description: Country code of the contact number
+        primary:
+          type: boolean
+          nullable: true
+          title: Primary contact number
+          description: True if the contact number is the primary contact number of the company
+      type: object
+      required:
+      - number
+      title: ContactNumber
+    DepartmentSize:
+      properties:
+        department:
+          $ref: '#/components/schemas/Department'
+          description: Department name
+        size:
+          type: integer
+          title: Size
+          description: Department size
+      type: object
+      required:
+      - department
+      - size
+      title: DepartmentSize
+    Experience:
+      properties:
+        domain:
+          type: string
+          nullable: true
+          title: Domain
+          description: Domain of the company the person is working for
+          examples:
+          - domain.com
+        jobTitle:
+          type: string
+          nullable: true
+          title: Jobtitle
+          description: Job title of the person
+          examples:
+          - Designer
+        dateFrom:
+          type: string
+          nullable: true
+          title: Datefrom
+          description: Start date of the experience
+          examples:
+          - '2020-01-01'
+        dateTo:
+          type: string
+          nullable: true
+          title: Dateto
+          description: End date of the experience
+          examples:
+          - '2021-01-01'
+        description:
+          type: string
+          nullable: true
+          title: Description
+          description: Description of the experience
+          examples:
+          - Software Engineer specializing in cloud infrastructure
+        linkedinCompanyHandle:
+          type: string
+          nullable: true
+          title: Linkedincompanyhandle
+          description: Linkedin handle of the company the person is working for
+          examples:
+          - colliers
+      type: object
+      title: Experience
+    Medias:
+      properties:
+        linkedin:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: LinkedIn page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://www.linkedin.com/company/dunder-mifflin
+        twitter:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Twitter page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://twitter.com/dunder-mifflin
+        youtube:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: YouTube page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://youtube.com/channel/dunder-mifflin
+        facebook:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Facebook page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://facebook.com/dunder-mifflin
+        xing:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Xing page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://xing.com/dunder-mifflin
+        tiktok:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: TikTok page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://tiktok.com/dunder-mifflin
+        instagram:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Instagram page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://instagram.com/dunder-mifflin
+      type: object
+      title: Medias
+    MobileApp:
+      properties:
+        link:
+          type: string
+          nullable: true
+          title: url
+          description: Website address for this app
+          examples:
+          - https://www.my.app.com/
+        name:
+          type: string
+          title: App name
+          description: App name
+          examples:
+          - My awesome app
+      type: object
+      required:
+      - name
+      title: MobileApp
+    public_api__models__person__Phone:
+      properties:
+        numbers:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Numbers
+          description: Phone numbers
+          examples:
+          - - '+4512345678'
+            - +33 6 00 00 00 00
+        status:
+          type: string
+          enum:
+          - verified
+          - notFound
+          - inProgress
+          title: Status
+          description: 'Status of the phone numbers: verified or not found'
+      type: object
+      required:
+      - numbers
+      - status
+      title: Phone
+    MatchPersonBaseBody:
+      properties:
+        person:
+          $ref: '#/components/schemas/Person'
+          description: The person to match with
+        company:
+          $ref: '#/components/schemas/Company'
+          nullable: true
+          title: Company
+          description: The company to match the person with
+      additionalProperties: false
+      type: object
+      required:
+      - person
+      title: MatchPersonBaseBody
+    Media:
+      properties:
+        url:
+          type: string
+          title: Media URL
+          description: URL of the media
+        handle:
+          type: string
+          nullable: true
+          title: Handle
+          description: ids extracted from social media urls
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Name of the company as it appears in the social media account
+        specialties:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Specialties
+          description: Specialties of the company as it appears in the social media account. Right now we only have this for LinkedIn.
+          examples:
+          - - artificial intelligence
+            - machine learning
+      type: object
+      required:
+      - url
+      title: Media
+    RevealEmails:
+      properties:
+        includeEmails:
+          type: boolean
+          title: Include emails
+          description: Include the emails for all the results. One email credit will be charged for each verified email.
+          default: false
+          examples:
+          - true
+        webhookUrl:
+          type: string
+          nullable: true
+          title: Webhook url
+          description: Only relevant if `includeEmails` is True. Webhook url to get the reveal email results, if any email has to be processed in the background.
+          examples:
+          - https://url.com/webhook
+      additionalProperties: false
+      type: object
+      title: RevealEmails
+    Revenue:
+      type: string
+      enum:
+      - 0-1M
+      - 1-10M
+      - 10-50M
+      - 50-100M
+      - 100-500M
+      - 500-1000M
+      - '>1000M'
+      title: Revenue
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RevealPhones:
+      properties:
+        includePhones:
+          type: boolean
+          title: Include phones
+          description: Include the phones for all the results. One phone credit will be charged for each verified phone.
+          default: false
+          examples:
+          - true
+        webhookUrl:
+          type: string
+          nullable: true
+          title: Webhook url
+          description: Only relevant if `includePhones` is True. Webhook url to get the reveal phone results, if any phone has to be processed in the background.
+          examples:
+          - https://url.com/webhook
+      additionalProperties: false
+      type: object
+      title: RevealPhones
+    MatchCompaniesBody:
+      properties:
+        companyDataMapping:
+          additionalProperties:
+            $ref: '#/components/schemas/MatchCompanyBody'
+          type: object
+          maxProperties: 10000
+          minProperties: 1
+          title: Mapping of user-defined IDs to company data
+          description: A dictionary where each key is unique user-defined ID for a company, and each value is the data for that company to be enriched. This ID will be included in the webhook response together with the enriched company data, allowing the user to match the response to the original request.
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the enriched companies should be sent to, when completed.
+          examples:
+          - https://some-url.com
+        fields:
+          items:
+            $ref: '#/components/schemas/CompanyField'
+          type: array
+          nullable: true
+          title: Fields
+          description: Fields to return in the Company objects. Only requesting the fields that are needed will use less bandwidth and result in faster responses. If not specified, all fields are returned that can be seen in the example.
+          examples:
+          - - domain
+            - countries
+            - primaryCountry
+            - companySize
+            - industryCategories
+            - industries
+            - linkedinIndustry
+            - ecommerce
+            - keywords
+            - employeeCountOcean
+            - employeeCountLinkedin
+            - revenue
+            - yearFounded
+            - description
+            - emails
+            - phones
+            - logo
+            - technologies
+            - technologyCategories
+            - mobileApps
+            - webTraffic
+            - medias
+            - name
+            - legalName
+            - locations
+            - departmentSizes
+            - rootUrl
+            - faxes
+            - impressum
+            - fundingRound
+            - updatedAt
+      additionalProperties: false
+      type: object
+      required:
+      - companyDataMapping
+      - webhookUrl
+      title: MatchCompaniesBody

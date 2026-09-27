@@ -219,6 +219,31 @@ components:
       - msg
       - type
       title: ValidationError
+    PublicRevealPhoneBody:
+      properties:
+        personIds:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Personids
+          description: List of Ocean person ids to fetch the phone data for. One phone credit will be charged for every verified phone found.
+          examples:
+          - - personId1
+            - personId2
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the phone data should be sent to, when completed.
+          examples:
+          - https://some-url.com
+      additionalProperties: false
+      type: object
+      required:
+      - personIds
+      - webhookUrl
+      title: PublicRevealPhoneBody
     PublicRevealEmailResult:
       properties:
         status:
@@ -249,6 +274,15 @@ components:
       required:
       - status
       title: PublicRevealPhoneResult
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     PublicRevealEmailBody:
       properties:
         personIds:
@@ -274,37 +308,3 @@ components:
       - personIds
       - webhookUrl
       title: PublicRevealEmailBody
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PublicRevealPhoneBody:
-      properties:
-        personIds:
-          items:
-            type: string
-          type: array
-          maxItems: 500
-          minItems: 1
-          title: Personids
-          description: List of Ocean person ids to fetch the phone data for. One phone credit will be charged for every verified phone found.
-          examples:
-          - - personId1
-            - personId2
-        webhookUrl:
-          type: string
-          title: Webhookurl
-          description: Url of the webhook the phone data should be sent to, when completed.
-          examples:
-          - https://some-url.com
-      additionalProperties: false
-      type: object
-      required:
-      - personIds
-      - webhookUrl
-      title: PublicRevealPhoneBody

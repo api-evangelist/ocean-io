@@ -424,6 +424,26 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ScoringFeature:
+      properties:
+        featureName:
+          type: string
+          title: Featurename
+          description: Feature that contributed to score
+        featureValue:
+          type: string
+          title: Featurevalue
+          description: Specific value that matched
+        score:
+          type: number
+          title: Score
+          description: Boost contribution
+      type: object
+      required:
+      - featureName
+      - featureValue
+      - score
+      title: ScoringFeature
     AddMarkedDomainsInput:
       properties:
         domains:
@@ -449,32 +469,6 @@ components:
       - domains
       - type
       title: AddMarkedDomainsInput
-    AttributeSegmentationDomainsResponse:
-      properties:
-        results:
-          items:
-            $ref: '#/components/schemas/AttributedDomain'
-          type: array
-          title: Results
-          description: One result per input domain, in the same order.
-        totalRequested:
-          type: integer
-          title: Totalrequested
-          description: Total number of domains requested.
-          examples:
-          - 3
-        totalAttributed:
-          type: integer
-          title: Totalattributed
-          description: Number of domains attributed to a segment. Excludes unmatched domains and domains that couldn't be evaluated.
-          examples:
-          - 2
-      type: object
-      required:
-      - results
-      - totalRequested
-      - totalAttributed
-      title: AttributeSegmentationDomainsResponse
     ValidationError:
       properties:
         loc:
@@ -501,43 +495,6 @@ components:
       - msg
       - type
       title: ValidationError
-    SegmentCrmMetrics:
-      properties:
-        averageDealValue:
-          type: number
-          nullable: true
-          title: Averagedealvalue
-          description: Average deal value for the segment, from your connected CRM.
-          examples:
-          - 48000
-        averageTimeToClose:
-          type: number
-          nullable: true
-          title: Averagetimetoclose
-          description: Average time to close in days, from your connected CRM.
-          examples:
-          - 64
-        winRate:
-          type: number
-          nullable: true
-          title: Winrate
-          description: Win rate for the segment (0-1), from your connected CRM.
-          examples:
-          - 0.31
-        untouchedCount:
-          type: integer
-          nullable: true
-          title: Untouchedcount
-          description: Companies in the segment you have no CRM activity with yet.
-          examples:
-          - 12
-      type: object
-      required:
-      - averageDealValue
-      - averageTimeToClose
-      - winRate
-      - untouchedCount
-      title: SegmentCrmMetrics
     StatusResponse:
       properties:
         status:
@@ -576,80 +533,23 @@ components:
       - domain
       - segmentId
       title: AttributedDomain
-    ScoringFeature:
+    AttributeSegmentationDomainsRequest:
       properties:
-        featureName:
-          type: string
-          title: Featurename
-          description: Feature that contributed to score
-        featureValue:
-          type: string
-          title: Featurevalue
-          description: Specific value that matched
-        score:
-          type: number
-          title: Score
-          description: Boost contribution
-      type: object
-      required:
-      - featureName
-      - featureValue
-      - score
-      title: ScoringFeature
-    Segment:
-      properties:
-        segmentId:
-          type: integer
-          title: Segmentid
-          description: Unique id of the segment within the segmentation.
-          examples:
-          - 1
-        name:
-          type: string
-          title: Name
-          description: Human-readable label describing the segment.
-          examples:
-          - Enterprise data platforms
         domains:
           items:
             type: string
           type: array
+          maxItems: 1000
+          minItems: 1
           title: Domains
-          description: Domains of the companies assigned to this segment.
+          description: Domains to attribute (max 1000).
           examples:
-          - - snowflake.com
-            - datadoghq.com
-        companyCount:
-          type: integer
-          title: Companycount
-          description: Number of companies in the segment.
-          examples:
-          - 2
-        traits:
-          items:
-            $ref: '#/components/schemas/ScoringFeature'
-          type: array
-          nullable: true
-          title: Traits
-          description: Company attributes that most define the segment, each with the matched value and a relative score. Present when the segmentation was run with scoring features.
-        crmMetrics:
-          $ref: '#/components/schemas/SegmentCrmMetrics'
-          nullable: true
-          description: Deal performance for the segment, from your connected CRM. `null` when CRM metrics aren't available.
-        lookalikeCount:
-          type: integer
-          nullable: true
-          title: Lookalikecount
-          description: Estimated number of lookalike companies for this segment.
-          examples:
-          - 1840
+          - - domain1.com
+            - domain2.com
       type: object
       required:
-      - segmentId
-      - name
       - domains
-      - companyCount
-      title: Segment
+      title: AttributeSegmentationDomainsRequest
     SegmentationInput:
       properties:
         domains:
@@ -724,6 +624,18 @@ components:
       required:
       - domains
       title: SegmentationInput
+    SegmentationId:
+      properties:
+        segmentationId:
+          type: integer
+          title: Segmentationid
+          description: Unique id of the segmentation. Use it to poll for results with the get segmentation endpoint.
+          examples:
+          - 12345
+      type: object
+      required:
+      - segmentationId
+      title: SegmentationId
     Segmentation:
       properties:
         segmentationId:
@@ -763,6 +675,93 @@ components:
       - segments
       - status
       title: Segmentation
+    SegmentationStatus:
+      type: string
+      enum:
+      - IN_PROGRESS
+      - SUCCESSFUL
+      - FAILED
+      title: SegmentationStatus
+    Segment:
+      properties:
+        segmentId:
+          type: integer
+          title: Segmentid
+          description: Unique id of the segment within the segmentation.
+          examples:
+          - 1
+        name:
+          type: string
+          title: Name
+          description: Human-readable label describing the segment.
+          examples:
+          - Enterprise data platforms
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+          description: Domains of the companies assigned to this segment.
+          examples:
+          - - snowflake.com
+            - datadoghq.com
+        companyCount:
+          type: integer
+          title: Companycount
+          description: Number of companies in the segment.
+          examples:
+          - 2
+        traits:
+          items:
+            $ref: '#/components/schemas/ScoringFeature'
+          type: array
+          nullable: true
+          title: Traits
+          description: Company attributes that most define the segment, each with the matched value and a relative score. Present when the segmentation was run with scoring features.
+        crmMetrics:
+          $ref: '#/components/schemas/SegmentCrmMetrics'
+          nullable: true
+          description: Deal performance for the segment, from your connected CRM. `null` when CRM metrics aren't available.
+        lookalikeCount:
+          type: integer
+          nullable: true
+          title: Lookalikecount
+          description: Estimated number of lookalike companies for this segment.
+          examples:
+          - 1840
+      type: object
+      required:
+      - segmentId
+      - name
+      - domains
+      - companyCount
+      title: Segment
+    AttributeSegmentationDomainsResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/AttributedDomain'
+          type: array
+          title: Results
+          description: One result per input domain, in the same order.
+        totalRequested:
+          type: integer
+          title: Totalrequested
+          description: Total number of domains requested.
+          examples:
+          - 3
+        totalAttributed:
+          type: integer
+          title: Totalattributed
+          description: Number of domains attributed to a segment. Excludes unmatched domains and domains that couldn't be evaluated.
+          examples:
+          - 2
+      type: object
+      required:
+      - results
+      - totalRequested
+      - totalAttributed
+      title: AttributeSegmentationDomainsResponse
     HTTPValidationError:
       properties:
         detail:
@@ -772,39 +771,40 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    SegmentationId:
+    SegmentCrmMetrics:
       properties:
-        segmentationId:
+        averageDealValue:
+          type: number
+          nullable: true
+          title: Averagedealvalue
+          description: Average deal value for the segment, from your connected CRM.
+          examples:
+          - 48000
+        averageTimeToClose:
+          type: number
+          nullable: true
+          title: Averagetimetoclose
+          description: Average time to close in days, from your connected CRM.
+          examples:
+          - 64
+        winRate:
+          type: number
+          nullable: true
+          title: Winrate
+          description: Win rate for the segment (0-1), from your connected CRM.
+          examples:
+          - 0.31
+        untouchedCount:
           type: integer
-          title: Segmentationid
-          description: Unique id of the segmentation. Use it to poll for results with the get segmentation endpoint.
+          nullable: true
+          title: Untouchedcount
+          description: Companies in the segment you have no CRM activity with yet.
           examples:
-          - 12345
+          - 12
       type: object
       required:
-      - segmentationId
-      title: SegmentationId
-    SegmentationStatus:
-      type: string
-      enum:
-      - IN_PROGRESS
-      - SUCCESSFUL
-      - FAILED
-      title: SegmentationStatus
-    AttributeSegmentationDomainsRequest:
-      properties:
-        domains:
-          items:
-            type: string
-          type: array
-          maxItems: 1000
-          minItems: 1
-          title: Domains
-          description: Domains to attribute (max 1000).
-          examples:
-          - - domain1.com
-            - domain2.com
-      type: object
-      required:
-      - domains
-      title: AttributeSegmentationDomainsRequest
+      - averageDealValue
+      - averageTimeToClose
+      - winRate
+      - untouchedCount
+      title: SegmentCrmMetrics
