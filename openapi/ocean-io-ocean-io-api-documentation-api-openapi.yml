@@ -230,286 +230,248 @@ webhooks:
       - Ocean.io API Documentation
 components:
   schemas:
-    Growth:
+    Media:
       properties:
-        threeMonths:
-          type: integer
+        url:
+          type: string
+          title: Media URL
+          description: URL of the media
+        handle:
+          type: string
           nullable: true
-          title: Growth in the last 3 months
-          description: Actual headcount change (positive or negative number)
-        threeMonthsPercentage:
-          type: number
-          nullable: true
-          title: Headcount change in the last 3 months
-          description: 'Headcount growth as a decimal (e.g., 0.15 represents 15% growth) '
-        sixMonths:
-          type: integer
-          nullable: true
-          title: Growth in the last 6 months
-          description: Actual headcount change (positive or negative number)
-        sixMonthsPercentage:
-          type: number
-          nullable: true
-          title: Headcount change in the last 6 months
-          description: Headcount growth as a decimal (e.g., 0.15 represents 15% growth)
-        twelveMonths:
-          type: integer
-          nullable: true
-          title: Growth in the last 12 months
-          description: Actual headcount change (positive or negative number)
-        twelveMonthsPercentage:
-          type: number
-          nullable: true
-          title: Headcount change in the last 12 months
-          description: Headcount growth as a decimal (e.g., 0.15 represents 15% growth)
-      type: object
-      title: Growth
-    ImpressumPerson:
-      properties:
+          title: Handle
+          description: ids extracted from social media urls
         name:
           type: string
+          nullable: true
           title: Name
-          examples:
-          - Michael Scott
-        position:
-          type: string
-          nullable: true
-          title: Position
-          examples:
-          - Regional Manager
-      type: object
-      required:
-      - name
-      title: ImpressumPerson
-    public_api__models__company__Location:
-      properties:
-        primary:
-          type: boolean
-          title: Primary location
-          description: True if the location is the headquarter of the company
-          default: false
-          examples:
-          - true
-          - false
-        latitude:
-          type: number
-          nullable: true
-          title: Latitude
-          description: Latitude of the location
-          examples:
-          - 43.6471
-        longitude:
-          type: number
-          nullable: true
-          title: Longitude
-          description: Longitude of the location
-          examples:
-          - -79.3971
-        country:
-          type: string
-          nullable: true
-          title: Country code
-          description: Country code of the location
-          examples:
-          - us
-        locality:
-          type: string
-          nullable: true
-          title: Locality/City
-          description: Locality (city) of the location
-          examples:
-          - Scranton
-        region:
-          type: string
-          nullable: true
-          title: Region
-          description: Region of the location. Available abbreviation values are located at /v2/data-fields endpoint (region section)
-          examples:
-          - Lackawanna County
-        postalCode:
-          type: string
-          nullable: true
-          title: Postal code
-          description: Postal code of the location
-          examples:
-          - '18505'
-        streetAddress:
-          type: string
-          nullable: true
-          title: Street address
-          description: Street address of the location
-          examples:
-          - Scranton Business Park, 1725 Slough Ave Suit 200
-        state:
-          type: string
-          nullable: true
-          title: State
-          description: Abbreviation of the location (if applicable). Available abbreviation values are located at /v2/data-fields endpoint (region section). Deprecated, please use `region` instead
-          examples:
-          - pa
-          deprecated: true
-        regionCode:
-          type: string
-          nullable: true
-          title: Region code
-          description: Region code of the location
-          examples:
-          - PA
-      type: object
-      title: Location
-    public_api__models__reveal_phones__Phone:
-      properties:
-        numbers:
+          description: Name of the company as it appears in the social media account
+        specialties:
           items:
             type: string
           type: array
           nullable: true
-          title: Numbers
-          description: Phone numbers
+          title: Specialties
+          description: Specialties of the company as it appears in the social media account. Right now we only have this for LinkedIn.
           examples:
-          - - '+4512345678'
-            - +33 6 00 00 00 00
-        status:
-          type: string
-          enum:
-          - verified
-          - notFound
-          - inProgress
-          title: Status
-          description: 'Status of the phone numbers: verified or not found'
-        personId:
-          type: string
-          title: Personid
-          description: Ocean ID of the person
-          examples:
-          - personId
+          - - artificial intelligence
+            - machine learning
       type: object
       required:
-      - numbers
-      - status
-      - personId
-      title: Phone
-    DepartmentSizesGrowth:
-      properties:
-        department:
-          $ref: '#/components/schemas/Department'
-          description: Department name
-        growth:
-          $ref: '#/components/schemas/Growth'
-          nullable: true
-          title: Headcount growth
-          description: Headcount growth per department
-      type: object
-      required:
-      - department
-      - growth
-      title: DepartmentSizesGrowth
-    Department:
+      - url
+      title: Media
+    MatchStatus:
       type: string
       enum:
-      - Accounting and Finance
-      - Board
-      - Business Support
-      - Customer Relations
-      - Design
-      - Editorial Personnel
-      - Engineering
-      - Founder/Owner
-      - Healthcare
-      - HR
-      - Legal
-      - Management
-      - Manufacturing
-      - Marketing and Advertising
-      - Operations
-      - PR and Communications
-      - Procurement
-      - Product
-      - Quality Control
-      - R&D
-      - Sales
-      - Security
-      - Supply Chain
-      - Other
-      title: Department
-    EnrichPeopleWebhookResult:
+      - Success
+      - Not enough data
+      - Not found
+      - Too many matches
+      title: MatchStatus
+    PublicPerson:
       properties:
-        people:
-          items:
-            $ref: '#/components/schemas/PublicPersonWithUniqueId'
-          type: array
-          title: Enriched people
-          description: List of enriched people
-        overallStatus:
-          $ref: '#/components/schemas/OverallEnrichmentStatus'
-          title: Overall enrichment status
-          description: 'Status of the whole enrichment batch: `"Completed`" if all people were processed, `"Incomplete`" if enrichment failed because of time out.'
-        creditsUsed:
-          type: number
-          title: Creditsused
-          description: Number of credits charged for this request.
+        id:
+          type: string
+          title: Id
+          description: Internal ocean id of the person
           examples:
-          - 1.0
-      type: object
-      required:
-      - overallStatus
-      - creditsUsed
-      title: EnrichPeopleWebhookResult
-    FundingRound:
-      properties:
-        date:
+          - e9447c74eafa8a19
+        domain:
+          type: string
+          title: Domain
+          description: Domain of the company the person is working for
+          examples:
+          - google.com
+        name:
           type: string
           nullable: true
-          title: Funding date
-          description: Date of the funding round
-        type:
-          $ref: '#/components/schemas/FundingRoundType'
+          title: Name
+          description: Full name of the person
+          examples:
+          - John Doe
+        firstName:
+          type: string
           nullable: true
-          title: Funding round type
-          description: Type of the funding round
-        moneyRaisedInUsd:
+          title: Firstname
+          description: First name of the person
+          examples:
+          - John
+        lastName:
+          type: string
+          nullable: true
+          title: Lastname
+          description: Last name of the person
+          examples:
+          - Doe
+        country:
+          type: string
+          nullable: true
+          title: Country
+          description: Country code of the person
+          examples:
+          - us
+          - dk
+        state:
+          type: string
+          nullable: true
+          title: State
+          description: State code of the person
+          examples:
+          - CA
+          - NY
+        location:
+          type: string
+          nullable: true
+          title: Location
+          description: Location of the person
+          examples:
+          - Copenhagen, Capital Region, Denmark
+        linkedinUrl:
+          type: string
+          nullable: true
+          title: Linkedinurl
+          description: Link to the linkedin profile of the person
+          examples:
+          - https://www.linkedin.com/in/someone
+        seniorities:
+          items:
+            $ref: '#/components/schemas/Seniority'
+          type: array
+          nullable: true
+          title: Seniorities
+          description: List of seniorities computed from the job title of the person
+          examples:
+          - - C-Level
+            - Manager
+        departments:
+          items:
+            $ref: '#/components/schemas/Department'
+          type: array
+          nullable: true
+          title: Departments
+          description: List of departments computed from the job title of the person
+          examples:
+          - - Management
+            - Marketing and Advertising
+        photo:
+          type: string
+          nullable: true
+          title: Photo
+          description: Link to the person's profile picture on LinkedIn
+          examples:
+          - http://media.licdn.com/dms/image/somelink
+        jobTitle:
+          type: string
+          nullable: true
+          title: Jobtitle
+          description: Job title of the person
+          examples:
+          - Professeur
+        jobTitleEnglish:
+          type: string
+          nullable: true
+          title: Jobtitleenglish
+          description: English translation of the person's job title
+          examples:
+          - Teacher
+        currentJobDescription:
+          type: string
+          nullable: true
+          title: Currentjobdescription
+          description: Current job description of the person
+          examples:
+          - Software Engineer specializing in cloud infrastructure
+        experiences:
+          items:
+            $ref: '#/components/schemas/Experience'
+          type: array
+          nullable: true
+          title: Experiences
+          description: List of experiences of the person
+          examples:
+          - - dateFrom: '2020-01-01'
+              dateTo: '2021-01-01'
+              description: Software Engineer specializing in cloud infrastructure
+              domain: domain.com
+              jobTitle: Software Engineer
+        summary:
+          type: string
+          nullable: true
+          title: Summary
+          description: Summary of the person
+          examples:
+          - Some text that the person wrote to describe themselves
+        skills:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Skills
+          description: Skills of the person
+          examples:
+          - - Product Management
+            - Entrepreneurship
+            - Social Media
+        phone:
+          $ref: '#/components/schemas/public_api__models__person__Phone'
+          nullable: true
+          description: Phone numbers of the person
+          examples:
+          - numbers:
+            - '+4512345678'
+            - +33 6 00 00 00 00
+            status: verified
+        email:
+          $ref: '#/components/schemas/public_api__models__person__Email'
+          nullable: true
+          description: Email of the person
+          examples:
+          - address: example.jonas@ocean.io
+            status: verified
+        inferredEmails:
+          items:
+            type: string
+          type: array
+          title: Inferredemails
+          description: List of inferred email addresses for the person. This is only available for enterprise subscriptions.
+          examples:
+          - - john.doe@domain.com
+            - j.doe@domain.com
+        updatedAt:
+          type: string
+          nullable: true
+          title: Updated at
+          description: When has the person data been updated for the last time
+          examples:
+          - '2022-10-27T12:09:37Z'
+        connectionsCount:
           type: integer
           nullable: true
-          title: Money raised in USD
-          description: Amount of money raised in USD
-        cbUrl:
+          title: Number of connections
+          description: Number of LinkedIn connections of the person
+          examples:
+          - 10
+          - 500
+        followersCount:
+          type: integer
+          nullable: true
+          title: Number of followers
+          description: Number of LinkedIn followers of the person
+          examples:
+          - 50
+          - 1000
+        headline:
           type: string
           nullable: true
-          title: Crunchbase URL
-          description: URL of the funding round on Crunchbase
-      type: object
-      title: FundingRound
-    PublicRevealPhoneWebhookResult:
-      properties:
-        phones:
-          items:
-            $ref: '#/components/schemas/public_api__models__reveal_phones__Phone'
-          type: array
-          title: Phones
-          description: Phone data, sent back in the same order as the input ids.
+          title: Headline
+          description: Headline of the person
           examples:
-          - - numbers:
-              - '+4512345678'
-              personId: personId1
-              status: verified
-            - numbers:
-              - '+33600000000'
-              - '+4512121212'
-              personId: personId2
-              status: verified
-            - personId: personId3
-              status: notFound
-        creditsUsed:
-          type: number
-          title: Creditsused
-          description: Number of credits charged for this request.
-          examples:
-          - 10.0
+          - Senior Software Engineer | Tech Lead
       type: object
       required:
-      - phones
-      - creditsUsed
-      title: PublicRevealPhoneWebhookResult
+      - id
+      - domain
+      title: PublicPerson
     PublicRevealEmailWebhookResult:
       properties:
         emails:
@@ -538,51 +500,146 @@ components:
       - emails
       - creditsUsed
       title: PublicRevealEmailWebhookResult
-    Seniority:
-      type: string
-      enum:
-      - Owner
-      - Founder
-      - Board Member
-      - C-Level
-      - Partner
-      - VP
-      - Head
-      - Director
-      - Manager
-      - Other
-      title: Seniority
-    MatchStatus:
-      type: string
-      enum:
-      - Success
-      - Not enough data
-      - Not found
-      - Too many matches
-      title: MatchStatus
-    public_api__models__person__Email:
+    Medias:
       properties:
-        address:
+        linkedin:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: LinkedIn page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://www.linkedin.com/company/dunder-mifflin
+        twitter:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Twitter page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://twitter.com/dunder-mifflin
+        youtube:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: YouTube page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://youtube.com/channel/dunder-mifflin
+        facebook:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Facebook page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://facebook.com/dunder-mifflin
+        xing:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Xing page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://xing.com/dunder-mifflin
+        tiktok:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: TikTok page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://tiktok.com/dunder-mifflin
+        instagram:
+          $ref: '#/components/schemas/Media'
+          nullable: true
+          description: Instagram page associated with the company
+          examples:
+          - handle: dunder-mifflin
+            name: Dunder Mifflin Paper Company, Inc.
+            url: https://instagram.com/dunder-mifflin
+      type: object
+      title: Medias
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Experience:
+      properties:
+        domain:
           type: string
           nullable: true
-          title: Address
-          description: Email address
+          title: Domain
+          description: Domain of the company the person is working for
           examples:
-          - name@gmail.com
-        status:
+          - domain.com
+        jobTitle:
           type: string
-          enum:
-          - verified
-          - guessed
-          - catchAll
-          - notFound
-          title: Status
-          description: 'Status of the address: verified, catchAll or guessed'
+          nullable: true
+          title: Jobtitle
+          description: Job title of the person
+          examples:
+          - Designer
+        dateFrom:
+          type: string
+          nullable: true
+          title: Datefrom
+          description: Start date of the experience
+          examples:
+          - '2020-01-01'
+        dateTo:
+          type: string
+          nullable: true
+          title: Dateto
+          description: End date of the experience
+          examples:
+          - '2021-01-01'
+        description:
+          type: string
+          nullable: true
+          title: Description
+          description: Description of the experience
+          examples:
+          - Software Engineer specializing in cloud infrastructure
+        linkedinCompanyHandle:
+          type: string
+          nullable: true
+          title: Linkedincompanyhandle
+          description: Linkedin handle of the company the person is working for
+          examples:
+          - colliers
+      type: object
+      title: Experience
+    PublicSearchPeopleEmailWebhookResult:
+      properties:
+        people:
+          items:
+            $ref: '#/components/schemas/EmailWebhookPerson'
+          type: array
+          title: People
+        detail:
+          type: string
+          title: Detail
+          description: Status text
+          examples:
+          - OK
+        total:
+          type: integer
+          nullable: true
+          title: Total
+          description: Total number of results of the search, accessible with pagination.
+          examples:
+          - 32871
       type: object
       required:
-      - address
-      - status
-      title: Email
+      - people
+      - detail
+      title: PublicSearchPeopleEmailWebhookResult
     FundingRoundType:
       type: string
       enum:
@@ -615,55 +672,29 @@ components:
       - Series I
       - Series J
       title: FundingRoundType
-    PublicSearchPeoplePhoneWebhookResult:
+    public_api__models__person__Email:
       properties:
-        people:
-          items:
-            $ref: '#/components/schemas/PhoneWebhookPerson'
-          type: array
-          title: People
-        detail:
+        address:
           type: string
-          title: Detail
-          description: Status text
-          examples:
-          - OK
-        total:
-          type: integer
           nullable: true
-          title: Total
-          description: Total number of results of the search, accessible with pagination.
+          title: Address
+          description: Email address
           examples:
-          - 32871
+          - name@gmail.com
+        status:
+          type: string
+          enum:
+          - verified
+          - guessed
+          - catchAll
+          - notFound
+          title: Status
+          description: 'Status of the address: verified, catchAll or guessed'
       type: object
       required:
-      - people
-      - detail
-      title: PublicSearchPeoplePhoneWebhookResult
-    WebTraffic:
-      properties:
-        visits:
-          type: integer
-          nullable: true
-          title: Total visits for the last available month
-          description: Total number of visits of the website for the last available month
-        pageViews:
-          type: integer
-          nullable: true
-          title: Website views
-          description: Number of views of the website for the last available month
-        pagesPerVisit:
-          type: number
-          nullable: true
-          title: Pages per visit
-          description: Average number of pages viewed per visit for the last available month
-        bounceRate:
-          type: number
-          nullable: true
-          title: Bouncerate
-          description: Bounce rate of the domain for the last available month
-      type: object
-      title: WebTraffic
+      - address
+      - status
+      title: Email
     EmailWebhookPerson:
       properties:
         id:
@@ -871,210 +902,207 @@ components:
       - id
       - domain
       title: EmailWebhookPerson
-    PublicPerson:
+    Growth:
       properties:
-        id:
-          type: string
-          title: Id
-          description: Internal ocean id of the person
-          examples:
-          - e9447c74eafa8a19
-        domain:
-          type: string
-          title: Domain
-          description: Domain of the company the person is working for
-          examples:
-          - google.com
-        name:
-          type: string
+        threeMonths:
+          type: integer
           nullable: true
-          title: Name
-          description: Full name of the person
-          examples:
-          - John Doe
-        firstName:
-          type: string
+          title: Growth in the last 3 months
+          description: Actual headcount change (positive or negative number)
+        threeMonthsPercentage:
+          type: number
           nullable: true
-          title: Firstname
-          description: First name of the person
-          examples:
-          - John
-        lastName:
-          type: string
+          title: Headcount change in the last 3 months
+          description: 'Headcount growth as a decimal (e.g., 0.15 represents 15% growth) '
+        sixMonths:
+          type: integer
           nullable: true
-          title: Lastname
-          description: Last name of the person
-          examples:
-          - Doe
+          title: Growth in the last 6 months
+          description: Actual headcount change (positive or negative number)
+        sixMonthsPercentage:
+          type: number
+          nullable: true
+          title: Headcount change in the last 6 months
+          description: Headcount growth as a decimal (e.g., 0.15 represents 15% growth)
+        twelveMonths:
+          type: integer
+          nullable: true
+          title: Growth in the last 12 months
+          description: Actual headcount change (positive or negative number)
+        twelveMonthsPercentage:
+          type: number
+          nullable: true
+          title: Headcount change in the last 12 months
+          description: Headcount growth as a decimal (e.g., 0.15 represents 15% growth)
+      type: object
+      title: Growth
+    ContactNumber:
+      properties:
+        number:
+          type: string
+          title: Number
+          description: Contact number
         country:
           type: string
           nullable: true
-          title: Country
-          description: Country code of the person
-          examples:
-          - us
-          - dk
-        state:
-          type: string
+          title: Contact number country code
+          description: Country code of the contact number
+        primary:
+          type: boolean
           nullable: true
-          title: State
-          description: State code of the person
-          examples:
-          - CA
-          - NY
-        location:
-          type: string
-          nullable: true
-          title: Location
-          description: Location of the person
-          examples:
-          - Copenhagen, Capital Region, Denmark
-        linkedinUrl:
-          type: string
-          nullable: true
-          title: Linkedinurl
-          description: Link to the linkedin profile of the person
-          examples:
-          - https://www.linkedin.com/in/someone
-        seniorities:
-          items:
-            $ref: '#/components/schemas/Seniority'
-          type: array
-          nullable: true
-          title: Seniorities
-          description: List of seniorities computed from the job title of the person
-          examples:
-          - - C-Level
-            - Manager
-        departments:
-          items:
-            $ref: '#/components/schemas/Department'
-          type: array
-          nullable: true
-          title: Departments
-          description: List of departments computed from the job title of the person
-          examples:
-          - - Management
-            - Marketing and Advertising
-        photo:
-          type: string
-          nullable: true
-          title: Photo
-          description: Link to the person's profile picture on LinkedIn
-          examples:
-          - http://media.licdn.com/dms/image/somelink
-        jobTitle:
-          type: string
-          nullable: true
-          title: Jobtitle
-          description: Job title of the person
-          examples:
-          - Professeur
-        jobTitleEnglish:
-          type: string
-          nullable: true
-          title: Jobtitleenglish
-          description: English translation of the person's job title
-          examples:
-          - Teacher
-        currentJobDescription:
-          type: string
-          nullable: true
-          title: Currentjobdescription
-          description: Current job description of the person
-          examples:
-          - Software Engineer specializing in cloud infrastructure
-        experiences:
-          items:
-            $ref: '#/components/schemas/Experience'
-          type: array
-          nullable: true
-          title: Experiences
-          description: List of experiences of the person
-          examples:
-          - - dateFrom: '2020-01-01'
-              dateTo: '2021-01-01'
-              description: Software Engineer specializing in cloud infrastructure
-              domain: domain.com
-              jobTitle: Software Engineer
-        summary:
-          type: string
-          nullable: true
-          title: Summary
-          description: Summary of the person
-          examples:
-          - Some text that the person wrote to describe themselves
-        skills:
-          items:
-            type: string
-          type: array
-          nullable: true
-          title: Skills
-          description: Skills of the person
-          examples:
-          - - Product Management
-            - Entrepreneurship
-            - Social Media
-        phone:
-          $ref: '#/components/schemas/public_api__models__person__Phone'
-          nullable: true
-          description: Phone numbers of the person
-          examples:
-          - numbers:
-            - '+4512345678'
-            - +33 6 00 00 00 00
-            status: verified
-        email:
-          $ref: '#/components/schemas/public_api__models__person__Email'
-          nullable: true
-          description: Email of the person
-          examples:
-          - address: example.jonas@ocean.io
-            status: verified
-        inferredEmails:
-          items:
-            type: string
-          type: array
-          title: Inferredemails
-          description: List of inferred email addresses for the person. This is only available for enterprise subscriptions.
-          examples:
-          - - john.doe@domain.com
-            - j.doe@domain.com
-        updatedAt:
-          type: string
-          nullable: true
-          title: Updated at
-          description: When has the person data been updated for the last time
-          examples:
-          - '2022-10-27T12:09:37Z'
-        connectionsCount:
-          type: integer
-          nullable: true
-          title: Number of connections
-          description: Number of LinkedIn connections of the person
-          examples:
-          - 10
-          - 500
-        followersCount:
-          type: integer
-          nullable: true
-          title: Number of followers
-          description: Number of LinkedIn followers of the person
-          examples:
-          - 50
-          - 1000
-        headline:
-          type: string
-          nullable: true
-          title: Headline
-          description: Headline of the person
-          examples:
-          - Senior Software Engineer | Tech Lead
+          title: Primary contact number
+          description: True if the contact number is the primary contact number of the company
       type: object
       required:
-      - id
-      - domain
-      title: PublicPerson
+      - number
+      title: ContactNumber
+    WebTraffic:
+      properties:
+        visits:
+          type: integer
+          nullable: true
+          title: Total visits for the last available month
+          description: Total number of visits of the website for the last available month
+        pageViews:
+          type: integer
+          nullable: true
+          title: Website views
+          description: Number of views of the website for the last available month
+        pagesPerVisit:
+          type: number
+          nullable: true
+          title: Pages per visit
+          description: Average number of pages viewed per visit for the last available month
+        bounceRate:
+          type: number
+          nullable: true
+          title: Bouncerate
+          description: Bounce rate of the domain for the last available month
+      type: object
+      title: WebTraffic
+    PublicPersonWithUniqueId:
+      properties:
+        person:
+          $ref: '#/components/schemas/PublicPerson'
+          nullable: true
+          title: Person
+          description: Enriched person
+          examples:
+          - domain: domain.com
+            id: publicid
+            inferredEmails: []
+            updatedAt: '2022-10-27T12:09:37Z'
+        uniqueId:
+          type: string
+          title: Unique id of the person
+          description: A unique identifier provided by the user for a person. This ID will be included in the webhook response together with the enriched person data, allowing the user to match the response to the original request.
+          examples:
+          - uniqueid
+        status:
+          $ref: '#/components/schemas/MatchStatus'
+          title: Status
+          description: Status of the person enrichment
+      type: object
+      required:
+      - uniqueId
+      - status
+      title: PublicPersonWithUniqueId
+    PublicSearchPeoplePhoneWebhookResult:
+      properties:
+        people:
+          items:
+            $ref: '#/components/schemas/PhoneWebhookPerson'
+          type: array
+          title: People
+        detail:
+          type: string
+          title: Detail
+          description: Status text
+          examples:
+          - OK
+        total:
+          type: integer
+          nullable: true
+          title: Total
+          description: Total number of results of the search, accessible with pagination.
+          examples:
+          - 32871
+      type: object
+      required:
+      - people
+      - detail
+      title: PublicSearchPeoplePhoneWebhookResult
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Department:
+      type: string
+      enum:
+      - Accounting and Finance
+      - Board
+      - Business Support
+      - Customer Relations
+      - Design
+      - Editorial Personnel
+      - Engineering
+      - Founder/Owner
+      - Healthcare
+      - HR
+      - Legal
+      - Management
+      - Manufacturing
+      - Marketing and Advertising
+      - Operations
+      - PR and Communications
+      - Procurement
+      - Product
+      - Quality Control
+      - R&D
+      - Sales
+      - Security
+      - Supply Chain
+      - Other
+      title: Department
+    ImpressumPerson:
+      properties:
+        name:
+          type: string
+          title: Name
+          examples:
+          - Michael Scott
+        position:
+          type: string
+          nullable: true
+          title: Position
+          examples:
+          - Regional Manager
+      type: object
+      required:
+      - name
+      title: ImpressumPerson
     PublicCompanyWithUniqueId:
       properties:
         company:
@@ -1097,22 +1125,44 @@ components:
       - uniqueId
       - status
       title: PublicCompanyWithUniqueId
-    PublicCompanySize:
-      type: string
-      enum:
-      - 0-1
-      - 2-10
-      - 11-50
-      - 51-200
-      - 201-500
-      - 501-1000
-      - 1001-5000
-      - 5001-10000
-      - 10001-50000
-      - 50001-100000
-      - 100001-500000
-      - 500000+
-      title: PublicCompanySize
+    FundingRound:
+      properties:
+        date:
+          type: string
+          nullable: true
+          title: Funding date
+          description: Date of the funding round
+        type:
+          $ref: '#/components/schemas/FundingRoundType'
+          nullable: true
+          title: Funding round type
+          description: Type of the funding round
+        moneyRaisedInUsd:
+          type: integer
+          nullable: true
+          title: Money raised in USD
+          description: Amount of money raised in USD
+        cbUrl:
+          type: string
+          nullable: true
+          title: Crunchbase URL
+          description: URL of the funding round on Crunchbase
+      type: object
+      title: FundingRound
+    DepartmentSize:
+      properties:
+        department:
+          $ref: '#/components/schemas/Department'
+          description: Department name
+        size:
+          type: integer
+          title: Size
+          description: Department size
+      type: object
+      required:
+      - department
+      - size
+      title: DepartmentSize
     Impressum:
       properties:
         company:
@@ -1173,155 +1223,94 @@ components:
           description: People mentioned in Impressum
       type: object
       title: Impressum
-    OverallEnrichmentStatus:
-      type: string
-      enum:
-      - Completed
-      - Incomplete
-      title: OverallEnrichmentStatus
-    ValidationError:
+    PublicRevealPhoneWebhookResult:
       properties:
-        loc:
+        phones:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/public_api__models__reveal_phones__Phone'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    PublicSearchPeopleEmailWebhookResult:
-      properties:
-        people:
-          items:
-            $ref: '#/components/schemas/EmailWebhookPerson'
-          type: array
-          title: People
-        detail:
-          type: string
-          title: Detail
-          description: Status text
+          title: Phones
+          description: Phone data, sent back in the same order as the input ids.
           examples:
-          - OK
-        total:
-          type: integer
-          nullable: true
-          title: Total
-          description: Total number of results of the search, accessible with pagination.
+          - - numbers:
+              - '+4512345678'
+              personId: personId1
+              status: verified
+            - numbers:
+              - '+33600000000'
+              - '+4512121212'
+              personId: personId2
+              status: verified
+            - personId: personId3
+              status: notFound
+        creditsUsed:
+          type: number
+          title: Creditsused
+          description: Number of credits charged for this request.
           examples:
-          - 32871
+          - 10.0
       type: object
       required:
-      - people
-      - detail
-      title: PublicSearchPeopleEmailWebhookResult
-    ContactNumber:
-      properties:
-        number:
-          type: string
-          title: Number
-          description: Contact number
-        country:
-          type: string
-          nullable: true
-          title: Contact number country code
-          description: Country code of the contact number
-        primary:
-          type: boolean
-          nullable: true
-          title: Primary contact number
-          description: True if the contact number is the primary contact number of the company
-      type: object
-      required:
-      - number
-      title: ContactNumber
-    DepartmentSize:
+      - phones
+      - creditsUsed
+      title: PublicRevealPhoneWebhookResult
+    DepartmentSizesGrowth:
       properties:
         department:
           $ref: '#/components/schemas/Department'
           description: Department name
-        size:
-          type: integer
-          title: Size
-          description: Department size
+        growth:
+          $ref: '#/components/schemas/Growth'
+          nullable: true
+          title: Headcount growth
+          description: Headcount growth per department
       type: object
       required:
       - department
-      - size
-      title: DepartmentSize
-    Experience:
+      - growth
+      title: DepartmentSizesGrowth
+    Revenue:
+      type: string
+      enum:
+      - 0-1M
+      - 1-10M
+      - 10-50M
+      - 50-100M
+      - 100-500M
+      - 500-1000M
+      - '>1000M'
+      title: Revenue
+    MobileApp:
       properties:
-        domain:
+        link:
           type: string
           nullable: true
-          title: Domain
-          description: Domain of the company the person is working for
+          title: url
+          description: Website address for this app
           examples:
-          - domain.com
-        jobTitle:
+          - https://www.my.app.com/
+        name:
           type: string
-          nullable: true
-          title: Jobtitle
-          description: Job title of the person
+          title: App name
+          description: App name
           examples:
-          - Designer
-        dateFrom:
-          type: string
-          nullable: true
-          title: Datefrom
-          description: Start date of the experience
-          examples:
-          - '2020-01-01'
-        dateTo:
-          type: string
-          nullable: true
-          title: Dateto
-          description: End date of the experience
-          examples:
-          - '2021-01-01'
-        description:
-          type: string
-          nullable: true
-          title: Description
-          description: Description of the experience
-          examples:
-          - Software Engineer specializing in cloud infrastructure
-        linkedinCompanyHandle:
-          type: string
-          nullable: true
-          title: Linkedincompanyhandle
-          description: Linkedin handle of the company the person is working for
-          examples:
-          - colliers
+          - My awesome app
       type: object
-      title: Experience
-    EnrichCompaniesWebhookResult:
+      required:
+      - name
+      title: MobileApp
+    EnrichPeopleWebhookResult:
       properties:
-        companies:
+        people:
           items:
-            $ref: '#/components/schemas/PublicCompanyWithUniqueId'
+            $ref: '#/components/schemas/PublicPersonWithUniqueId'
           type: array
-          title: Enriched companies
-          description: List of enriched companies
+          title: Enriched people
+          description: List of enriched people
         overallStatus:
           $ref: '#/components/schemas/OverallEnrichmentStatus'
           title: Overall enrichment status
-          description: 'Status of the whole enrichment batch: `"Completed`" if all companies were processed, `"Incomplete`" if enrichment failed because of time out.'
+          description: 'Status of the whole enrichment batch: `"Completed`" if all people were processed, `"Incomplete`" if enrichment failed because of time out.'
         creditsUsed:
           type: number
           title: Creditsused
@@ -1332,7 +1321,192 @@ components:
       required:
       - overallStatus
       - creditsUsed
-      title: EnrichCompaniesWebhookResult
+      title: EnrichPeopleWebhookResult
+    public_api__models__reveal_phones__Phone:
+      properties:
+        numbers:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Numbers
+          description: Phone numbers
+          examples:
+          - - '+4512345678'
+            - +33 6 00 00 00 00
+        status:
+          type: string
+          enum:
+          - verified
+          - notFound
+          - inProgress
+          title: Status
+          description: 'Status of the phone numbers: verified or not found'
+        personId:
+          type: string
+          title: Personid
+          description: Ocean ID of the person
+          examples:
+          - personId
+      type: object
+      required:
+      - numbers
+      - status
+      - personId
+      title: Phone
+    PublicCompanySize:
+      type: string
+      enum:
+      - 0-1
+      - 2-10
+      - 11-50
+      - 51-200
+      - 201-500
+      - 501-1000
+      - 1001-5000
+      - 5001-10000
+      - 10001-50000
+      - 50001-100000
+      - 100001-500000
+      - 500000+
+      title: PublicCompanySize
+    public_api__models__company__Location:
+      properties:
+        primary:
+          type: boolean
+          title: Primary location
+          description: True if the location is the headquarter of the company
+          default: false
+          examples:
+          - true
+          - false
+        latitude:
+          type: number
+          nullable: true
+          title: Latitude
+          description: Latitude of the location
+          examples:
+          - 43.6471
+        longitude:
+          type: number
+          nullable: true
+          title: Longitude
+          description: Longitude of the location
+          examples:
+          - -79.3971
+        country:
+          type: string
+          nullable: true
+          title: Country code
+          description: Country code of the location
+          examples:
+          - us
+        locality:
+          type: string
+          nullable: true
+          title: Locality/City
+          description: Locality (city) of the location
+          examples:
+          - Scranton
+        region:
+          type: string
+          nullable: true
+          title: Region
+          description: Region of the location. Available abbreviation values are located at /v2/data-fields endpoint (region section)
+          examples:
+          - Lackawanna County
+        postalCode:
+          type: string
+          nullable: true
+          title: Postal code
+          description: Postal code of the location
+          examples:
+          - '18505'
+        streetAddress:
+          type: string
+          nullable: true
+          title: Street address
+          description: Street address of the location
+          examples:
+          - Scranton Business Park, 1725 Slough Ave Suit 200
+        state:
+          type: string
+          nullable: true
+          title: State
+          description: Abbreviation of the location (if applicable). Available abbreviation values are located at /v2/data-fields endpoint (region section). Deprecated, please use `region` instead
+          examples:
+          - pa
+          deprecated: true
+        regionCode:
+          type: string
+          nullable: true
+          title: Region code
+          description: Region code of the location
+          examples:
+          - PA
+      type: object
+      title: Location
+    public_api__models__person__Phone:
+      properties:
+        numbers:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Numbers
+          description: Phone numbers
+          examples:
+          - - '+4512345678'
+            - +33 6 00 00 00 00
+        status:
+          type: string
+          enum:
+          - verified
+          - notFound
+          - inProgress
+          title: Status
+          description: 'Status of the phone numbers: verified or not found'
+      type: object
+      required:
+      - numbers
+      - status
+      title: Phone
+    OverallEnrichmentStatus:
+      type: string
+      enum:
+      - Completed
+      - Incomplete
+      title: OverallEnrichmentStatus
+    public_api__models__reveal_emails__Email:
+      properties:
+        address:
+          type: string
+          nullable: true
+          title: Address
+          description: Email address
+          examples:
+          - name@gmail.com
+        status:
+          type: string
+          enum:
+          - verified
+          - guessed
+          - catchAll
+          - notFound
+          title: Status
+          description: 'Status of the address: verified, catchAll or guessed'
+        personId:
+          type: string
+          title: Personid
+          description: Ocean ID of the person
+          examples:
+          - personId
+      type: object
+      required:
+      - address
+      - status
+      - personId
+      title: Email
     PhoneWebhookPerson:
       properties:
         id:
@@ -1542,197 +1716,29 @@ components:
       - id
       - domain
       title: PhoneWebhookPerson
-    PublicPersonWithUniqueId:
+    EnrichCompaniesWebhookResult:
       properties:
-        person:
-          $ref: '#/components/schemas/PublicPerson'
-          nullable: true
-          title: Person
-          description: Enriched person
-          examples:
-          - domain: domain.com
-            id: publicid
-            inferredEmails: []
-            updatedAt: '2022-10-27T12:09:37Z'
-        uniqueId:
-          type: string
-          title: Unique id of the person
-          description: A unique identifier provided by the user for a person. This ID will be included in the webhook response together with the enriched person data, allowing the user to match the response to the original request.
-          examples:
-          - uniqueid
-        status:
-          $ref: '#/components/schemas/MatchStatus'
-          title: Status
-          description: Status of the person enrichment
-      type: object
-      required:
-      - uniqueId
-      - status
-      title: PublicPersonWithUniqueId
-    Medias:
-      properties:
-        linkedin:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: LinkedIn page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://www.linkedin.com/company/dunder-mifflin
-        twitter:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Twitter page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://twitter.com/dunder-mifflin
-        youtube:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: YouTube page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://youtube.com/channel/dunder-mifflin
-        facebook:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Facebook page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://facebook.com/dunder-mifflin
-        xing:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Xing page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://xing.com/dunder-mifflin
-        tiktok:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: TikTok page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://tiktok.com/dunder-mifflin
-        instagram:
-          $ref: '#/components/schemas/Media'
-          nullable: true
-          description: Instagram page associated with the company
-          examples:
-          - handle: dunder-mifflin
-            name: Dunder Mifflin Paper Company, Inc.
-            url: https://instagram.com/dunder-mifflin
-      type: object
-      title: Medias
-    MobileApp:
-      properties:
-        link:
-          type: string
-          nullable: true
-          title: url
-          description: Website address for this app
-          examples:
-          - https://www.my.app.com/
-        name:
-          type: string
-          title: App name
-          description: App name
-          examples:
-          - My awesome app
-      type: object
-      required:
-      - name
-      title: MobileApp
-    public_api__models__person__Phone:
-      properties:
-        numbers:
+        companies:
           items:
-            type: string
+            $ref: '#/components/schemas/PublicCompanyWithUniqueId'
           type: array
-          nullable: true
-          title: Numbers
-          description: Phone numbers
+          title: Enriched companies
+          description: List of enriched companies
+        overallStatus:
+          $ref: '#/components/schemas/OverallEnrichmentStatus'
+          title: Overall enrichment status
+          description: 'Status of the whole enrichment batch: `"Completed`" if all companies were processed, `"Incomplete`" if enrichment failed because of time out.'
+        creditsUsed:
+          type: number
+          title: Creditsused
+          description: Number of credits charged for this request.
           examples:
-          - - '+4512345678'
-            - +33 6 00 00 00 00
-        status:
-          type: string
-          enum:
-          - verified
-          - notFound
-          - inProgress
-          title: Status
-          description: 'Status of the phone numbers: verified or not found'
+          - 1.0
       type: object
       required:
-      - numbers
-      - status
-      title: Phone
-    public_api__models__reveal_emails__Email:
-      properties:
-        address:
-          type: string
-          nullable: true
-          title: Address
-          description: Email address
-          examples:
-          - name@gmail.com
-        status:
-          type: string
-          enum:
-          - verified
-          - guessed
-          - catchAll
-          - notFound
-          title: Status
-          description: 'Status of the address: verified, catchAll or guessed'
-        personId:
-          type: string
-          title: Personid
-          description: Ocean ID of the person
-          examples:
-          - personId
-      type: object
-      required:
-      - address
-      - status
-      - personId
-      title: Email
-    Media:
-      properties:
-        url:
-          type: string
-          title: Media URL
-          description: URL of the media
-        handle:
-          type: string
-          nullable: true
-          title: Handle
-          description: ids extracted from social media urls
-        name:
-          type: string
-          nullable: true
-          title: Name
-          description: Name of the company as it appears in the social media account
-        specialties:
-          items:
-            type: string
-          type: array
-          nullable: true
-          title: Specialties
-          description: Specialties of the company as it appears in the social media account. Right now we only have this for LinkedIn.
-          examples:
-          - - artificial intelligence
-            - machine learning
-      type: object
-      required:
-      - url
-      title: Media
+      - overallStatus
+      - creditsUsed
+      title: EnrichCompaniesWebhookResult
     PublicCompany:
       properties:
         domain:
@@ -2032,23 +2038,17 @@ components:
       required:
       - domain
       title: PublicCompany
-    Revenue:
+    Seniority:
       type: string
       enum:
-      - 0-1M
-      - 1-10M
-      - 10-50M
-      - 50-100M
-      - 100-500M
-      - 500-1000M
-      - '>1000M'
-      title: Revenue
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - Owner
+      - Founder
+      - Board Member
+      - C-Level
+      - Partner
+      - VP
+      - Head
+      - Director
+      - Manager
+      - Other
+      title: Seniority

@@ -276,6 +276,66 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    WarmupCompaniesBody:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Domains
+          description: Domains to be checked and added to the database if not present
+          examples:
+          - - ocean.io
+            - denmark.dk
+      additionalProperties: false
+      type: object
+      required:
+      - domains
+      title: WarmupCompaniesBody
+    GetCreditBalanceResponse:
+      properties:
+        credits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Standard'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        emailCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Email'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        phoneCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Phone'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        previewCredits:
+          $ref: '#/components/schemas/Credits'
+          description: '''Preview'' credits balance.'
+          examples:
+          - oneTime: 100.0
+            recurrent: 100.0
+        dailyLimitRateLeft:
+          type: integer
+          title: Dailylimitrateleft
+          description: Number of requests left for the current day.
+          default: 0
+          examples:
+          - 10
+        dailyLimitRateSecondsToReset:
+          type: integer
+          title: Dailylimitratesecondstoreset
+          description: Number of seconds left until the daily limit resets.
+          default: 0
+          examples:
+          - 3600
+      type: object
+      title: GetCreditBalanceResponse
     PublicTechnology:
       properties:
         name:
@@ -295,60 +355,92 @@ components:
           - - Chat
       type: object
       title: PublicTechnology
-    ValidationError:
+    PublicIndustries:
       properties:
-        loc:
+        industries:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            type: string
           type: array
-          title: Location
-        msg:
+          title: Industries
+          description: List of industries
+          examples:
+          - - Advertising Platforms
+            - Biopharma
+        industryCategory:
           type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          nullable: true
+          title: Industry category
+          description: Industry category name
+          examples:
+          - Administrative Services
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    Department:
-      type: string
-      enum:
-      - Accounting and Finance
-      - Board
-      - Business Support
-      - Customer Relations
-      - Design
-      - Editorial Personnel
-      - Engineering
-      - Founder/Owner
-      - Healthcare
-      - HR
-      - Legal
-      - Management
-      - Manufacturing
-      - Marketing and Advertising
-      - Operations
-      - PR and Communications
-      - Procurement
-      - Product
-      - Quality Control
-      - R&D
-      - Sales
-      - Security
-      - Supply Chain
-      - Other
-      title: Department
+      title: PublicIndustries
+    PublicGetDataFieldsResponse:
+      properties:
+        industries:
+          items:
+            $ref: '#/components/schemas/PublicIndustries'
+          type: array
+          title: Industries
+          description: List of industries
+          examples:
+          - - industries:
+              - Advertising Platforms
+              - Biopharma
+              industryCategory: Administrative Services
+        linkedinIndustries:
+          items:
+            type: string
+          type: array
+          title: Linkedin industries
+          description: List of Linkedin industries
+          examples:
+          - - Accounting
+            - Airlines/Aviation
+            - Alternative Dispute Resolution
+        technologies:
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
+          type: array
+          title: Technologies
+          description: List of technologies
+          examples:
+          - categories:
+            - Chat
+            name: ChatStack
+        regions:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/PublicCountryCodeToRegionMapping'
+            type: array
+          type: object
+          title: Country regions
+          description: List of regions per country
+          examples:
+          - nl:
+            - code: NH
+              englishName: North Holland
+              localName: Noord-Holland
+        seniorities:
+          items:
+            $ref: '#/components/schemas/Seniority'
+          type: array
+          title: Seniorities
+          description: List of seniorities computed from the job title of the person
+          examples:
+          - - C-Level
+            - Manager
+        departments:
+          items:
+            $ref: '#/components/schemas/Department'
+          type: array
+          title: Departments
+          description: List of departments computed from the job title of the person
+          examples:
+          - - Management
+            - Marketing and Advertising
+      type: object
+      title: PublicGetDataFieldsResponse
     PublicCountryCodeToRegionMapping:
       properties:
         code:
@@ -444,132 +536,41 @@ components:
             data-errors-domain-2.com: missing industry features
       type: object
       title: WarmupCompaniesResult
-    WarmupCompaniesBody:
+    ValidationError:
       properties:
-        domains:
+        loc:
           items:
-            type: string
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          maxItems: 500
-          minItems: 1
-          title: Domains
-          description: Domains to be checked and added to the database if not present
-          examples:
-          - - ocean.io
-            - denmark.dk
-      additionalProperties: false
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - domains
-      title: WarmupCompaniesBody
-    GetCreditBalanceResponse:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
       properties:
-        credits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Standard'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        emailCredits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Email'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        phoneCredits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Phone'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        previewCredits:
-          $ref: '#/components/schemas/Credits'
-          description: '''Preview'' credits balance.'
-          examples:
-          - oneTime: 100.0
-            recurrent: 100.0
-        dailyLimitRateLeft:
-          type: integer
-          title: Dailylimitrateleft
-          description: Number of requests left for the current day.
-          default: 0
-          examples:
-          - 10
-        dailyLimitRateSecondsToReset:
-          type: integer
-          title: Dailylimitratesecondstoreset
-          description: Number of seconds left until the daily limit resets.
-          default: 0
-          examples:
-          - 3600
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      title: GetCreditBalanceResponse
-    PublicGetDataFieldsResponse:
-      properties:
-        industries:
-          items:
-            $ref: '#/components/schemas/PublicIndustries'
-          type: array
-          title: Industries
-          description: List of industries
-          examples:
-          - - industries:
-              - Advertising Platforms
-              - Biopharma
-              industryCategory: Administrative Services
-        linkedinIndustries:
-          items:
-            type: string
-          type: array
-          title: Linkedin industries
-          description: List of Linkedin industries
-          examples:
-          - - Accounting
-            - Airlines/Aviation
-            - Alternative Dispute Resolution
-        technologies:
-          items:
-            $ref: '#/components/schemas/PublicTechnology'
-          type: array
-          title: Technologies
-          description: List of technologies
-          examples:
-          - categories:
-            - Chat
-            name: ChatStack
-        regions:
-          additionalProperties:
-            items:
-              $ref: '#/components/schemas/PublicCountryCodeToRegionMapping'
-            type: array
-          type: object
-          title: Country regions
-          description: List of regions per country
-          examples:
-          - nl:
-            - code: NH
-              englishName: North Holland
-              localName: Noord-Holland
-        seniorities:
-          items:
-            $ref: '#/components/schemas/Seniority'
-          type: array
-          title: Seniorities
-          description: List of seniorities computed from the job title of the person
-          examples:
-          - - C-Level
-            - Manager
-        departments:
-          items:
-            $ref: '#/components/schemas/Department'
-          type: array
-          title: Departments
-          description: List of departments computed from the job title of the person
-          examples:
-          - - Management
-            - Marketing and Advertising
-      type: object
-      title: PublicGetDataFieldsResponse
+      title: HTTPValidationError
     Credits:
       properties:
         oneTime:
@@ -588,15 +589,34 @@ components:
           - 1000
       type: object
       title: Credits
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+    Department:
+      type: string
+      enum:
+      - Accounting and Finance
+      - Board
+      - Business Support
+      - Customer Relations
+      - Design
+      - Editorial Personnel
+      - Engineering
+      - Founder/Owner
+      - Healthcare
+      - HR
+      - Legal
+      - Management
+      - Manufacturing
+      - Marketing and Advertising
+      - Operations
+      - PR and Communications
+      - Procurement
+      - Product
+      - Quality Control
+      - R&D
+      - Sales
+      - Security
+      - Supply Chain
+      - Other
+      title: Department
     Seniority:
       type: string
       enum:
@@ -611,23 +631,3 @@ components:
       - Manager
       - Other
       title: Seniority
-    PublicIndustries:
-      properties:
-        industries:
-          items:
-            type: string
-          type: array
-          title: Industries
-          description: List of industries
-          examples:
-          - - Advertising Platforms
-            - Biopharma
-        industryCategory:
-          type: string
-          nullable: true
-          title: Industry category
-          description: Industry category name
-          examples:
-          - Administrative Services
-      type: object
-      title: PublicIndustries

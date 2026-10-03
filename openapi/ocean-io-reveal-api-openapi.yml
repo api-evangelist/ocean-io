@@ -193,6 +193,21 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    PublicRevealEmailResult:
+      properties:
+        status:
+          type: string
+          enum:
+          - in progress
+          - webhook sent
+          title: Status
+          description: Status of the request. `"in progress"` if any email has to be verified in the background. All the email results are sent to the webhook once they are all done.
+          examples:
+          - in progress
+      type: object
+      required:
+      - status
+      title: PublicRevealEmailResult
     ValidationError:
       properties:
         loc:
@@ -219,46 +234,15 @@ components:
       - msg
       - type
       title: ValidationError
-    PublicRevealPhoneBody:
+    HTTPValidationError:
       properties:
-        personIds:
+        detail:
           items:
-            type: string
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          maxItems: 500
-          minItems: 1
-          title: Personids
-          description: List of Ocean person ids to fetch the phone data for. One phone credit will be charged for every verified phone found.
-          examples:
-          - - personId1
-            - personId2
-        webhookUrl:
-          type: string
-          title: Webhookurl
-          description: Url of the webhook the phone data should be sent to, when completed.
-          examples:
-          - https://some-url.com
-      additionalProperties: false
+          title: Detail
       type: object
-      required:
-      - personIds
-      - webhookUrl
-      title: PublicRevealPhoneBody
-    PublicRevealEmailResult:
-      properties:
-        status:
-          type: string
-          enum:
-          - in progress
-          - webhook sent
-          title: Status
-          description: Status of the request. `"in progress"` if any email has to be verified in the background. All the email results are sent to the webhook once they are all done.
-          examples:
-          - in progress
-      type: object
-      required:
-      - status
-      title: PublicRevealEmailResult
+      title: HTTPValidationError
     PublicRevealPhoneResult:
       properties:
         status:
@@ -274,15 +258,6 @@ components:
       required:
       - status
       title: PublicRevealPhoneResult
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     PublicRevealEmailBody:
       properties:
         personIds:
@@ -308,3 +283,28 @@ components:
       - personIds
       - webhookUrl
       title: PublicRevealEmailBody
+    PublicRevealPhoneBody:
+      properties:
+        personIds:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Personids
+          description: List of Ocean person ids to fetch the phone data for. One phone credit will be charged for every verified phone found.
+          examples:
+          - - personId1
+            - personId2
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the phone data should be sent to, when completed.
+          examples:
+          - https://some-url.com
+      additionalProperties: false
+      type: object
+      required:
+      - personIds
+      - webhookUrl
+      title: PublicRevealPhoneBody
