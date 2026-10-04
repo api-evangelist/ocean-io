@@ -213,6 +213,9 @@ apis:
   - type: ToolCrosswalk
     url: mcp/ocean-io-tool-crosswalk.yml
 common:
+- type: CapabilityMap
+  url: capabilities/ocean-io-capability-edges.yml
+  name: Ocean.io Business Capability Map
 - type: Overlay
   url: overlays/ocean-io-api-overlay.yaml
 - type: Website

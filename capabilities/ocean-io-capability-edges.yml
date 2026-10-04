@@ -1,0 +1,38 @@
+slug: ocean-io
+provider: Ocean.io
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 2
+edges:
+- tag: Segmentation
+  spec_file: ocean-io-segmentation-api-openapi.yml
+  capability_id: BC-420.20
+  capability_id_l1: BC-420
+  capability_name: Customer Segmentation Management
+  confidence: 0.78
+  evidence: POST /v2/segmentation createSegmentation; POST /v2/segmentation/{segmentation_id}/attribute-domains
+    attributeSegmentationDomains Attribute domains to segments; schemas Segment, SegmentCrmMetrics, ScoringFeature
+  reason: Creates segmentations, marks positive/negative training domains and attributes company domains
+    to segments with CRM metrics and scoring features — construction and assignment of customer/market
+    segments, i.e. customer segmentation management.
+- tag: Enrich
+  spec_file: ocean-io-enrich-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: POST /v2/enrich/company enrichCompany; POST /v2/enrich/person enrichPerson; schemas EnrichCompanyResult,
+    EnrichPeopleResult, Growth, FundingRound, WebTraffic
+  reason: The operations append firmographic and contact attributes to company and person records from
+    a B2B profile database — account/contact record enrichment, which realises Customer Data Management
+    (master/golden record attribute completion). Some ambiguity versus market-intelligence framing, hence
+    0.7.
