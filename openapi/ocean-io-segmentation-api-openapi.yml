@@ -424,6 +424,39 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    SegmentationStatus:
+      type: string
+      enum:
+      - IN_PROGRESS
+      - SUCCESSFUL
+      - FAILED
+      title: SegmentationStatus
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     SegmentCrmMetrics:
       properties:
         averageDealValue:
@@ -461,54 +494,43 @@ components:
       - winRate
       - untouchedCount
       title: SegmentCrmMetrics
-    StatusResponse:
-      properties:
-        status:
-          type: string
-          title: Status
-      type: object
-      required:
-      - status
-      title: StatusResponse
-    Segmentation:
+    SegmentationId:
       properties:
         segmentationId:
           type: integer
           title: Segmentationid
-          description: Unique id of the segmentation.
+          description: Unique id of the segmentation. Use it to poll for results with the get segmentation endpoint.
           examples:
           - 12345
-        segments:
-          items:
-            $ref: '#/components/schemas/Segment'
-          type: array
-          title: Segments
-          description: Resulting segments. Empty while `status` is `IN_PROGRESS`.
-        status:
-          $ref: '#/components/schemas/SegmentationStatus'
-          description: '`IN_PROGRESS` while running, `SUCCESSFUL` when segments are ready, or `FAILED` if it could not be completed.'
-          examples:
-          - SUCCESSFUL
-        totalAddressableMarket:
-          type: integer
-          nullable: true
-          title: Totaladdressablemarket
-          description: Estimated number of lookalike companies across all segments.
-          examples:
-          - 3200
-        totalUntouched:
-          type: integer
-          nullable: true
-          title: Totaluntouched
-          description: Companies in the addressable market you have no CRM activity with yet.
-          examples:
-          - 27
       type: object
       required:
       - segmentationId
-      - segments
-      - status
-      title: Segmentation
+      title: SegmentationId
+    AddMarkedDomainsInput:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+          description: Domains to add to the positive or negative list.
+          examples:
+          - - stripe.com
+            - twilio.com
+        type:
+          type: string
+          enum:
+          - positive
+          - negative
+          title: Type
+          description: Whether these domains are a good fit (`positive`) or a poor fit (`negative`).
+          examples:
+          - positive
+      type: object
+      required:
+      - domains
+      - type
+      title: AddMarkedDomainsInput
     Segment:
       properties:
         segmentId:
@@ -563,6 +585,15 @@ components:
       - domains
       - companyCount
       title: Segment
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ScoringFeature:
       properties:
         featureName:
@@ -583,115 +614,6 @@ components:
       - featureValue
       - score
       title: ScoringFeature
-    AttributeSegmentationDomainsResponse:
-      properties:
-        results:
-          items:
-            $ref: '#/components/schemas/AttributedDomain'
-          type: array
-          title: Results
-          description: One result per input domain, in the same order.
-        totalRequested:
-          type: integer
-          title: Totalrequested
-          description: Total number of domains requested.
-          examples:
-          - 3
-        totalAttributed:
-          type: integer
-          title: Totalattributed
-          description: Number of domains attributed to a segment. Excludes unmatched domains and domains that couldn't be evaluated.
-          examples:
-          - 2
-      type: object
-      required:
-      - results
-      - totalRequested
-      - totalAttributed
-      title: AttributeSegmentationDomainsResponse
-    SegmentationStatus:
-      type: string
-      enum:
-      - IN_PROGRESS
-      - SUCCESSFUL
-      - FAILED
-      title: SegmentationStatus
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    AttributedDomain:
-      properties:
-        domain:
-          type: string
-          title: Domain
-          description: The domain that was attributed.
-          examples:
-          - domain1.com
-        segmentId:
-          type: integer
-          nullable: true
-          title: Segmentid
-          description: ID of the matching segment, or `null` if the domain didn't match any segment closely enough (the unattributed bucket).
-          examples:
-          - 42
-        score:
-          type: number
-          maximum: 1.0
-          minimum: 0.0
-          nullable: true
-          title: Score
-          description: Match score (0-1). Higher means a stronger match to the assigned segment. `null` when the domain didn't match any segment closely enough or couldn't be evaluated.
-          examples:
-          - 0.91
-      type: object
-      required:
-      - domain
-      - segmentId
-      title: AttributedDomain
-    SegmentationId:
-      properties:
-        segmentationId:
-          type: integer
-          title: Segmentationid
-          description: Unique id of the segmentation. Use it to poll for results with the get segmentation endpoint.
-          examples:
-          - 12345
-      type: object
-      required:
-      - segmentationId
-      title: SegmentationId
     AttributeSegmentationDomainsRequest:
       properties:
         domains:
@@ -709,31 +631,6 @@ components:
       required:
       - domains
       title: AttributeSegmentationDomainsRequest
-    AddMarkedDomainsInput:
-      properties:
-        domains:
-          items:
-            type: string
-          type: array
-          title: Domains
-          description: Domains to add to the positive or negative list.
-          examples:
-          - - stripe.com
-            - twilio.com
-        type:
-          type: string
-          enum:
-          - positive
-          - negative
-          title: Type
-          description: Whether these domains are a good fit (`positive`) or a poor fit (`negative`).
-          examples:
-          - positive
-      type: object
-      required:
-      - domains
-      - type
-      title: AddMarkedDomainsInput
     SegmentationInput:
       properties:
         domains:
@@ -808,3 +705,106 @@ components:
       required:
       - domains
       title: SegmentationInput
+    AttributeSegmentationDomainsResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/AttributedDomain'
+          type: array
+          title: Results
+          description: One result per input domain, in the same order.
+        totalRequested:
+          type: integer
+          title: Totalrequested
+          description: Total number of domains requested.
+          examples:
+          - 3
+        totalAttributed:
+          type: integer
+          title: Totalattributed
+          description: Number of domains attributed to a segment. Excludes unmatched domains and domains that couldn't be evaluated.
+          examples:
+          - 2
+      type: object
+      required:
+      - results
+      - totalRequested
+      - totalAttributed
+      title: AttributeSegmentationDomainsResponse
+    AttributedDomain:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: The domain that was attributed.
+          examples:
+          - domain1.com
+        segmentId:
+          type: integer
+          nullable: true
+          title: Segmentid
+          description: ID of the matching segment, or `null` if the domain didn't match any segment closely enough (the unattributed bucket).
+          examples:
+          - 42
+        score:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          nullable: true
+          title: Score
+          description: Match score (0-1). Higher means a stronger match to the assigned segment. `null` when the domain didn't match any segment closely enough or couldn't be evaluated.
+          examples:
+          - 0.91
+      type: object
+      required:
+      - domain
+      - segmentId
+      title: AttributedDomain
+    Segmentation:
+      properties:
+        segmentationId:
+          type: integer
+          title: Segmentationid
+          description: Unique id of the segmentation.
+          examples:
+          - 12345
+        segments:
+          items:
+            $ref: '#/components/schemas/Segment'
+          type: array
+          title: Segments
+          description: Resulting segments. Empty while `status` is `IN_PROGRESS`.
+        status:
+          $ref: '#/components/schemas/SegmentationStatus'
+          description: '`IN_PROGRESS` while running, `SUCCESSFUL` when segments are ready, or `FAILED` if it could not be completed.'
+          examples:
+          - SUCCESSFUL
+        totalAddressableMarket:
+          type: integer
+          nullable: true
+          title: Totaladdressablemarket
+          description: Estimated number of lookalike companies across all segments.
+          examples:
+          - 3200
+        totalUntouched:
+          type: integer
+          nullable: true
+          title: Totaluntouched
+          description: Companies in the addressable market you have no CRM activity with yet.
+          examples:
+          - 27
+      type: object
+      required:
+      - segmentationId
+      - segments
+      - status
+      title: Segmentation
+    StatusResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - status
+      title: StatusResponse

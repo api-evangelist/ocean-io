@@ -438,100 +438,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    models__autocomplete_keyword__AutoCompletionResult:
-      properties:
-        keywords:
-          items:
-            type: string
-          type: array
-          title: Keywords found
-          description: Array of found keywords. Returns empty array if no results
-          examples:
-          - software
-          - software development
-      additionalProperties: false
-      type: object
-      required:
-      - keywords
-      title: AutoCompletionResult
-    models__autocomplete_locations__AutoCompletionResult:
-      properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/models__autocomplete_locations__Location'
-          type: array
-          title: Locations found
-          description: Array of found locations with metadata. Returns empty array if no results
-      additionalProperties: false
-      type: object
-      required:
-      - locations
-      title: AutoCompletionResult
-    models__autocomplete_skills__AutoCompletionBody:
-      properties:
-        query:
-          type: string
-          title: Autocomplete request for skills
-          description: Beginning of the skill name
-          examples:
-          - python
-        limit:
-          type: integer
-          maximum: 15.0
-          minimum: 1.0
-          title: Limit
-          description: Number of skills to return. Default is 5 if not specified, maximum is 15.
-          default: 5
-          examples:
-          - 5
-      additionalProperties: false
-      type: object
-      required:
-      - query
-      title: AutoCompletionBody
-    models__autocomplete_job_title__AutoCompletionBody:
-      properties:
-        query:
-          type: string
-          maxLength: 100
-          minLength: 1
-          title: Autocomplete request for job title
-          description: Beginning of the job title
-          examples:
-          - developer
-        limit:
-          type: integer
-          maximum: 15.0
-          minimum: 1.0
-          title: Limit
-          description: Number of job titles to return. Default is 5 if not specified, maximum is 15.
-          default: 5
-          examples:
-          - 5
-      additionalProperties: false
-      type: object
-      required:
-      - query
-      title: AutoCompletionBody
-    models__autocomplete_companies__AutoCompletionResult:
-      properties:
-        companies:
-          items:
-            $ref: '#/components/schemas/AutoCompletionCompany'
-          type: array
-          title: Companies found
-          description: Array of found companies. Returns empty array if no results
-      additionalProperties: false
-      type: object
-      required:
-      - companies
-      title: AutoCompletionResult
-    LocationSearchType:
-      type: string
-      enum:
-      - companies
-      - people
-      title: LocationSearchType
     models__autocomplete_job_title__AutoCompletionResult:
       properties:
         jobTitles:
@@ -548,15 +454,6 @@ components:
       required:
       - jobTitles
       title: AutoCompletionResult
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -583,101 +480,6 @@ components:
       - msg
       - type
       title: ValidationError
-    models__autocomplete_keyword__AutoCompletionBody:
-      properties:
-        query:
-          type: string
-          title: Autocomplete request for keywords
-          description: Beginning of the keyword
-          examples:
-          - softw
-        limit:
-          type: integer
-          maximum: 15.0
-          minimum: 1.0
-          title: Limit
-          description: Number of keywords to return. Default is 5 if not specified, maximum is 15.
-          default: 5
-          examples:
-          - 5
-      additionalProperties: false
-      type: object
-      required:
-      - query
-      title: AutoCompletionBody
-    AutoCompletionCompany:
-      properties:
-        domain:
-          type: string
-          title: Domain
-          description: Domain of the company, used as a unique identifier
-          examples:
-          - ocean.io
-        logo:
-          type: string
-          nullable: true
-          title: Logo
-          description: Logo of the company (URL)
-          examples:
-          - https://cdn2.ocean.io/companies-logos-v1/domain.com/020539e284d9318e805301b672ad23047c30818a.png
-        name:
-          type: string
-          nullable: true
-          title: Name
-          description: Name of the company
-          examples:
-          - Ocean
-      additionalProperties: false
-      type: object
-      required:
-      - domain
-      title: AutoCompletionCompany
-    models__autocomplete_locations__AutoCompletionBody:
-      properties:
-        query:
-          type: string
-          title: Autocomplete request for location
-          description: Beginning of the location
-          examples:
-          - londo
-        limit:
-          type: integer
-          maximum: 15.0
-          minimum: 1.0
-          title: Limit
-          description: Number of locations to return. Default is 5 if not specified, maximum is 15.
-          default: 5
-          examples:
-          - 5
-        locationType:
-          $ref: '#/components/schemas/LocationSearchType'
-          title: Location type
-          description: Type of entities to search locations for. Use 'people' to include non-standard locations like 'San Francisco Bay Area'.
-          default: companies
-          examples:
-          - companies
-      additionalProperties: false
-      type: object
-      required:
-      - query
-      title: AutoCompletionBody
-    models__autocomplete_skills__AutoCompletionResult:
-      properties:
-        skills:
-          items:
-            type: string
-          type: array
-          title: Skills found
-          description: Array of found skills. Returns empty array if no results
-          examples:
-          - Python
-          - Python Programming
-          - Python Django
-      additionalProperties: false
-      type: object
-      required:
-      - skills
-      title: AutoCompletionResult
     models__autocomplete_locations__Location:
       properties:
         countryCode:
@@ -726,6 +528,95 @@ components:
       - parentName
       - type
       title: Location
+    models__autocomplete_locations__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          title: Autocomplete request for location
+          description: Beginning of the location
+          examples:
+          - londo
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of locations to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+        locationType:
+          $ref: '#/components/schemas/LocationSearchType'
+          title: Location type
+          description: Type of entities to search locations for. Use 'people' to include non-standard locations like 'San Francisco Bay Area'.
+          default: companies
+          examples:
+          - companies
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
+    models__autocomplete_skills__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          title: Autocomplete request for skills
+          description: Beginning of the skill name
+          examples:
+          - python
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of skills to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
+    models__autocomplete_companies__AutoCompletionResult:
+      properties:
+        companies:
+          items:
+            $ref: '#/components/schemas/AutoCompletionCompany'
+          type: array
+          title: Companies found
+          description: Array of found companies. Returns empty array if no results
+      additionalProperties: false
+      type: object
+      required:
+      - companies
+      title: AutoCompletionResult
+    models__autocomplete_keyword__AutoCompletionResult:
+      properties:
+        keywords:
+          items:
+            type: string
+          type: array
+          title: Keywords found
+          description: Array of found keywords. Returns empty array if no results
+          examples:
+          - software
+          - software development
+      additionalProperties: false
+      type: object
+      required:
+      - keywords
+      title: AutoCompletionResult
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     models__autocomplete_companies__AutoCompletionBody:
       properties:
         name:
@@ -763,6 +654,102 @@ components:
       required:
       - name
       title: AutoCompletionBody
+    models__autocomplete_job_title__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Autocomplete request for job title
+          description: Beginning of the job title
+          examples:
+          - developer
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of job titles to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
+    models__autocomplete_skills__AutoCompletionResult:
+      properties:
+        skills:
+          items:
+            type: string
+          type: array
+          title: Skills found
+          description: Array of found skills. Returns empty array if no results
+          examples:
+          - Python
+          - Python Programming
+          - Python Django
+      additionalProperties: false
+      type: object
+      required:
+      - skills
+      title: AutoCompletionResult
+    LocationSearchType:
+      type: string
+      enum:
+      - companies
+      - people
+      title: LocationSearchType
+    AutoCompletionCompany:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain of the company, used as a unique identifier
+          examples:
+          - ocean.io
+        logo:
+          type: string
+          nullable: true
+          title: Logo
+          description: Logo of the company (URL)
+          examples:
+          - https://cdn2.ocean.io/companies-logos-v1/domain.com/020539e284d9318e805301b672ad23047c30818a.png
+        name:
+          type: string
+          nullable: true
+          title: Name
+          description: Name of the company
+          examples:
+          - Ocean
+      additionalProperties: false
+      type: object
+      required:
+      - domain
+      title: AutoCompletionCompany
+    models__autocomplete_keyword__AutoCompletionBody:
+      properties:
+        query:
+          type: string
+          title: Autocomplete request for keywords
+          description: Beginning of the keyword
+          examples:
+          - softw
+        limit:
+          type: integer
+          maximum: 15.0
+          minimum: 1.0
+          title: Limit
+          description: Number of keywords to return. Default is 5 if not specified, maximum is 15.
+          default: 5
+          examples:
+          - 5
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      title: AutoCompletionBody
     LocationType:
       type: string
       enum:
@@ -771,3 +758,16 @@ components:
       - 3-municipality
       - 4-city
       title: LocationType
+    models__autocomplete_locations__AutoCompletionResult:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/models__autocomplete_locations__Location'
+          type: array
+          title: Locations found
+          description: Array of found locations with metadata. Returns empty array if no results
+      additionalProperties: false
+      type: object
+      required:
+      - locations
+      title: AutoCompletionResult

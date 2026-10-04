@@ -193,7 +193,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    PublicRevealEmailResult:
+    PublicRevealPhoneResult:
       properties:
         status:
           type: string
@@ -201,13 +201,13 @@ components:
           - in progress
           - webhook sent
           title: Status
-          description: Status of the request. `"in progress"` if any email has to be verified in the background. All the email results are sent to the webhook once they are all done.
+          description: Status of the request. `"in progress"` if any phone has to be verified in the background. All the phone results are sent to the webhook once they are all done.
           examples:
           - in progress
       type: object
       required:
       - status
-      title: PublicRevealEmailResult
+      title: PublicRevealPhoneResult
     ValidationError:
       properties:
         loc:
@@ -234,55 +234,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PublicRevealPhoneResult:
-      properties:
-        status:
-          type: string
-          enum:
-          - in progress
-          - webhook sent
-          title: Status
-          description: Status of the request. `"in progress"` if any phone has to be verified in the background. All the phone results are sent to the webhook once they are all done.
-          examples:
-          - in progress
-      type: object
-      required:
-      - status
-      title: PublicRevealPhoneResult
-    PublicRevealEmailBody:
-      properties:
-        personIds:
-          items:
-            type: string
-          type: array
-          maxItems: 500
-          minItems: 1
-          title: Personids
-          description: List of Ocean person ids to fetch the email data for. One email credit will be charged for every verified email found.
-          examples:
-          - - personId1
-            - personId2
-        webhookUrl:
-          type: string
-          title: Webhookurl
-          description: Url of the webhook the email data should be sent to, when completed.
-          examples:
-          - https://some-url.com
-      additionalProperties: false
-      type: object
-      required:
-      - personIds
-      - webhookUrl
-      title: PublicRevealEmailBody
     PublicRevealPhoneBody:
       properties:
         personIds:
@@ -308,3 +259,52 @@ components:
       - personIds
       - webhookUrl
       title: PublicRevealPhoneBody
+    PublicRevealEmailResult:
+      properties:
+        status:
+          type: string
+          enum:
+          - in progress
+          - webhook sent
+          title: Status
+          description: Status of the request. `"in progress"` if any email has to be verified in the background. All the email results are sent to the webhook once they are all done.
+          examples:
+          - in progress
+      type: object
+      required:
+      - status
+      title: PublicRevealEmailResult
+    PublicRevealEmailBody:
+      properties:
+        personIds:
+          items:
+            type: string
+          type: array
+          maxItems: 500
+          minItems: 1
+          title: Personids
+          description: List of Ocean person ids to fetch the email data for. One email credit will be charged for every verified email found.
+          examples:
+          - - personId1
+            - personId2
+        webhookUrl:
+          type: string
+          title: Webhookurl
+          description: Url of the webhook the email data should be sent to, when completed.
+          examples:
+          - https://some-url.com
+      additionalProperties: false
+      type: object
+      required:
+      - personIds
+      - webhookUrl
+      title: PublicRevealEmailBody
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
