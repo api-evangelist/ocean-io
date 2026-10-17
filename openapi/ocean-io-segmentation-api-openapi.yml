@@ -424,39 +424,23 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    SegmentationStatus:
-      type: string
-      enum:
-      - IN_PROGRESS
-      - SUCCESSFUL
-      - FAILED
-      title: SegmentationStatus
-    ValidationError:
+    AttributeSegmentationDomainsRequest:
       properties:
-        loc:
+        domains:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            type: string
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          maxItems: 1000
+          minItems: 1
+          title: Domains
+          description: Domains to attribute (max 1000).
+          examples:
+          - - domain1.com
+            - domain2.com
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - domains
+      title: AttributeSegmentationDomainsRequest
     SegmentCrmMetrics:
       properties:
         averageDealValue:
@@ -494,43 +478,6 @@ components:
       - winRate
       - untouchedCount
       title: SegmentCrmMetrics
-    SegmentationId:
-      properties:
-        segmentationId:
-          type: integer
-          title: Segmentationid
-          description: Unique id of the segmentation. Use it to poll for results with the get segmentation endpoint.
-          examples:
-          - 12345
-      type: object
-      required:
-      - segmentationId
-      title: SegmentationId
-    AddMarkedDomainsInput:
-      properties:
-        domains:
-          items:
-            type: string
-          type: array
-          title: Domains
-          description: Domains to add to the positive or negative list.
-          examples:
-          - - stripe.com
-            - twilio.com
-        type:
-          type: string
-          enum:
-          - positive
-          - negative
-          title: Type
-          description: Whether these domains are a good fit (`positive`) or a poor fit (`negative`).
-          examples:
-          - positive
-      type: object
-      required:
-      - domains
-      - type
-      title: AddMarkedDomainsInput
     Segment:
       properties:
         segmentId:
@@ -585,6 +532,41 @@ components:
       - domains
       - companyCount
       title: Segment
+    AttributeSegmentationDomainsResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/AttributedDomain'
+          type: array
+          title: Results
+          description: One result per input domain, in the same order.
+        totalRequested:
+          type: integer
+          title: Totalrequested
+          description: Total number of domains requested.
+          examples:
+          - 3
+        totalAttributed:
+          type: integer
+          title: Totalattributed
+          description: Number of domains attributed to a segment. Excludes unmatched domains and domains that couldn't be evaluated.
+          examples:
+          - 2
+      type: object
+      required:
+      - results
+      - totalRequested
+      - totalAttributed
+      title: AttributeSegmentationDomainsResponse
+    StatusResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - status
+      title: StatusResponse
     HTTPValidationError:
       properties:
         detail:
@@ -594,43 +576,79 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ScoringFeature:
+    AttributedDomain:
       properties:
-        featureName:
+        domain:
           type: string
-          title: Featurename
-          description: Feature that contributed to score
-        featureValue:
-          type: string
-          title: Featurevalue
-          description: Specific value that matched
+          title: Domain
+          description: The domain that was attributed.
+          examples:
+          - domain1.com
+        segmentId:
+          type: integer
+          nullable: true
+          title: Segmentid
+          description: ID of the matching segment, or `null` if the domain didn't match any segment closely enough (the unattributed bucket).
+          examples:
+          - 42
         score:
           type: number
+          maximum: 1.0
+          minimum: 0.0
+          nullable: true
           title: Score
-          description: Boost contribution
+          description: Match score (0-1). Higher means a stronger match to the assigned segment. `null` when the domain didn't match any segment closely enough or couldn't be evaluated.
+          examples:
+          - 0.91
       type: object
       required:
-      - featureName
-      - featureValue
-      - score
-      title: ScoringFeature
-    AttributeSegmentationDomainsRequest:
+      - domain
+      - segmentId
+      title: AttributedDomain
+    SegmentationStatus:
+      type: string
+      enum:
+      - IN_PROGRESS
+      - SUCCESSFUL
+      - FAILED
+      title: SegmentationStatus
+    SegmentationId:
+      properties:
+        segmentationId:
+          type: integer
+          title: Segmentationid
+          description: Unique id of the segmentation. Use it to poll for results with the get segmentation endpoint.
+          examples:
+          - 12345
+      type: object
+      required:
+      - segmentationId
+      title: SegmentationId
+    AddMarkedDomainsInput:
       properties:
         domains:
           items:
             type: string
           type: array
-          maxItems: 1000
-          minItems: 1
           title: Domains
-          description: Domains to attribute (max 1000).
+          description: Domains to add to the positive or negative list.
           examples:
-          - - domain1.com
-            - domain2.com
+          - - stripe.com
+            - twilio.com
+        type:
+          type: string
+          enum:
+          - positive
+          - negative
+          title: Type
+          description: Whether these domains are a good fit (`positive`) or a poor fit (`negative`).
+          examples:
+          - positive
       type: object
       required:
       - domains
-      title: AttributeSegmentationDomainsRequest
+      - type
+      title: AddMarkedDomainsInput
     SegmentationInput:
       properties:
         domains:
@@ -705,61 +723,52 @@ components:
       required:
       - domains
       title: SegmentationInput
-    AttributeSegmentationDomainsResponse:
+    ScoringFeature:
       properties:
-        results:
-          items:
-            $ref: '#/components/schemas/AttributedDomain'
-          type: array
-          title: Results
-          description: One result per input domain, in the same order.
-        totalRequested:
-          type: integer
-          title: Totalrequested
-          description: Total number of domains requested.
-          examples:
-          - 3
-        totalAttributed:
-          type: integer
-          title: Totalattributed
-          description: Number of domains attributed to a segment. Excludes unmatched domains and domains that couldn't be evaluated.
-          examples:
-          - 2
-      type: object
-      required:
-      - results
-      - totalRequested
-      - totalAttributed
-      title: AttributeSegmentationDomainsResponse
-    AttributedDomain:
-      properties:
-        domain:
+        featureName:
           type: string
-          title: Domain
-          description: The domain that was attributed.
-          examples:
-          - domain1.com
-        segmentId:
-          type: integer
-          nullable: true
-          title: Segmentid
-          description: ID of the matching segment, or `null` if the domain didn't match any segment closely enough (the unattributed bucket).
-          examples:
-          - 42
+          title: Featurename
+          description: Feature that contributed to score
+        featureValue:
+          type: string
+          title: Featurevalue
+          description: Specific value that matched
         score:
           type: number
-          maximum: 1.0
-          minimum: 0.0
-          nullable: true
           title: Score
-          description: Match score (0-1). Higher means a stronger match to the assigned segment. `null` when the domain didn't match any segment closely enough or couldn't be evaluated.
-          examples:
-          - 0.91
+          description: Boost contribution
       type: object
       required:
-      - domain
-      - segmentId
-      title: AttributedDomain
+      - featureName
+      - featureValue
+      - score
+      title: ScoringFeature
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     Segmentation:
       properties:
         segmentationId:
@@ -799,12 +808,3 @@ components:
       - segments
       - status
       title: Segmentation
-    StatusResponse:
-      properties:
-        status:
-          type: string
-          title: Status
-      type: object
-      required:
-      - status
-      title: StatusResponse
