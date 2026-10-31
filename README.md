@@ -1,4 +1,4 @@
-# Ocean.io (ocean-io)
+# Ocean.io
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,31 +64,154 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Ocean.io is a B2B account-based prospecting and enrichment platform focused on lookalike search and ICP refinement. It offers a REST API for company enrichment and lookalike account discovery. API access is gated to paying customers and configured per contract.
+Ocean.io is a B2B go-to-market data platform built around lookalike intelligence: give it a domain or a set of closed-won customers and it returns the most similar companies from a database of 67M company profiles and 250M+ employee records, each carrying 100+ signals assembled from the open web. Alongside the web app it ships a public REST API at api.ocean.io covering company and people search (filter, Boolean and lookalike), company and person enrichment, domain and LinkedIn-handle lookup, verified email and phone reveal, autocomplete for filter values, and a stateful segmentation service that clusters a customer list into scored segments and attributes new domains to the closest one. The API is documented with a public OpenAPI 3.1 document, meters every call from a single credit pool, delivers batch and reveal results by webhook callback, and is also exposed to agents through a first-party hosted MCP server at api.ocean.io/mcp.
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/ocean-io/refs/heads/main/apis.yml)
+**Areas:** Sales Intelligence · B2B · Data Enrichment · Lookalike · Account Based Marketing · Prospecting · Company Data · People Data · Contact Data · Segmentation · Go-To-Market · MCP
 
-## Type
-- **x-type:** company
+## Ocean.io on APIs.io
 
-## Tags
-- Sales Intelligence, B2B, Enrichment, Lookalike, ABM, Prospecting
+Everything profiled for Ocean.io is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/ocean-io/](https://apis.io/providers/ocean-io/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
-- **Created:** 2026-05-08
-- **Modified:** 2026-05-08
+### APIs (8)
 
-## APIs
+- [Ocean.io Autocomplete API](https://apis.io/apis/ocean-io/ocean-io-autocomplete-api/) — The Autocomplete API from Ocean.io — 5 operation(s) for autocomplete.
+- [Ocean.io Enrich API](https://apis.io/apis/ocean-io/ocean-io-enrich-api/) — The Enrich API from Ocean.io — 4 operation(s) for enrich.
+- [Ocean.io Lookup API](https://apis.io/apis/ocean-io/ocean-io-lookup-api/) — The Lookup API from Ocean.io — 2 operation(s) for lookup.
+- [Ocean.io API Documentation API](https://apis.io/apis/ocean-io/ocean-io-ocean-io-api-documentation-api/) — The Ocean.io API Documentation API from Ocean.io — 0 operation(s) for ocean.io api documentation.
+- [Ocean.io Other API](https://apis.io/apis/ocean-io/ocean-io-other-api/) — The Other API from Ocean.io — 3 operation(s) for other.
+- [Ocean.io Reveal API](https://apis.io/apis/ocean-io/ocean-io-reveal-api/) — The Reveal API from Ocean.io — 2 operation(s) for reveal.
+- [Ocean.io Search API](https://apis.io/apis/ocean-io/ocean-io-search-api/) — The Search API from Ocean.io — 6 operation(s) for search.
+- [Ocean.io Segmentation API](https://apis.io/apis/ocean-io/ocean-io-segmentation-api/) — The Segmentation API from Ocean.io — 4 operation(s) for segmentation.
 
+### Published properties
 
-## Common Properties
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Ocean Io Webhooks](https://apis.io/asyncapis/ocean-io/ocean-io-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [ocean_data_api](https://apis.io/servers/ocean-io/ocean-data-api/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Ocean Io Agentic Access](https://apis.io/agentic-access/ocean-io/ocean-io-agentic-access/)
+
+#### Collections (1)
+
+Postman and Open Collection request collections.
+
+- [Ocean.io API Documentation](https://apis.io/collections/ocean-io/open-ocean-io-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Ocean Io Api Overlay](https://apis.io/overlays/ocean-io/ocean-io-api-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Ocean Io Authentication](https://apis.io/security/ocean-io/ocean-io-authentication/)
+- [Ocean Io Domain Security](https://apis.io/security/ocean-io/ocean-io-domain-security/)
+- [Ocean Io Trust Center](https://apis.io/security/ocean-io/ocean-io-trust-center/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Ocean Io Scopes](https://apis.io/scopes/ocean-io/ocean-io-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Ocean Io Plans Pricing](https://apis.io/plans/ocean-io/ocean-io-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Ocean Io Rate Limits](https://apis.io/rate-limits/ocean-io/ocean-io-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Ocean Io Finops](https://apis.io/finops/ocean-io/ocean-io-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
 - [Website](https://ocean.io/)
-- [Developer Portal](https://ocean.io/help/api)
-- [Plans](plans/ocean-io-plans-pricing.yml) — partial (sales-led; no public pricing)
-- [RateLimits](rate-limits/ocean-io-rate-limits.yml) — partial (contract-defined credits)
-- [FinOps](finops/ocean-io-finops.yml) — reconciled (annual enterprise contract)
+- [Documentation](https://app.ocean.io/docs)
+- [Getting started](https://app.ocean.io/docs/getting-started/quickstart)
+- [API reference](https://app.ocean.io/docs)
+- [Pricing](https://ocean.io/pricing)
+- [Compliance](https://trust.ocean.io/)
+- [Status](https://status.ocean.io/)
 
-## Maintainers
-**FN:** Kin Lane
+## API Evangelist rating
 
-**Email:** kin@apievangelist.com
+**Kin Score 40.3** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 53.6 |
+| Contract governance | 4.5 |
+| Operational transparency | 55.3 |
+| Developer ergonomics | 23.2 |
+| Access clarity | 26.3 |
+
+**Agent readiness 44.5** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 31.4** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/ocean-io/](https://apis.io/providers/ocean-io/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Ocean.io: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/ocean-io/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
